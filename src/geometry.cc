@@ -11,8 +11,6 @@
 #include "geometry.h"
 #include "macro_def.h"
 
-#define SQR(x) ((x)*(x))
-
 extern float global_characteristic_length_scale;
 
 Vec::Vec() {}
@@ -325,10 +323,9 @@ float ray_box_intersect(const Ray &r, const Box &b)
  * @param sgn either +1 or -1, indicating forward or backward rotation,
  * undefined behavior if not +1 or -1
  */
-static void z_to_normal_rotation(const Vec &normal, Vec &v, int sgn)
+void z_to_normal_rotation(const Vec &normal, Vec &v, int sgn)
 {
 	Vec result, zxn, tmp;
-	float zxndotv;
 	float costheta;
 
 	costheta = normal.x[2];
