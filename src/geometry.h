@@ -16,9 +16,7 @@ public:
 
 	Vec();
 	Vec(float x, float y, float z);
-	Vec(const Vec &v);
 
-	Vec &operator=(const Vec &v);
 	Vec &operator+=(const Vec &v);
 	Vec &operator-=(const Vec &v);
 	Vec &operator*=(const float s);
@@ -63,7 +61,16 @@ public:
 	/** small xyz and larger xyz corners */
 	float corners[2][3];
 
+	Box(float corners[2][3]);
 	Box(float xmin, float ymin, float zmin, float xmax, float ymax, float zmax);
 };
+
+float fast_ray_plane_intersect(Vec &intersect, const Ray &r, int plane, float pval);
+float ray_face_intersect(Vec &result, const Ray &r, const struct Triangle &f);
+Box face_bounding_box(const Triangle &f);
+bool vec_in_box(const Vec &v, const Box &b);
+bool box_touch_box(const Box &a, const Box &b);
+float ray_box_intersect(const Ray &r, const Box &b);
+void z_to_normal_rotation(const Vec &normal, Vec &v, int sgn);
 
 #endif /* GEOMETRY_H */

@@ -16,21 +16,6 @@ extern float global_characteristic_length_scale;
 Vec::Vec() {}
 Vec::Vec(float x, float y, float z) : x{x, y, z} {}
 
-Vec::Vec(const Vec &v)
-{
-	x[0] = v.x[0];
-	x[1] = v.x[1];
-	x[2] = v.x[2];
-}
-
-Vec &Vec::operator=(const Vec &v)
-{
-	x[0] = v.x[0];
-	x[1] = v.x[1];
-	x[2] = v.x[2];
-	return *this;
-}
-
 Vec &Vec::operator+=(const Vec &v)
 {
 	x[0] += v.x[0];
@@ -121,6 +106,15 @@ Ray::Ray(const Vec &origin, const Vec &direction)
 : orig{origin}, dir{direction}
 {
 	dir.normalize();
+}
+
+Box::Box(float corners[2][3])
+{
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < 3; j++) {
+			this->corners[i][j] = corners[i][j];
+		}
+	}
 }
 
 Box::Box(float xmin, float ymin, float zmin, float xmax, float ymax, float zmax)
