@@ -310,3 +310,43 @@ float ray_box_intersect(const Ray &r, const Box &b)
 		return -1;
 	}
 }
+
+/**
+ * Performs a rotation operation on any vector that would take the z-axis to the
+ * specified normal vector
+ *
+ * Rodrigues' rotation formula:
+ * https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
+ *
+ * v cos + ((zxn)xv) + (zxn)((zxn) dot v) / (1 + cos)
+ *
+ * @param normal the z-axis would be rotated to this
+ * @param v the vector to rotate
+ * @param sgn either +1 or -1, indicating forward or backward rotation,
+ * undefined behavior if not +1 or -1
+ */
+static void z_to_normal_rotation(const Vec &normal, Vec &v, int sgn)
+{
+	Vec result, zxn, tmp;
+	float zxndotv;
+	float costheta;
+
+	costheta = normal.x[2];
+
+	/* normal points close to z or opposite of z */
+	if (1 - costheta < GEOMETRY_EPSILON) {
+		return;
+	}
+	if (1 + costheta < GEOMETRY_EPSILON) {
+		/* NOTE: this is parity violating but ok if materials are axisym */
+		v *= -1.0f;
+		return;
+	}
+
+	/* z cross n */
+	zxn.x[0] = -normal.x[1];
+	zxn.x[1] = normal.x[0];
+	zxn.x[2] = 0;
+
+	v = costheta*v + sgn*(zxn^v) + ((zxn*v)/(1.0f + costheta))*zxn;
+}
