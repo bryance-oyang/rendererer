@@ -7,6 +7,7 @@
  */
 
 #include <math.h>
+#include <float.h>
 #include "geometry.h"
 #include "macro_def.h"
 
@@ -185,7 +186,7 @@ float fast_ray_plane_intersect(Vec &intersect, const Ray &r,
  *
  * @return intercept ray parameter t if intersection occurs or -1 if not
  */
-static float ray_face_intersect(Vec &result, const Ray &r, const struct Triangle &f)
+float ray_face_intersect(Vec &result, const Ray &r, const struct Triangle &f)
 {
 	float pyramid_vol, u1, u2;
 	float t;
@@ -223,5 +224,89 @@ static float ray_face_intersect(Vec &result, const Ray &r, const struct Triangle
 		/* r0 + vt */
 		result = r.orig + t * r.dir;
 		return t;
+	}
+}
+
+/** @return the bounding box of a face */
+Box face_bounding_box(const Triangle &f)
+{
+	Box result{FLT_MAX, FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX};
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			float coord_val = f.v[i].x[j];
+			if (coord_val < result.corners[0][j])
+				result.corners[0][j] = coord_val;
+			if (coord_val > result.corners[1][j])
+				result.corners[1][j] = coord_val;
+		}
+	}
+	return result;
+}
+
+/** @return true if v is inside, or false otherwise */
+bool vec_in_box(const Vec &v, const Box &b)
+{
+	bool retval = true;
+	for (int i = 0; i < 3; i++) {
+		retval = retval && b.corners[0][i] <= v.x[i] && v.x[i] <= b.corners[1][i];
+	}
+	return retval;
+}
+
+/** @return true if any part of boxes touches */
+bool box_touch_box(const Box &a, const Box &b)
+{
+	bool retval = true;
+	for (int i = 0; i < 3; i++) {
+		retval = retval
+			&& a.corners[0][i] <= b.corners[1][i]
+			&& a.corners[1][i] >= b.corners[0][i];
+	}
+	return retval;
+}
+
+/**
+ * In the event of ray being parallel to one of the xyz planes, we just skip
+ * that plane. It can be parallel to at most 2 of 3, so we guarantee at least
+ * checking one plane for normal intersection.
+ *
+ * @return smaller intercept ray parameter t if intercept occurs, or
+ * negative number if not
+ */
+float ray_box_intersect(const Ray &r, const Box &b)
+{
+	float t;
+	float tmin = FLT_MAX;
+	bool nintersect_found = false;
+	Vec intersect;
+
+	/* i indexes xyz */
+	for (int i = 0; i < 3; i++) {
+		/* check if parallel to plane, if so skip it */
+		if (unlikely(fabsf(r.dir.x[i]) < GEOMETRY_EPSILON))
+			continue;
+
+		/* check both lower and upper planes */
+		float plane_coord[2] = {b.corners[0][i], b.corners[1][i]};
+		/* j indexes lower or upper */
+		for (int j = 0; j < 2; j++) {
+			t = fast_ray_plane_intersect(intersect, r, i, plane_coord[j]);
+			if (
+				t >= 0
+				&& t < tmin
+				&& b.corners[0][(i+1)%3] <= intersect.x[(i+1)%3]
+				&& intersect.x[(i+1)%3] <= b.corners[1][(i+1)%3]
+				&& b.corners[0][(i+2)%3] <= intersect.x[(i+2)%3]
+				&& intersect.x[(i+2)%3] <= b.corners[1][(i+2)%3]
+			) {
+				nintersect_found = true;
+				tmin = t;
+			}
+		}
+	}
+	if (nintersect_found) {
+		return tmin;
+	} else {
+		return -1;
 	}
 }
