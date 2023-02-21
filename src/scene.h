@@ -9,9 +9,13 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include <vector>
+#include <memory>
 #include <mutex>
-#include "geometry.h"
 #include "multiarray.h"
+#include "geometry.h"
+#include "material.h"
+#include "octree.h"
 
 /**
  * Represents a physical camera with film
@@ -29,6 +33,8 @@ public:
 	/** direction camera is pointing */
 	Vec normal;
 
+	int nx;
+	int ny;
 	/** indexing order: same convention as image:
 	 * y, x, freq; use macro campera_pix to access */
 	MultiArray<float> pixel_data;
@@ -36,14 +42,24 @@ public:
 
 	Camera(float focal_len, float film_diagonal, const Vec &position,
 		const Vec &normal, int nx, int ny);
+	Camera(const Camera &camera);
 
+	void alloc_pixel_data();
 	Ray get_init_ray(const float film_x, const float film_y);
 	void get_ij(int *i, int *j, const float film_x, const float film_y);
 };
 
 class Scene {
 public:
+	std::vector<std::shared_ptr<Face>> all_faces;
+	std::vector<std::shared_ptr<Material>> all_materials;
+	Octree octree_root;
+	Camera camera;
 
+	Scene(const Box &bounding_box,
+		const std::vector<std::shared_ptr<Face>> &all_faces,
+		const std::vector<std::shared_ptr<Material>> &all_materials,
+		const Camera &camera);
 };
 
 #endif /* SCENE_H */

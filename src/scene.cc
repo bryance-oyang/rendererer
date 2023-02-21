@@ -22,9 +22,25 @@ Camera::Camera(float focal_len, float film_diagonal, const Vec &position,
 	this->position = position;
 	this->normal = normal;
 	this->normal.normalize();
+	this->ny = ny;
+	this->nx = nx;
+}
 
-	ny = ny;
-	nx = nx;
+Camera::Camera(const Camera &camera)
+{
+	focal_len = camera.focal_len;
+	film_width = camera.film_width;
+	film_height = camera.film_height;
+
+	position = camera.position;
+	normal = camera.normal;
+
+	nx = camera.nx;
+	ny = camera.ny;
+}
+
+void Camera::alloc_pixel_data()
+{
 	pixel_data = MultiArray<float>{ny, nx, NFREQ};
 }
 
@@ -67,6 +83,29 @@ Ray Camera::get_init_ray(const float film_x, const float film_y)
  */
 void Camera::get_ij(int *i, int *j, const float film_x, const float film_y)
 {
-	*j = (int)((pixel_data.n[1] / film_width) * (film_width / 2 - film_x));
-	*i = (int)((pixel_data.n[0] / film_height) * (film_height / 2 - film_y));
+	*j = (int)((nx / film_width) * (film_width / 2 - film_x));
+	*i = (int)((ny / film_height) * (film_height / 2 - film_y));
+}
+
+Scene::Scene(const Box &bounding_box,
+	const std::vector<std::shared_ptr<Face>> &all_faces,
+	const std::vector<std::shared_ptr<Material>> &all_materials,
+	const Camera &camera)
+: all_faces{all_faces},
+all_materials{all_materials},
+camera{camera}
+{
+	// setup camera
+	this->camera.alloc_pixel_data();
+
+	// ensure normals and bounding boxes are computed
+	std::vector<std::shared_ptr<Box>> bounding_boxes;
+	for (auto &face : all_faces) {
+		face->compute_normal();
+		bounding_boxes.emplace_back(std::make_shared<Box>(face_bounding_box(*face)));
+	}
+
+	// build octree
+	octree_root = Octree{bounding_box, all_faces, bounding_boxes,
+		OCTREE_MAX_FACE_PER_BOX, OCTREE_MAX_SUBDIV};
 }

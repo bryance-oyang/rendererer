@@ -41,7 +41,10 @@ public:
 	/** normal */
 	Vec n;
 
+	Triangle() {};
 	Triangle(const Vec &v0, const Vec &v1, const Vec &v2);
+
+	void compute_normal();
 };
 
 class Face : public Triangle {
@@ -69,6 +72,7 @@ public:
 	/** small xyz and larger xyz corners */
 	float corners[2][3];
 
+	Box() {};
 	Box(float corners[2][3]);
 	Box(float xmin, float ymin, float zmin, float xmax, float ymax, float zmax);
 };

@@ -11,7 +11,7 @@
 #include "octree.h"
 
 /** divides parent box into 8 children boxes */
-static std::vector<Box> mk_sub_boxes(Box &parent)
+static std::vector<Box> mk_sub_boxes(const Box &parent)
 {
 	std::vector<Box> children;
 	float tmp[2][3];
@@ -63,8 +63,8 @@ static std::vector<Box> mk_sub_boxes(Box &parent)
  * subdivide/refine octree, overruling max_faces_per_box, gets -- every
  * recursive call
  */
-Octree::Octree(Box &bounding_box, std::vector<std::shared_ptr<Face>> &all_faces,
-	std::vector<std::shared_ptr<Box>> &faces_bounding_boxes,
+Octree::Octree(const Box &bounding_box, const std::vector<std::shared_ptr<Face>> &all_faces,
+	const std::vector<std::shared_ptr<Box>> &faces_bounding_boxes,
 	size_t max_faces_per_box, size_t max_recursion_depth)
 : box{bounding_box}
 {

@@ -25,8 +25,9 @@ public:
 	/** true if no more sub octrees */
 	bool terminal;
 
-	Octree(Box &bounding_box, std::vector<std::shared_ptr<Face>> &all_faces,
-		std::vector<std::shared_ptr<Box>> &bounding_boxes,
+	Octree() {};
+	Octree(const Box &bounding_box, const std::vector<std::shared_ptr<Face>> &all_faces,
+		const std::vector<std::shared_ptr<Box>> &bounding_boxes,
 		size_t max_faces_per_box, size_t max_recursion_depth);
 
 	std::unique_ptr<Intersection> _base_intersect(Ray &r);

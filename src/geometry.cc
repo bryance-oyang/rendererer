@@ -98,7 +98,12 @@ void Vec::normalize()
 Triangle::Triangle(const Vec &v0, const Vec &v1, const Vec &v2)
 : v{v0, v1, v2}
 {
-	n = (v1 - v0) ^ (v2 - v0);
+	compute_normal();
+}
+
+void Triangle::compute_normal()
+{
+	n = (v[1] - v[0]) ^ (v[2] - v[0]);
 	n.normalize();
 }
 
