@@ -8,7 +8,41 @@
 
 #include "render.h"
 
-void PathTracer::render(const Scene &scene)
+RenderThread::RenderThread(int tid, Scene &scene, int samples_before_update)
+: tid{tid}, scene{scene}, samples_before_update{samples_before_update}
 {
-	return;
+	film_buffer = scene.camera.pixel_data;
+	start();
+}
+
+RenderThread::~RenderThread()
+{
+	join();
+}
+
+void RenderThread::start()
+{
+	thread = std::make_unique<std::thread>(&RenderThread::thread_main, this);
+}
+
+void RenderThread::thread_main()
+{
+	this->render();
+}
+
+void RenderThread::join()
+{
+	if (thread) {
+		thread->join();
+		thread.reset();
+	}
+}
+
+void RenderThread::update_pixel_data() noexcept
+{
+	Camera &camera = scene.camera;
+
+	camera.mutex.lock();
+	camera.pixel_data += film_buffer;
+	camera.mutex.unlock();
 }

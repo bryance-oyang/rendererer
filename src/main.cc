@@ -9,29 +9,23 @@
 #include <cstdio>
 #include <unistd.h>
 
-#include <vector>
-#include <thread>
 #include "macro_def.h"
+#include "render.h"
 
 using namespace std;
 
-void test(int &x)
-{
-	printf("%d start\n", x);
-	sleep(5);
-	printf("%d end\n", x);
-}
-
 int main()
 {
-	vector<thread> threads;
+	vector<unique_ptr<RenderThread>> threads;
+	Scene scene;
 
-	for (int i = 0; i < 10; i++) {
-		threads.emplace_back(thread(test, ref(i)));
-		sleep(1);
+	threads.emplace_back(make_unique<PathTracer>(0, scene, 3));
+	threads.emplace_back(make_unique<Derper>(1, scene, 7));
+	threads.emplace_back(make_unique<PathTracer>(2, scene, 9));
+
+	for (size_t i = 0; i < threads.size(); i++) {
+		threads[i]->join();
 	}
-	for (int i = 0; i < 10; i++) {
-		threads[i].join();
-	}
+
 	return 0;
 }

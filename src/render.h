@@ -9,15 +9,45 @@
 #ifndef RENDER_H
 #define RENDER_H
 
+#include <cstdio>
+#include <thread>
+
+#include "multiarray.h"
 #include "scene.h"
 
-class Renderer {
+class RenderThread {
 public:
-	virtual void render(const Scene &scene) {}
+	const int tid;
+	std::unique_ptr<std::thread> thread;
+	Scene &scene;
+	int samples_before_update;
+
+	MultiArray<float> film_buffer;
+
+	virtual void render() {}
+
+	RenderThread(int tid, Scene &scene, int samples_before_update);
+	~RenderThread();
+
+	void start();
+	void thread_main();
+	void join();
+
+	void update_pixel_data() noexcept;
 };
 
-class PathTracer : public Renderer {
-	void render(const Scene &scene);
+class PathTracer : public RenderThread {
+public:
+	PathTracer(int tid, Scene &scene, int samples_before_update) : RenderThread(tid, scene, samples_before_update) {}
+
+	void render() {printf("pathtracer %d\n", tid);}
+};
+
+class Derper : public RenderThread {
+public:
+	Derper(int tid, Scene &scene, int samples_before_update) : RenderThread(tid, scene, samples_before_update) {}
+
+	void render() {printf("derper %d\n", tid);}
 };
 
 #endif /* RENDER_H */

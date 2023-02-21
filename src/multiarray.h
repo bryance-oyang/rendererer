@@ -72,7 +72,7 @@ public:
 		swap(first.data, second.data);
 	}
 
-	MultiArray(MultiArray &other)
+	MultiArray(const MultiArray &other)
 	{
 		len = other.len;
 		rank = other.rank;
@@ -83,7 +83,7 @@ public:
 		memcpy(data, other.data, len * sizeof(T));
 	}
 
-	MultiArray(MultiArray &&other)
+	MultiArray(const MultiArray &&other)
 	{
 		using std::swap;
 		swap(*this, other);
@@ -93,6 +93,14 @@ public:
 	{
 		using std::swap;
 		swap(*this, other);
+		return *this;
+	}
+
+	MultiArray &operator+=(const MultiArray &other)
+	{
+		for (int i = 0; i < len; i++) {
+			data[i] += other.data[i];
+		}
 		return *this;
 	}
 

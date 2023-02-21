@@ -40,6 +40,7 @@ public:
 	MultiArray<float> pixel_data;
 	std::mutex mutex;
 
+	Camera() {}
 	Camera(float focal_len, float film_diagonal, const Vec &position,
 		const Vec &normal, int nx, int ny);
 	Camera(const Camera &camera);
@@ -56,6 +57,7 @@ public:
 	Octree octree_root;
 	Camera camera;
 
+	Scene() {}
 	Scene(const Box &bounding_box,
 		const std::vector<std::shared_ptr<Face>> &all_faces,
 		const std::vector<std::shared_ptr<Material>> &all_materials,
