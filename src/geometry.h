@@ -56,6 +56,7 @@ public:
 	/** normalized direction */
 	Vec dir;
 
+	Ray() {};
 	Ray(const Vec &origin, const Vec &direction);
 };
 

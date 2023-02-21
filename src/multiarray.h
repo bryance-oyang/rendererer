@@ -16,9 +16,9 @@
 
 template<typename T> class MultiArray {
 public:
-	size_t rank;
-	size_t n[MULTIARRAY_MAXDIM];
-	size_t len;
+	int rank;
+	int n[MULTIARRAY_MAXDIM];
+	int len;
 	T *data = nullptr;
 
 	void alloc()
@@ -38,22 +38,22 @@ public:
 	n{0, 1, 1, 1},
 	len{0} {}
 
-	MultiArray(size_t n0)
+	MultiArray(int n0)
 	: rank{1},
 	n{n0, 1, 1, 1},
 	len{n0} { alloc(); }
 
-	MultiArray(size_t n0, size_t n1)
+	MultiArray(int n0, int n1)
 	: rank{2},
 	n{n0, n1, 1, 1},
 	len{n0*n1} { alloc(); }
 
-	MultiArray(size_t n0, size_t n1, size_t n2)
+	MultiArray(int n0, int n1, int n2)
 	: rank{3},
 	n{n0, n1, n2, 1},
 	len{n0*n1*n2} { alloc(); }
 
-	MultiArray(size_t n0, size_t n1, size_t n2, size_t n3)
+	MultiArray(int n0, int n1, int n2, int n3)
 	: rank{4},
 	n{n0, n1, n2, n3},
 	len{n0*n1*n2*n3} { alloc(); }
@@ -96,19 +96,19 @@ public:
 		return *this;
 	}
 
-	T &operator()(size_t i0)
+	T &operator()(int i0)
 	{
 		return data[i0];
 	}
-	T &operator()(size_t i0, size_t i1)
+	T &operator()(int i0, int i1)
 	{
 		return data[i0*n[1] + i1];
 	}
-	T &operator()(size_t i0, size_t i1, size_t i2)
+	T &operator()(int i0, int i1, int i2)
 	{
 		return data[(i0*n[1] + i1)*n[2] + i2];
 	}
-	T &operator()(size_t i0, size_t i1, size_t i2, size_t i3)
+	T &operator()(int i0, int i1, int i2, int i3)
 	{
 		return data[((i0*n[1] + i1)*n[2] + i2)*n[3] + i3];
 	}
