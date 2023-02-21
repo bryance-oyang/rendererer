@@ -44,11 +44,7 @@ void RenderThread::join()
 
 void RenderThread::update_pixel_data() noexcept
 {
-	Camera &camera = scene.camera;
-
-	camera.mutex.lock();
-	camera.pixel_data += film_buffer;
-	camera.mutex.unlock();
+	scene.camera.update_pixel_data(film_buffer);
 }
 
 void PathTracer::render()

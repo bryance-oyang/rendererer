@@ -47,6 +47,16 @@ void Camera::alloc_pixel_data()
 	pixel_data = MultiArray<float>{ny, nx, NFREQ};
 }
 
+void Camera::update_pixel_data(MultiArray<float> &other) noexcept
+{
+	mutex.lock();
+	pixel_data = other;
+	pixel_data_updated = true;
+	mutex.unlock();
+
+	cond.notify_all();
+}
+
 /**
  * Looking towards camera normal (through lens at scene), pixel indices start at
  * bottom right corner of camera film since cameras invert images onto film.

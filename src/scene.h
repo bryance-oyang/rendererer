@@ -10,6 +10,7 @@
 #define SCENE_H
 
 #include <mutex>
+#include <condition_variable>
 #include "multiarray.h"
 #include "material.h"
 #include "octree.h"
@@ -32,10 +33,13 @@ public:
 
 	int nx;
 	int ny;
+
+	bool pixel_data_updated = false;
 	/** indexing order: same convention as image:
 	 * y, x, freq; use macro campera_pix to access */
 	MultiArray<float> pixel_data;
 	std::mutex mutex;
+	std::condition_variable cond;
 
 	Camera() {}
 	Camera(float focal_len, float film_diagonal, const Vec &position,
@@ -43,6 +47,8 @@ public:
 	Camera(const Camera &camera);
 
 	void alloc_pixel_data();
+	void update_pixel_data(MultiArray<float> &other) noexcept;
+
 	Ray get_init_ray(const float film_x, const float film_y);
 	void get_ij(int *i, int *j, const float film_x, const float film_y);
 };

@@ -32,6 +32,10 @@ public:
 			data = nullptr;
 		}
 	}
+	size_t bytes()
+	{
+		return sizeof(T) * len;
+	}
 
 	MultiArray()
 	: rank{0},
