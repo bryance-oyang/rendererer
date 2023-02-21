@@ -124,7 +124,7 @@ std::unique_ptr<Intersection> Octree::_base_intersect(Ray &r)
 /**
  * Check that i not in order[0...n-1]
  */
-static bool not_in(int i, int n, int *order)
+static bool not_in(int i, int n, const int *order)
 {
 	for (int j = 0; j < n; j++) {
 		if (i == order[j]) {
@@ -171,9 +171,6 @@ std::unique_ptr<Intersection> Octree::first_ray_face_intercept(Ray &r)
 		return _base_intersect(r);
 	}
 
-	// recursive case retval
-	std::unique_ptr<Intersection> result;
-
 	/* first check if ray origin inside box */
 	int origin_box = -1;
 	for (int i = 0; i < 8; i++) {
@@ -183,7 +180,7 @@ std::unique_ptr<Intersection> Octree::first_ray_face_intercept(Ray &r)
 		}
 	}
 	if (origin_box >= 0) {
-		result = sub[origin_box]->first_ray_face_intercept(r);
+		auto result = sub[origin_box]->first_ray_face_intercept(r);
 		if (result) {
 			return result;
 		}
@@ -209,7 +206,7 @@ std::unique_ptr<Intersection> Octree::first_ray_face_intercept(Ray &r)
 			return nullptr;
 		}
 
-		result = sub[order[i]]->first_ray_face_intercept(r);
+		auto result = sub[order[i]]->first_ray_face_intercept(r);
 		if (result) {
 			return result;
 		}
