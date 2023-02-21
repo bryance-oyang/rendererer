@@ -19,8 +19,8 @@ public:
 	Box box;
 	std::vector<Face> faces;
 
-	Octree(Box &bounding_box, std::vector<std::shared_ptr<Face>> all_faces,
-		std::vector<std::shared_ptr<Box>> bounding_boxes,
+	Octree(Box &bounding_box, std::vector<std::shared_ptr<Face>> &all_faces,
+		std::vector<std::shared_ptr<Box>> &bounding_boxes,
 		size_t max_faces_per_box, size_t max_recursion_depth);
 };
 

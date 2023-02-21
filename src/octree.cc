@@ -46,8 +46,8 @@ static std::vector<Box> mk_sub_boxes(Box &parent)
 	return children;
 }
 
-Octree::Octree(Box &bounding_box, std::vector<std::shared_ptr<Face>> all_faces,
-	std::vector<std::shared_ptr<Box>> bounding_boxes,
+Octree::Octree(Box &bounding_box, std::vector<std::shared_ptr<Face>> &all_faces,
+	std::vector<std::shared_ptr<Box>> &bounding_boxes,
 	size_t max_faces_per_box, size_t max_recursion_depth)
 : box{bounding_box}
 {
@@ -61,4 +61,20 @@ Octree::Octree(Box &bounding_box, std::vector<std::shared_ptr<Face>> all_faces,
 	std::vector<Box> sub_boxes = mk_sub_boxes(bounding_box);
 
 	// assign faces to sub
+	std::vector<std::shared_ptr<Face>> sub_all_faces[8];
+	std::vector<std::shared_ptr<Box>> sub_bounding_boxes[8];
+	for (size_t i = 0; i < all_faces.size(); i++) {
+		for (int j = 0; j < 8; j++) {
+			if (box_touch_box(*bounding_boxes[i], sub_boxes[j])) {
+				sub_all_faces[j].emplace_back(all_faces[i]);
+				sub_bounding_boxes[j].emplace_back(bounding_boxes[i]);
+			}
+		}
+	}
+
+	// recurse into sub-boxes
+	for (int i = 0; i < 8; i++) {
+		sub[i] = std::make_unique<Octree>(sub_boxes[i], sub_all_faces[i],
+			sub_bounding_boxes[i], max_faces_per_box, max_recursion_depth - 1);
+	}
 }
