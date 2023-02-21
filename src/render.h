@@ -24,7 +24,6 @@ public:
 
 	MultiArray<float> film_buffer;
 
-	virtual void render() {}
 
 	RenderThread(int tid, Scene &scene, int samples_before_update);
 	~RenderThread();
@@ -33,21 +32,16 @@ public:
 	void thread_main();
 	void join();
 
+	virtual void render() {}
 	void update_pixel_data() noexcept;
 };
 
 class PathTracer : public RenderThread {
 public:
-	PathTracer(int tid, Scene &scene, int samples_before_update) : RenderThread(tid, scene, samples_before_update) {}
+	PathTracer(int tid, Scene &scene, int samples_before_update)
+	: RenderThread(tid, scene, samples_before_update) {}
 
-	void render() {printf("pathtracer %d\n", tid);}
-};
-
-class Derper : public RenderThread {
-public:
-	Derper(int tid, Scene &scene, int samples_before_update) : RenderThread(tid, scene, samples_before_update) {}
-
-	void render() {printf("derper %d\n", tid);}
+	void render();
 };
 
 #endif /* RENDER_H */

@@ -46,3 +46,8 @@ void RenderThread::update_pixel_data() noexcept
 	camera.pixel_data += film_buffer;
 	camera.mutex.unlock();
 }
+
+void PathTracer::render()
+{
+
+}

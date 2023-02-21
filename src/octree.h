@@ -12,7 +12,6 @@
 #include <vector>
 #include <memory>
 #include "geometry.h"
-#include "intersection.h"
 
 class Octree {
 public:

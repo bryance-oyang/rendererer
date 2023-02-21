@@ -133,6 +133,9 @@ Box::Box(float xmin, float ymin, float zmin, float xmax, float ymax, float zmax)
 	corners[1][2] = zmax;
 }
 
+Intersection::Intersection(const Vec &point, const Face &face)
+: point{point}, face{&face} {}
+
 /**
  * Computes the intersection of a ray with one of xyz planes denoted by plane =
  * 012. Can skip dot product call with plane normal and just get the component

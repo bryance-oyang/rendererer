@@ -9,8 +9,6 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "intersection.h"
-
 class Material {
 public:
 };

@@ -16,15 +16,14 @@ using namespace std;
 
 int main()
 {
-	vector<unique_ptr<RenderThread>> threads;
+	vector<unique_ptr<RenderThread>> render_threads;
 	Scene scene;
 
-	threads.emplace_back(make_unique<PathTracer>(0, scene, 3));
-	threads.emplace_back(make_unique<Derper>(1, scene, 7));
-	threads.emplace_back(make_unique<PathTracer>(2, scene, 9));
+	render_threads.emplace_back(make_unique<PathTracer>(0, scene, 3));
+	render_threads.emplace_back(make_unique<PathTracer>(2, scene, 9));
 
-	for (size_t i = 0; i < threads.size(); i++) {
-		threads[i]->join();
+	for (size_t i = 0; i < render_threads.size(); i++) {
+		render_threads[i]->join();
 	}
 
 	return 0;

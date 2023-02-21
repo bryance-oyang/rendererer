@@ -4,3 +4,5 @@
 *.d
 vgcore.*
 a.out
+html/
+latex/
