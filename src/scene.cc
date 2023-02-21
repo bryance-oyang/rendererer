@@ -6,7 +6,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "intersection.h"
+#include "scene.h"
 
-Intersection::Intersection(const Vec &point, const Face &face)
-: point{point}, face{&face} {}
+float global_characteristic_length_scale;
