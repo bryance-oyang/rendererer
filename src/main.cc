@@ -25,20 +25,14 @@ public:
 	: camera{camera}
 	{
 		ctube = ws_ctube_open(port, max_nclient, timeout_ms, max_broadcast_fps);
-		start_thread();
+		if (ctube != NULL) {
+			start_thread();
+		}
 	}
 	~Broadcaster() noexcept
 	{
 		if (ctube != NULL) {
 			ws_ctube_close(ctube);
-		}
-	}
-	void broadcast() noexcept
-	{
-		if (ctube != NULL) {
-			std::lock_guard<std::mutex>{camera.mutex};
-			ws_ctube_broadcast(ctube, camera.pixel_data.data,
-				camera.pixel_data.bytes());
 		}
 	}
 
@@ -56,7 +50,8 @@ public:
 				camera.cond.wait(mutex);
 			}
 			camera.pixel_data_updated = false;
-			broadcast();
+			ws_ctube_broadcast(ctube, camera.pixel_data.data,
+				camera.pixel_data.bytes());
 		}
 	}
 };
@@ -64,11 +59,14 @@ public:
 int main()
 {
 	std::vector<std::unique_ptr<RenderThread>> render_threads;
+	Camera camera{35, 35, Vec{0, 0, 0}, Vec{0, 0, 1}, IMAGE_WIDTH, IMAGE_HEIGHT};
 	Scene scene;
+	scene.camera = camera;
+	scene.camera.alloc_pixel_data();
 	Broadcaster ctube{scene.camera, 9743, 3, 0, 24};
 
 	render_threads.emplace_back(std::make_unique<PathTracer>(0, scene, 3));
-	render_threads.emplace_back(std::make_unique<PathTracer>(2, scene, 9));
+	render_threads.emplace_back(std::make_unique<Derper>(2, scene, 9));
 
 	for (size_t i = 0; i < render_threads.size(); i++) {
 		render_threads[i]->join();

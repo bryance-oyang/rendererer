@@ -31,6 +31,11 @@ Camera::Camera(float focal_len, float film_diagonal, const Vec &position,
 
 Camera::Camera(const Camera &camera)
 {
+	*this = camera;
+}
+
+Camera &Camera::operator=(const Camera &camera)
+{
 	focal_len = camera.focal_len;
 	film_width = camera.film_width;
 	film_height = camera.film_height;
@@ -40,6 +45,8 @@ Camera::Camera(const Camera &camera)
 
 	nx = camera.nx;
 	ny = camera.ny;
+
+	return *this;
 }
 
 void Camera::alloc_pixel_data()
@@ -50,7 +57,7 @@ void Camera::alloc_pixel_data()
 void Camera::update_pixel_data(MultiArray<float> &other) noexcept
 {
 	mutex.lock();
-	pixel_data = other;
+	pixel_data += other;
 	pixel_data_updated = true;
 	mutex.unlock();
 

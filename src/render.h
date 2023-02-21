@@ -9,9 +9,11 @@
 #ifndef RENDER_H
 #define RENDER_H
 
+#include <unistd.h>
 #include <cstdio>
 #include <thread>
 #include "scene.h"
+#include "random.h"
 
 class RenderThread {
 public:
@@ -32,6 +34,24 @@ public:
 
 	virtual void render() {}
 	void update_pixel_data() noexcept;
+};
+
+class Derper : public RenderThread {
+public:
+	Derper(int tid, Scene &scene, int samples_before_update)
+	: RenderThread(tid, scene, samples_before_update) {}
+
+	void render() {
+		RandRng rng;
+		for (;;) {
+			sleep(1);
+
+			for (int i = 0; i < film_buffer.len; i++) {
+				film_buffer(i) = rng.next();
+			}
+			update_pixel_data();
+		}
+	}
 };
 
 class PathTracer : public RenderThread {

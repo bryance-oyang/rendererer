@@ -2,7 +2,7 @@ EXEC=a.out
 srcdir=
 
 SHELL=/bin/sh
-CC=g++ -pipe -mtune=native -march=native
+CC=g++ -pipe -mtune=native -march=native -pthread
 OFLAGS=-Ofast -flto
 CFLAGS+=-std=c++17 -Wall -Wextra
 LDFLAGS=-lm

@@ -45,6 +45,7 @@ public:
 	Camera(float focal_len, float film_diagonal, const Vec &position,
 		const Vec &normal, int nx, int ny);
 	Camera(const Camera &camera);
+	Camera &operator=(const Camera &camera);
 
 	void alloc_pixel_data();
 	void update_pixel_data(MultiArray<float> &other) noexcept;
