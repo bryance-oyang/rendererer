@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2023 Bryance Oyang
  *
@@ -6,17 +7,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#ifndef MATERIAL_H
-#define MATERIAL_H
-
 #include "intersection.h"
 
-class Material {
-public:
-};
-
-class DiffuseMaterial : public Material {
-public:
-};
-
-#endif /* MATERIAL_H */
+Intersection::Intersection(const Vec &point, const Face &face)
+: point{point}, face{&face} {}

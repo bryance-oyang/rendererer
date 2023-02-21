@@ -9,6 +9,8 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
+class Material;
+
 /** 3D vector */
 class Vec {
 public:
@@ -40,6 +42,11 @@ public:
 	Vec n;
 
 	Triangle(const Vec &v0, const Vec &v1, const Vec &v2);
+};
+
+class Face : public Triangle {
+public:
+	Material &material;
 };
 
 class Ray {

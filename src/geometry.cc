@@ -7,7 +7,7 @@
  */
 
 #include <math.h>
-#include <float.h>
+#include <cfloat>
 #include "geometry.h"
 #include "macro_def.h"
 

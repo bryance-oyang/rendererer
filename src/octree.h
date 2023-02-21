@@ -11,17 +11,26 @@
 
 #include <vector>
 #include <memory>
-#include "material.h"
+#include "geometry.h"
+#include "intersection.h"
 
 class Octree {
 public:
+	/** octree children */
 	std::unique_ptr<Octree> sub[8];
+	/** bounding box for octree */
 	Box box;
+	/** faces that are in the box */
 	std::vector<Face> faces;
+	/** true if no more sub octrees */
+	bool terminal;
 
 	Octree(Box &bounding_box, std::vector<std::shared_ptr<Face>> &all_faces,
 		std::vector<std::shared_ptr<Box>> &bounding_boxes,
 		size_t max_faces_per_box, size_t max_recursion_depth);
+
+	std::unique_ptr<Intersection> _base_intersect(Ray &r);
+	std::unique_ptr<Intersection> first_ray_face_intercept(Ray &r);
 };
 
 #endif /* OCTREE_H */

@@ -6,6 +6,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <cfloat>
+#include <vector>
 #include "octree.h"
 
 /** divides parent box into 8 children boxes */
@@ -71,8 +73,12 @@ Octree::Octree(Box &bounding_box, std::vector<std::shared_ptr<Face>> &all_faces,
 		for (auto &f : all_faces) {
 			faces.emplace_back(*f);
 		}
+		terminal = true;
+		return;
 	}
 
+	// recursive case
+	terminal = false;
 	std::vector<Box> sub_boxes = mk_sub_boxes(bounding_box);
 
 	// assign faces to sub
@@ -92,4 +98,121 @@ Octree::Octree(Box &bounding_box, std::vector<std::shared_ptr<Face>> &all_faces,
 		sub[i] = std::make_unique<Octree>(sub_boxes[i], sub_all_faces[i],
 			sub_bounding_boxes[i], max_faces_per_box, max_recursion_depth - 1);
 	}
+}
+
+/** find first intersection of ray with triangles in base */
+std::unique_ptr<Intersection> Octree::_base_intersect(Ray &r)
+{
+	std::unique_ptr<Intersection> intersection;
+	float tmin = FLT_MAX;
+
+	// assume intersection not found to begin
+	intersection = nullptr;
+
+	// find first intersection by lowest t
+	for (auto &face : faces) {
+		Vec point;
+		float t = ray_face_intersect(point, r, face);
+		if (t > 0 && t < tmin && vec_in_box(point, box)) {
+			intersection = std::make_unique<Intersection>(point, face);
+		}
+	}
+
+	return intersection;
+}
+
+/**
+ * Check that i not in order[0...n-1]
+ */
+static bool not_in(int i, int n, int *order)
+{
+	for (int j = 0; j < n; j++) {
+		if (i == order[j]) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/**
+ * This function is to find the nth closest box hit starting with n = 0, given
+ * box_hit_times. Ignores negative entries in box_hit_times. Must have called
+ * already for n < current n so that order[0...(n-1)] have correct values.
+ *
+ * @param n nth closest to find, starting at 0
+ * @param order This function sets order[n] given order[0...(n-1)]. A list of
+ * indices from 0...(n-1) indicating the order: box_hit_times[order[0]] is the
+ * smallest, box_hit_times[order[1]] is 2nd smallest, etc, but ignores negative
+ * entries in box_hit_times. If nth smallest is not found, puts -1 into
+ * order[n].
+ * @param box_hit_times the parameter t of the ray when box is hit, or negative if not hit
+ */
+static void order_hit_boxes(int n, int *order, const float *box_hit_times)
+{
+	float nth_smallest = FLT_MAX;
+	order[n] = -1;
+	for (int i = 0; i < 8; i++) {
+		if (box_hit_times[i] < 0)
+			continue;
+		if (box_hit_times[i] <= nth_smallest) {
+			if (n == 0 || box_hit_times[order[n-1]] < box_hit_times[i] || (box_hit_times[order[n-1]] == box_hit_times[i] && not_in(i, n, order))) {
+				nth_smallest = box_hit_times[i];
+				order[n] = i;
+			}
+		}
+	}
+}
+
+/** recursively find first intersection with face in octree */
+std::unique_ptr<Intersection> Octree::first_ray_face_intercept(Ray &r)
+{
+	// base case
+	if (this->terminal) {
+		return _base_intersect(r);
+	}
+
+	// recursive case retval
+	std::unique_ptr<Intersection> result;
+
+	/* first check if ray origin inside box */
+	int origin_box = -1;
+	for (int i = 0; i < 8; i++) {
+		if (vec_in_box(r.orig, sub[i]->box)) {
+			origin_box = i;
+			break;
+		}
+	}
+	if (origin_box >= 0) {
+		result = sub[origin_box]->first_ray_face_intercept(r);
+		if (result) {
+			return result;
+		}
+	}
+
+	/* find interceptions with sub-boxes and the times they are hit */
+	float box_hit_times[8]; /* set to -1 if not hit */
+	int order[8];
+	for (int i = 0; i < 8; i++) {
+		box_hit_times[i] = ray_box_intersect(r, sub[i]->box);
+	}
+
+	int i = 0;
+	if (origin_box >= 0) {
+		/* skip origin_box since already searched */
+		order[0] = origin_box;
+		i = 1;
+	}
+	/* recurse into each sub-box in order until hit is found */
+	for (; i < 8; i++) {
+		order_hit_boxes(i, order, box_hit_times);
+		if (order[i] < 0) {
+			return nullptr;
+		}
+
+		result = sub[order[i]]->first_ray_face_intercept(r);
+		if (result) {
+			return result;
+		}
+	}
+	return nullptr;
 }
