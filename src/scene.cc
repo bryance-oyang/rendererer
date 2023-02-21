@@ -10,7 +10,6 @@
  * @file
  */
 
-#include <cmath>
 #include "scene.h"
 #include "macro_def.h"
 

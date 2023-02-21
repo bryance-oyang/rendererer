@@ -11,7 +11,6 @@
  */
 
 #include <unistd.h>
-
 #include "macro_def.h"
 #include "render.h"
 

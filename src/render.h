@@ -11,7 +11,6 @@
 
 #include <cstdio>
 #include <thread>
-
 #include "scene.h"
 
 class RenderThread {

@@ -4,9 +4,7 @@
 #ifndef MACRO_DEF_H
 #define MACRO_DEF_H
 
-#include <math.h>
-#include <stddef.h>
-#include <stdbool.h>
+#include <cmath>
 
 #define MAX_BOUNCES_PER_PATH 8
 #define DO_MLT true
