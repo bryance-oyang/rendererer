@@ -46,8 +46,23 @@ static std::vector<Box> mk_sub_boxes(Box &parent)
 	return children;
 }
 
+/**
+ * Recursively puts faces into octree structure. If the number of faces exceeds
+ * max_faces_per_box, subdivide the box into 8 sub-boxes and recurse down. Does
+ * not put faces into the box unless we are at the finest level with nfaces <
+ * max_faces_per_box or max_recursion_depth is exceeded.
+ *
+ * @param bounding_box bounding box for the octree box
+ * @param all_faces face list
+ * @param faces_bounding_boxes bounding boxes for the faces
+ * @param max_faces_per_box if exceeded by nfaces, we subdivide the box into 8
+ * and recurse, splitting faces into the boxes they belong in
+ * @param max_recursion_depth maximum additional number of times to
+ * subdivide/refine octree, overruling max_faces_per_box, gets -- every
+ * recursive call
+ */
 Octree::Octree(Box &bounding_box, std::vector<std::shared_ptr<Face>> &all_faces,
-	std::vector<std::shared_ptr<Box>> &bounding_boxes,
+	std::vector<std::shared_ptr<Box>> &faces_bounding_boxes,
 	size_t max_faces_per_box, size_t max_recursion_depth)
 : box{bounding_box}
 {
@@ -65,9 +80,9 @@ Octree::Octree(Box &bounding_box, std::vector<std::shared_ptr<Face>> &all_faces,
 	std::vector<std::shared_ptr<Box>> sub_bounding_boxes[8];
 	for (size_t i = 0; i < all_faces.size(); i++) {
 		for (int j = 0; j < 8; j++) {
-			if (box_touch_box(*bounding_boxes[i], sub_boxes[j])) {
+			if (box_touch_box(*faces_bounding_boxes[i], sub_boxes[j])) {
 				sub_all_faces[j].emplace_back(all_faces[i]);
-				sub_bounding_boxes[j].emplace_back(bounding_boxes[i]);
+				sub_bounding_boxes[j].emplace_back(faces_bounding_boxes[i]);
 			}
 		}
 	}
