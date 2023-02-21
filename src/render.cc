@@ -6,6 +6,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+/**
+ * @file
+ */
+
 #include "render.h"
 
 RenderThread::RenderThread(int tid, Scene &scene, int samples_before_update)

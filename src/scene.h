@@ -9,11 +9,8 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <vector>
-#include <memory>
 #include <mutex>
 #include "multiarray.h"
-#include "geometry.h"
 #include "material.h"
 #include "octree.h"
 

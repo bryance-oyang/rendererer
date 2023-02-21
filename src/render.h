@@ -12,7 +12,6 @@
 #include <cstdio>
 #include <thread>
 
-#include "multiarray.h"
 #include "scene.h"
 
 class RenderThread {

@@ -6,7 +6,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <math.h>
+/**
+ * @file
+ */
+
 #include <cfloat>
 #include "geometry.h"
 #include "macro_def.h"

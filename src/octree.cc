@@ -6,8 +6,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+/**
+ * @file
+ */
+
 #include <cfloat>
-#include <vector>
 #include "octree.h"
 
 /** divides parent box into 8 children boxes */
