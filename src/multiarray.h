@@ -33,6 +33,11 @@ public:
 		}
 	}
 
+	MultiArray()
+	: rank{0},
+	n{0, 1, 1, 1},
+	len{0} {}
+
 	MultiArray(size_t n0)
 	: rank{1},
 	n{n0, 1, 1, 1},
