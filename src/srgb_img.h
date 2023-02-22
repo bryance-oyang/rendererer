@@ -13,12 +13,13 @@
 #include <cfloat>
 #include "multiarray.h"
 
+/** creates an sRGB image 0-255 */
 class SRGBImg {
 public:
-	MultiArray<uint8_t> data;
+	MultiArray<uint8_t> pixels;
 
 	SRGBImg(MultiArray<float> &raw, bool direct)
-	: data{raw.n[0], raw.n[1], 3}
+	: pixels{raw.n[0], raw.n[1], 3}
 	{
 		if (direct) {
 			direct_conversion(raw);
@@ -50,7 +51,7 @@ public:
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				for (int k = 0; k < 3; k++) {
-					data(i, j, k) = (uint8_t)(255.1f * (raw(i, j, k) - min[k]) / (max[k] - min[k]));
+					pixels(i, j, k) = (uint8_t)(255.1f * (raw(i, j, k) - min[k]) / (max[k] - min[k]));
 				}
 			}
 		}

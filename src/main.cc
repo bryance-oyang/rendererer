@@ -18,6 +18,7 @@
 #include "srgb_img.h"
 #include "ws_ctube.h"
 
+/** separate thread to convert data into sRGB image and use websocket_ctube to broadcast */
 class ImgGenThread {
 public:
 	std::unique_ptr<std::thread> thread;
@@ -30,7 +31,6 @@ public:
 	{
 		ctube = ws_ctube_open(port, max_nclient, timeout_ms, max_broadcast_fps);
 		if (ctube != NULL) {
-			should_terminate.store(0);
 			start_thread();
 		}
 	}
@@ -42,6 +42,7 @@ public:
 
 	void start_thread()
 	{
+		should_terminate.store(0);
 		thread = std::make_unique<std::thread>(&ImgGenThread::thread_main, this);
 	}
 	void stop_thread()
@@ -57,14 +58,13 @@ public:
 
 	void thread_main()
 	{
-		// TODO: terminate thread
 		std::unique_ptr<SRGBImg> img;
 		for (;;) {
 			{ /* lock camera mutex */
 				std::unique_lock<std::mutex> mutex{camera.mutex};
 				while (!camera.pixel_data_updated) {
 					using namespace std::chrono_literals;
-					camera.cond.wait_for(mutex, 100ms);
+					camera.cond.wait_for(mutex, 200ms);
 
 					/* check if we should exit */
 					if (should_terminate.load()) {
@@ -75,7 +75,7 @@ public:
 				img = std::make_unique<SRGBImg>(camera.pixel_data, true);
 			} /* unlock camera mutex */
 
-			ws_ctube_broadcast(ctube, img->data.data, img->data.bytes());
+			ws_ctube_broadcast(ctube, img->pixels.data, img->pixels.bytes());
 		}
 	}
 };
