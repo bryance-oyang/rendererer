@@ -13,7 +13,7 @@
 #include <cstdio>
 #include <thread>
 #include "scene.h"
-#include "random.h"
+#include "rng.h"
 
 class RenderThread {
 public:

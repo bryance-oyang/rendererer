@@ -11,7 +11,7 @@
  */
 
 #include <cstdlib>
-#include "random.h"
+#include "rng.h"
 
 /**
  * Get nprimes number of primes in order to initialize the halton prime number

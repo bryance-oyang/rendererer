@@ -9,6 +9,8 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
+#include <memory>
+
 class Material;
 
 /** 3D vector */
@@ -49,7 +51,11 @@ public:
 
 class Face : public Triangle {
 public:
-	Material &material;
+	std::shared_ptr<Material> material;
+
+	Face() {};
+	Face(const Vec &v0, const Vec &v1, const Vec &v2)
+	: Triangle(v0, v1, v2) {};
 };
 
 class Ray {

@@ -9,12 +9,34 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+#include "macro_def.h"
+
 class Material {
 public:
 };
 
+class EmitterMaterial : public Material {
+public:
+	float emission[NFREQ];
+
+	EmitterMaterial(float *emission)
+	{
+		for (int i = 0; i < NFREQ; i++) {
+			this->emission[i] = emission[i];
+		}
+	}
+};
+
 class DiffuseMaterial : public Material {
 public:
+	float color[NFREQ];
+
+	DiffuseMaterial(float *color)
+	{
+		for (int i = 0; i < NFREQ; i++) {
+			this->color[i] = color[i];
+		}
+	}
 };
 
 #endif /* MATERIAL_H */

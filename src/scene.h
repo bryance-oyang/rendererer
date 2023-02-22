@@ -68,4 +68,6 @@ public:
 		const Camera &camera);
 };
 
+Scene build_test_scene();
+
 #endif /* SCENE_H */

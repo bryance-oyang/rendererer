@@ -83,10 +83,7 @@ public:
 int main()
 {
 	std::vector<std::unique_ptr<RenderThread>> render_threads;
-	Camera camera{35, 35, Vec{0, 0, 0}, Vec{0, 0, 1}, IMAGE_WIDTH, IMAGE_HEIGHT};
-	Scene scene;
-	scene.camera = camera;
-	scene.camera.alloc_pixel_data();
+	Scene scene = build_test_scene();
 
 	ImgGenThread img_gen{scene.camera, 9743, 3, 0, 24};
 	render_threads.emplace_back(std::make_unique<PathTracer>(0, scene, 3));

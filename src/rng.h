@@ -6,8 +6,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#ifndef RANDOM_H
-#define RANDOM_H
+#ifndef RNG_H
+#define RNG_H
 
 #include <vector>
 
@@ -37,4 +37,4 @@ public:
 	float next();
 };
 
-#endif /* RANDOM_H */
+#endif /* RNG_H */

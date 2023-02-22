@@ -10,6 +10,7 @@
  * @file
  */
 
+#include <cfloat>
 #include "scene.h"
 #include "macro_def.h"
 
@@ -135,4 +136,77 @@ camera{camera}
 	// build octree
 	octree_root = Octree{bounding_box, all_faces, bounding_boxes,
 		OCTREE_MAX_FACE_PER_BOX, OCTREE_MAX_SUBDIV};
+}
+
+Box all_faces_bounding_box(std::vector<std::shared_ptr<Face>> &all_faces)
+{
+	float corners[2][3];
+
+	for (int i = 0; i < 3; i++) {
+		corners[0][i] = FLT_MAX;
+		corners[1][i] = -FLT_MAX;
+	}
+
+	// get min/max of face vertices
+	for (auto &face : all_faces) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				float x = face->v[i].x[j];
+				if (x < corners[0][j]) {
+					corners[0][j] = x - 0.1;
+				}
+				if (x > corners[1][j]) {
+					corners[1][j] = x + 0.1;
+				}
+			}
+		}
+	}
+
+	return Box{corners};
+}
+
+Scene build_test_scene()
+{
+	std::vector<std::shared_ptr<Material>> all_materials;
+	float white[3] = {0.9, 0.9, 0.9};
+	float emission[3] = {1, 1, 1};
+	float green[3] = {0, 0.9, 0};
+
+	all_materials.push_back(std::make_shared<DiffuseMaterial>(white));
+	all_materials.push_back(std::make_shared<EmitterMaterial>(emission));
+	all_materials.push_back(std::make_shared<DiffuseMaterial>(green));
+
+	std::vector<std::shared_ptr<Face>> all_faces;
+	std::shared_ptr<Face> face;
+
+	// ground
+	face = std::make_shared<Face>(Vec{0,0,0}, Vec{0,-2,0}, Vec{2,0,0});
+	face->material = all_materials[0];
+	all_faces.push_back(face);
+
+	// wall
+	face = std::make_shared<Face>(Vec{0,0,0}, Vec{2,0,0}, Vec{0,0,2});
+	face->material = all_materials[0];
+	all_faces.push_back(face);
+
+	// wall 2
+	face = std::make_shared<Face>(Vec{0,0,0}, Vec{0,-2,0}, Vec{0,0,2});
+	face->material = all_materials[2];
+	all_faces.push_back(face);
+
+	// obj
+	face = std::make_shared<Face>(Vec{0.1,-0.3,0}, Vec{0.9,-1.1,0}, Vec{0.1,-0.3,1});
+	face->material = all_materials[0];
+	all_faces.push_back(face);
+
+	// light
+	face = std::make_shared<Face>(Vec{0.5,-1,4}, Vec{0.5,-2,4}, Vec{1.5,-1,4});
+	face->material = all_materials[1];
+	all_faces.push_back(face);
+
+	Box bounding_box = all_faces_bounding_box(all_faces);
+
+	Camera camera{35, 35, Vec{0.5,-3,0.5}, Vec{0,1,0}, IMAGE_WIDTH, IMAGE_HEIGHT};
+
+	return Scene{bounding_box, all_faces, all_materials, camera};
 }
