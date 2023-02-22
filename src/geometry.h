@@ -83,15 +83,6 @@ public:
 	Box(float xmin, float ymin, float zmin, float xmax, float ymax, float zmax);
 };
 
-class Intersection {
-public:
-	const Vec point;
-	const Face *face;
-
-	Intersection(const Vec &point, const Face &face);
-};
-
-
 float fast_ray_plane_intersect(Vec &intersect, const Ray &r, int plane, float pval);
 float ray_face_intersect(Vec &result, const Ray &r, const struct Triangle &f);
 Box face_bounding_box(const Triangle &f);

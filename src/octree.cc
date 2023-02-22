@@ -103,25 +103,25 @@ Octree::Octree(const Box &bounding_box, const std::vector<std::shared_ptr<Face>>
 	}
 }
 
-/** find first intersection of ray with triangles in base */
-std::unique_ptr<Intersection> Octree::_base_intersect(Ray &r)
+/** base case for first_ray_face_intersect() */
+bool Octree::_base_intersect(Vec *point, Face **face, Ray &r)
 {
-	std::unique_ptr<Intersection> intersection;
 	float tmin = FLT_MAX;
-
-	// assume intersection not found to begin
-	intersection = nullptr;
+	bool intersected = false;
+	Vec candidate_point;
 
 	// find first intersection by lowest t
-	for (auto &face : faces) {
-		Vec point;
-		float t = ray_face_intersect(point, r, face);
-		if (t > 0 && t < tmin && vec_in_box(point, box)) {
-			intersection = std::make_unique<Intersection>(point, face);
+	for (auto &candidate_face : faces) {
+		float t = ray_face_intersect(candidate_point, r, candidate_face);
+		if (t > 0 && t < tmin && vec_in_box(candidate_point, box)) {
+			tmin = t;
+			intersected = true;
+			*point = candidate_point;
+			*face = &candidate_face;
 		}
 	}
 
-	return intersection;
+	return intersected;
 }
 
 /**
@@ -166,12 +166,18 @@ static void order_hit_boxes(int n, int *order, const float *box_hit_times)
 	}
 }
 
-/** recursively find first intersection with face in octree */
-std::unique_ptr<Intersection> Octree::first_ray_face_intercept(Ray &r)
+/**
+ * recursively find first intersection with face in octree
+ *
+ * @param point stores the point intersected here
+ * @param face stores the face intersected here
+ * @param r the ray with which to intersect
+ */
+bool Octree::first_ray_face_intersect(Vec *point, Face **face, Ray &r)
 {
 	// base case
 	if (this->terminal) {
-		return _base_intersect(r);
+		return _base_intersect(point, face, r);
 	}
 
 	/* first check if ray origin inside box */
@@ -183,13 +189,13 @@ std::unique_ptr<Intersection> Octree::first_ray_face_intercept(Ray &r)
 		}
 	}
 	if (origin_box >= 0) {
-		auto result = sub[origin_box]->first_ray_face_intercept(r);
+		auto result = sub[origin_box]->first_ray_face_intersect(point, face, r);
 		if (result) {
 			return result;
 		}
 	}
 
-	/* find interceptions with sub-boxes and the times they are hit */
+	/* find intersections with sub-boxes and the times they are hit */
 	float box_hit_times[8]; /* set to -1 if not hit */
 	int order[8];
 	for (int i = 0; i < 8; i++) {
@@ -206,13 +212,13 @@ std::unique_ptr<Intersection> Octree::first_ray_face_intercept(Ray &r)
 	for (; i < 8; i++) {
 		order_hit_boxes(i, order, box_hit_times);
 		if (order[i] < 0) {
-			return nullptr;
+			return false;
 		}
 
-		auto result = sub[order[i]]->first_ray_face_intercept(r);
+		auto result = sub[order[i]]->first_ray_face_intersect(point, face, r);
 		if (result) {
 			return result;
 		}
 	}
-	return nullptr;
+	return false;
 }

@@ -137,19 +137,16 @@ Box::Box(float xmin, float ymin, float zmin, float xmax, float ymax, float zmax)
 	corners[1][2] = zmax;
 }
 
-Intersection::Intersection(const Vec &point, const Face &face)
-: point{point}, face{&face} {}
-
 /**
  * Computes the intersection of a ray with one of xyz planes denoted by plane =
  * 012. Can skip dot product call with plane normal and just get the component
  * directly. Skips function calls and directly computes vector components
  *
- * intercept = r0 + (n dot (p - r0)) / (n dot v) * v
+ * intersect = r0 + (n dot (p - r0)) / (n dot v) * v
  * @param intersect function puts intersection point here
  * @param r ray r(t) = r0 + vt
- * @param plane 012 denotes xyz plane to look for intercept
- * @param pval coordinate of plane: if intercepting with plane y = 3, pval = 3
+ * @param plane 012 denotes xyz plane to look for intersect
+ * @param pval coordinate of plane: if intersecting with plane y = 3, pval = 3
  *
  * @return ray parameter t (time) when ray hits plane
  */
@@ -188,7 +185,7 @@ float fast_ray_plane_intersect(Vec &intersect, const Ray &r,
  * @param r ray r(t) = r0 + vt
  * @param f face
  *
- * @return intercept ray parameter t if intersection occurs or -1 if not
+ * @return intersect ray parameter t if intersection occurs or -1 if not
  */
 float ray_face_intersect(Vec &result, const Ray &r, const struct Triangle &f)
 {
@@ -274,7 +271,7 @@ bool box_touch_box(const Box &a, const Box &b)
  * that plane. It can be parallel to at most 2 of 3, so we guarantee at least
  * checking one plane for normal intersection.
  *
- * @return smaller intercept ray parameter t if intercept occurs, or
+ * @return smaller intersect ray parameter t if intersect occurs, or
  * negative number if not
  */
 float ray_box_intersect(const Ray &r, const Box &b)

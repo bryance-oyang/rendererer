@@ -138,7 +138,7 @@ camera{camera}
 		OCTREE_MAX_FACE_PER_BOX, OCTREE_MAX_SUBDIV};
 }
 
-Box all_faces_bounding_box(std::vector<std::shared_ptr<Face>> &all_faces)
+static Box all_faces_bounding_box(std::vector<std::shared_ptr<Face>> &all_faces)
 {
 	float corners[2][3];
 
