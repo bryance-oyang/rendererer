@@ -13,6 +13,13 @@
 #include "scene.h"
 #include "macro_def.h"
 
+/**
+ * This should be set once at beginning to be the order of magnitude scale size
+ * of the scene: let's say our scene's typical face is ~1000 units wide, then we
+ * set this to 1000. The purpose is to exclude ray self-intersecting its origin
+ * point from floating point errors and providing a tolerance = GEOMETRY_EPSILON
+ * * global_characteristic_length_scale
+ */
 float global_characteristic_length_scale;
 
 Camera::Camera(float focal_len, float film_diagonal, const Vec &position,

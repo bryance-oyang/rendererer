@@ -37,7 +37,9 @@ void RenderThread::thread_main()
 void RenderThread::join()
 {
 	if (thread) {
-		thread->join();
+		if (thread->joinable()) {
+			thread->join();
+		}
 		thread.reset();
 	}
 }

@@ -14,6 +14,7 @@
 #include <cstring>
 #include <utility>
 
+/** multidimensional but contiguous in memory; accessed via A(i, j, k) */
 template<typename T> class MultiArray {
 public:
 	int rank;
@@ -62,10 +63,7 @@ public:
 	n{n0, n1, n2, n3},
 	len{n0*n1*n2*n3} { alloc(); }
 
-	~MultiArray()
-	{
-		free();
-	}
+	~MultiArray() { free(); }
 
 	friend void swap(MultiArray &first, MultiArray &second)
 	{
@@ -104,6 +102,14 @@ public:
 	{
 		for (int i = 0; i < len; i++) {
 			data[i] += other.data[i];
+		}
+		return *this;
+	}
+
+	MultiArray &operator-=(const MultiArray &other)
+	{
+		for (int i = 0; i < len; i++) {
+			data[i] -= other.data[i];
 		}
 		return *this;
 	}

@@ -23,12 +23,16 @@ public:
 	unsigned int denominator;
 	unsigned int base;
 
+	HaltonRng(unsigned int numerator, unsigned int denominator, unsigned int base);
+
 	float next();
 };
 
 class RandRng : public Rng {
 public:
 	unsigned int seed;
+
+	RandRng(unsigned int seed);
 
 	float next();
 };

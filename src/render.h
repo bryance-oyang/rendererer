@@ -36,15 +36,15 @@ public:
 	void update_pixel_data() noexcept;
 };
 
-class Derper : public RenderThread {
+class DebugRender : public RenderThread {
 public:
-	Derper(int tid, Scene &scene, int samples_before_update)
+	DebugRender(int tid, Scene &scene, int samples_before_update)
 	: RenderThread(tid, scene, samples_before_update) {}
 
 	void render() {
-		RandRng rng;
-		for (;;) {
+		for (int cycle = 0;; cycle++) {
 			sleep(1);
+			RandRng rng{(unsigned)cycle};
 
 			for (int i = 0; i < film_buffer.len; i++) {
 				film_buffer(i) = rng.next();

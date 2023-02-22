@@ -14,6 +14,7 @@
 #include "geometry.h"
 #include "macro_def.h"
 
+/* see scene.cc */
 extern float global_characteristic_length_scale;
 
 Vec::Vec() {}
