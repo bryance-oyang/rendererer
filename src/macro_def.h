@@ -16,25 +16,21 @@
 #define MLT_MAX_CHAIN ((unsigned long)1 << 31)
 #define MLT_RESTART_CHAIN_PROB (1.0f / (1 << 18))
 
-#ifndef DEBUG
-/* nondebug */
-#define NTHREAD 8
-
-#define AVG_SAMPLE_PER_PIX (1 << 10)
-
 #define IMAGE_WIDTH (1 << 8)
 #define IMAGE_HEIGHT (1 << 8)
+
+#ifndef DEBUG
+/* nondebug */
+
+#define NTHREAD 8
+#define AVG_SAMPLE_PER_PIX (1 << 10)
+
 #else /* DEBUG */
 /* debug */
+
 #define NTHREAD 1
+#define AVG_SAMPLE_PER_PIX 10
 
-#define AVG_SAMPLE_PER_PIX (1 << 10)
-//#define AVG_SAMPLE_PER_PIX 10
-
-#define IMAGE_WIDTH (1 << 7)
-#define IMAGE_HEIGHT (1 << 7)
-//#define IMAGE_WIDTH 10
-//#define IMAGE_HEIGHT 10
 #endif /* DEBUG */
 
 /** This should be 3 for color or 1 for bw */

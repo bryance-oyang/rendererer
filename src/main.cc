@@ -27,7 +27,13 @@ int main()
 
 	// start threads
 	for (int tid = 0; tid < NTHREAD; tid++) {
-		render_threads.emplace_back(std::make_unique<PathTracer>(tid, scene, AVG_SAMPLE_PER_PIX, primes));
+		render_threads.emplace_back(std::make_unique<PathTracer>(tid, scene, 1, primes));
+		//render_threads.emplace_back(std::make_unique<DebugRender>(tid, scene, 1));
+	}
+
+	// join threads
+	for (int tid = 0; tid < NTHREAD; tid++) {
+		render_threads[tid]->join();
 	}
 
 	return 0;

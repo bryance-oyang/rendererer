@@ -15,7 +15,9 @@
 RenderThread::RenderThread(int tid, Scene &scene, int samples_before_update)
 : tid{tid}, scene{scene}, camera{scene.camera}, samples_before_update{samples_before_update}
 {
-	film_buffer = scene.camera.pixel_data;
+	const MultiArray<float> &pixel_data = camera.pixel_data;
+	film_buffer = MultiArray<float>{pixel_data.n[0], pixel_data.n[1], pixel_data.n[2]};
+	film_buffer.fill(0);
 }
 
 RenderThread::~RenderThread()
@@ -87,7 +89,7 @@ bool PathTracer::sample_new_path(int *last_path)
 			return hit_light;
 		}
 
-		const Material &material = *path.faces[i+1]->material;
+		const Material &material = *path.faces[i]->material;
 		if (material.is_light) {
 			hit_light = true;
 		}
@@ -103,7 +105,8 @@ bool PathTracer::sample_new_path(int *last_path)
 			path.rays[i].cosines[i] = cos_in;
 		}
 
-		material.sample_ray(path.rays[i+1], path.rays[i], rngs[i][0], rngs[i][1]);
+		path.prob_dens[i] = material.sample_ray(path.rays[i+1], path.rays[i],
+			path.normals[i], rngs[i][0], rngs[i][1]);
 	}
 
 	return hit_light;
@@ -116,6 +119,10 @@ void PathTracer::compute_I(const int last_path)
 	}
 
 	for (int i = last_path - 1; i >= 0; i--) {
+		for (int k = 0; k < NFREQ; k++) {
+			path.I[k] /= path.prob_dens[i];
+		}
+
 		const Material &material = *path.faces[i]->material;
 		material.transfer(path.I, path.rays[i+1], path.rays[i]);
 	}
@@ -123,7 +130,7 @@ void PathTracer::compute_I(const int last_path)
 
 void PathTracer::render()
 {
-	for (;;) {
+	for (long samples = 0; samples < AVG_SAMPLE_PER_PIX * IMAGE_WIDTH * IMAGE_HEIGHT; samples++) {
 		int last_path;
 		if (!sample_new_path(&last_path)) {
 			continue;
@@ -134,6 +141,11 @@ void PathTracer::render()
 		camera.get_ij(&i, &j, path.film_x, path.film_y);
 		for (int k = 0; k < NFREQ; k++) {
 			film_buffer(i, j, k) += path.I[k];
+		}
+
+		if (samples % samples_before_update) {
+			samples = 0;
+			update_pixel_data();
 		}
 	}
 }

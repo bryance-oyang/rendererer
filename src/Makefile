@@ -10,7 +10,7 @@ PFLAGS=-ggdb3
 DFLAGS=$(CFLAGS) -MM -MT
 
 # debug and sanitize code
-CDEBUG=-ggdb3
+CDEBUG=-ggdb3 -DDEBUG
 SANITIZE=-ggdb3 -fno-omit-frame-pointer -fno-common -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=leak -fsanitize=undefined -fsanitize-address-use-after-scope
 TSANITIZE=-ggdb3 -fsanitize=thread
 

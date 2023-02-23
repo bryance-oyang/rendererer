@@ -14,6 +14,7 @@
 std::vector<unsigned int> get_primes(unsigned int nprimes);
 
 class Rng {
+public:
 	virtual float next() {return 0;}
 };
 

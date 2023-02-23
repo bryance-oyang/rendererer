@@ -37,6 +37,12 @@ public:
 	{
 		return sizeof(T) * len;
 	}
+	void fill(const T &value)
+	{
+		for (int i = 0; i < len; i++) {
+			data[i] = value;
+		}
+	}
 
 	MultiArray()
 	: rank{0},

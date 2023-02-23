@@ -23,6 +23,7 @@ public:
 	Ray rays[MAX_BOUNCES_PER_PATH + 2];
 	const Face *faces[MAX_BOUNCES_PER_PATH + 1];
 	Vec normals[MAX_BOUNCES_PER_PATH + 1];
+	float prob_dens[MAX_BOUNCES_PER_PATH + 1];
 };
 
 class RenderThread {

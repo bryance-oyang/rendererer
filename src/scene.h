@@ -47,7 +47,7 @@ public:
 	Camera(const Camera &camera);
 	Camera &operator=(const Camera &camera);
 
-	void alloc_pixel_data();
+	void init_pixel_data();
 	void update_pixel_data(MultiArray<float> &other) noexcept;
 
 	void get_init_ray(Ray &ray, const float film_x, const float film_y) const;

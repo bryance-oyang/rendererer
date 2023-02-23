@@ -20,7 +20,7 @@
 class ImgGenThread {
 public:
 	std::unique_ptr<std::thread> thread;
-	ws_ctube *ctube;
+	ws_ctube *ctube = NULL;
 	Camera &camera;
 	std::atomic<int> should_terminate;
 
@@ -33,8 +33,7 @@ public:
 	}
 	~ImgGenThread() noexcept
 	{
-		stop_thread();
-		stop_ctube();
+		join();
 	}
 
 	bool start_ctube(int port, int max_nclient, int timeout_ms, double max_broadcast_fps)
@@ -45,8 +44,10 @@ public:
 	}
 	void stop_ctube()
 	{
-		ws_ctube_close(ctube);
-		ctube = NULL;
+		if (ctube != NULL) {
+			ws_ctube_close(ctube);
+			ctube = NULL;
+		}
 	}
 
 	bool start_thread()
@@ -65,6 +66,12 @@ public:
 			}
 			thread.reset();
 		}
+	}
+
+	void join()
+	{
+		stop_thread();
+		stop_ctube();
 	}
 
 	void thread_main()

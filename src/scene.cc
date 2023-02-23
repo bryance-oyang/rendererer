@@ -56,9 +56,10 @@ Camera &Camera::operator=(const Camera &camera)
 	return *this;
 }
 
-void Camera::alloc_pixel_data()
+void Camera::init_pixel_data()
 {
 	pixel_data = MultiArray<float>{ny, nx, NFREQ};
+	pixel_data.fill(0);
 }
 
 void Camera::update_pixel_data(MultiArray<float> &other) noexcept
@@ -121,7 +122,7 @@ all_materials{all_materials},
 camera{camera}
 {
 	// setup camera
-	this->camera.alloc_pixel_data();
+	this->camera.init_pixel_data();
 
 	// ensure normals and bounding boxes are computed
 	std::vector<std::shared_ptr<Box>> bounding_boxes;
