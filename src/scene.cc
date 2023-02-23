@@ -138,11 +138,11 @@ camera{camera}
 
 static Box all_faces_bounding_box(std::vector<std::shared_ptr<Face>> &all_faces)
 {
-	float corners[2][3];
+	Vec corners[2];
 
 	for (int i = 0; i < 3; i++) {
-		corners[0][i] = FLT_MAX;
-		corners[1][i] = -FLT_MAX;
+		corners[0].x[i] = FLT_MAX;
+		corners[1].x[i] = -FLT_MAX;
 	}
 
 	// get min/max of face vertices
@@ -150,20 +150,54 @@ static Box all_faces_bounding_box(std::vector<std::shared_ptr<Face>> &all_faces)
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				float x = face->v[i].x[j];
-				if (x < corners[0][j]) {
-					corners[0][j] = x - 0.1;
+				if (x < corners[0].x[j]) {
+					corners[0].x[j] = x;
 				}
-				if (x > corners[1][j]) {
-					corners[1][j] = x + 0.1;
+				if (x > corners[1].x[j]) {
+					corners[1].x[j] = x;
 				}
 			}
 		}
 	}
 
-	return Box{corners};
+	// expand box slightly
+	Vec diag = corners[1] - corners[0];
+	corners[1] += 0.1 * diag;
+	corners[0] -= 0.1 * diag;
+
+	return Box{
+		corners[0].x[0],
+		corners[0].x[1],
+		corners[0].x[2],
+		corners[1].x[0],
+		corners[1].x[1],
+		corners[1].x[2]
+	};
 }
 
 Scene build_test_scene()
+{
+	std::vector<std::shared_ptr<Material>> all_materials;
+	float emission[3] = {1, 0, 1};
+
+	all_materials.push_back(std::make_shared<EmitterMaterial>(emission));
+
+	std::vector<std::shared_ptr<Face>> all_faces;
+	std::shared_ptr<Face> face;
+
+	// wall
+	face = std::make_shared<Face>(Vec{0,0,0}, Vec{2,0,0}, Vec{0,0,2});
+	face->material = all_materials[0];
+	all_faces.push_back(face);
+
+	Box bounding_box = all_faces_bounding_box(all_faces);
+
+	Camera camera{35, 35, Vec{0.5,-3,0.5}, Vec{0,1,0}, IMAGE_WIDTH, IMAGE_HEIGHT};
+
+	return Scene{bounding_box, all_faces, all_materials, camera};
+}
+
+Scene build_test_scene2()
 {
 	std::vector<std::shared_ptr<Material>> all_materials;
 	float white[3] = {0.9, 0.9, 0.9};
