@@ -7,17 +7,10 @@
 
 #include <cmath>
 
-#define MAX_BOUNCES_PER_PATH 8
-#define DO_MLT true
-#define MLT_STARTUP_DISCARD 0.0f
-#define MLT_FILM_WALK_FRAC (1.0f / 64.0f)
-#define MLT_DIFFUSE_Z_WALK 0.01
-#define MLT_RANDOM_DRAW_PROB 1.0f
-#define MLT_MAX_CHAIN ((unsigned long)1 << 31)
-#define MLT_RESTART_CHAIN_PROB (1.0f / (1 << 18))
-
 #define IMAGE_WIDTH (1 << 8)
 #define IMAGE_HEIGHT (1 << 8)
+
+#define MAX_BOUNCES_PER_PATH 8
 
 #ifndef DEBUG
 /* nondebug */
