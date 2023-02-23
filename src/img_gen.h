@@ -76,7 +76,7 @@ public:
 
 	void thread_main()
 	{
-		std::unique_ptr<SRGBImg> img;
+		std::unique_ptr<SRGBImgDirect> img;
 		for (;;) {
 			{ /* lock camera mutex */
 				std::unique_lock<std::mutex> mutex{camera.mutex};
@@ -90,7 +90,7 @@ public:
 					}
 				}
 				camera.pixel_data_updated = false;
-				img = std::make_unique<SRGBImg>(camera.pixel_data, true);
+				img = std::make_unique<SRGBImgDirect>(camera.pixel_data);
 			} /* unlock camera mutex */
 
 			ws_ctube_broadcast(ctube, img->pixels.data, img->pixels.bytes());
