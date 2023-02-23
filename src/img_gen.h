@@ -10,8 +10,8 @@
 #define IMG_GEN_H
 
 #include <atomic>
-#include <memory>
 #include <thread>
+#include <chrono>
 #include "scene.h"
 #include "srgb_img.h"
 #include "ws_ctube.h"

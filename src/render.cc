@@ -64,20 +64,22 @@ PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update,
 /**
  * generate a new path
  *
- * @param i returns index of ray that should be darkness (first physically incoming ray)
+ * @param last_path returns index of ray that should be darkness (first
+ * physically incoming ray)
  *
  * @return if a light was hit
  */
-bool PathTracer::sample_new_path(int &i)
+bool PathTracer::sample_new_path(int *last_path)
 {
+	int &i = *last_path;
 	bool hit_light = false;
 	const Camera &camera = scene.camera;
 	const Octree &octree_root = scene.octree_root;
 
 	// first ray from camera
-	const float film_x = rngs[0][0].next() * camera.film_width - camera.film_width / 2;
-	const float film_y = rngs[0][1].next() * camera.film_height - camera.film_height / 2;
-	camera.get_init_ray(path.rays[0], film_x, film_y);
+	path.film_x = rngs[0][0].next() * camera.film_width - camera.film_width / 2;
+	path.film_y = rngs[0][1].next() * camera.film_height - camera.film_height / 2;
+	camera.get_init_ray(path.rays[0], path.film_x, path.film_y);
 
 	for (i = 0; i < MAX_BOUNCES_PER_PATH + 1; i++) {
 		if (!octree_root.first_ray_face_intersect(&path.rays[i+1].orig,
@@ -107,7 +109,31 @@ bool PathTracer::sample_new_path(int &i)
 	return hit_light;
 }
 
+void PathTracer::compute_I(const int last_path)
+{
+	for (int k = 0; k < NFREQ; k++) {
+		path.I[k] = 0;
+	}
+
+	for (int i = last_path - 1; i >= 0; i--) {
+		const Material &material = *path.faces[i]->material;
+		material.transfer(path.I, path.rays[i+1], path.rays[i]);
+	}
+}
+
 void PathTracer::render()
 {
+	for (;;) {
+		int last_path;
+		if (!sample_new_path(&last_path)) {
+			continue;
+		}
+		compute_I(last_path);
 
+		int i, j;
+		camera.get_ij(&i, &j, path.film_x, path.film_y);
+		for (int k = 0; k < NFREQ; k++) {
+			film_buffer(i, j, k) += path.I[k];
+		}
+	}
 }

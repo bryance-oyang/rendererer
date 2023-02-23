@@ -26,7 +26,6 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "macro_def.h"
 #include "geometry.h"
 #include "rng.h"
 
@@ -41,8 +40,9 @@ public:
 		(void)rng_theta;
 		(void)rng_phi;
 	}
-	virtual void transfer(Ray &ray_out, const Ray &ray_in) const
+	virtual void transfer(float *I, Ray &ray_out, const Ray &ray_in) const
 	{
+		(void)I;
 		(void)ray_out;
 		(void)ray_in;
 	}

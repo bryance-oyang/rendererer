@@ -11,9 +11,6 @@
  * @brief rendererer
  */
 
-#include <unistd.h>
-#include <chrono>
-#include "macro_def.h"
 #include "render.h"
 #include "img_gen.h"
 

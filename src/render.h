@@ -13,10 +13,13 @@
 #include <cstdio>
 #include <thread>
 #include "scene.h"
-#include "rng.h"
 
 class Path {
 public:
+	float I[NFREQ];
+	float film_x;
+	float film_y;
+
 	Ray rays[MAX_BOUNCES_PER_PATH + 2];
 	const Face *faces[MAX_BOUNCES_PER_PATH + 1];
 	Vec normals[MAX_BOUNCES_PER_PATH + 1];
@@ -69,7 +72,8 @@ public:
 
 	PathTracer(int tid, Scene &scene, int samples_before_update, std::vector<unsigned int> &primes);
 
-	bool sample_new_path(int &i);
+	bool sample_new_path(int *last_path);
+	void compute_I(const int last_path);
 	void render();
 };
 

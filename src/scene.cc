@@ -12,7 +12,6 @@
 
 #include <cfloat>
 #include "scene.h"
-#include "macro_def.h"
 
 /**
  * This should be set once at beginning to be the order of magnitude scale size

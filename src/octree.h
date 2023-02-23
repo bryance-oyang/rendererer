@@ -9,8 +9,6 @@
 #ifndef OCTREE_H
 #define OCTREE_H
 
-#include <vector>
-#include <memory>
 #include "geometry.h"
 
 class Octree {
