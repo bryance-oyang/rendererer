@@ -69,9 +69,12 @@ PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update,
 	std::vector<unsigned int> &primes)
 : RenderThread(tid, scene, samples_before_update)
 {
+	std::shared_ptr<RandRng> rand_r_rng = std::make_shared<RandRng>(tid * (UINT_MAX / NTHREAD));
 	for (int i = 0; i < 2; i++) {
-		for (int j = 0; j < MAX_BOUNCES_PER_PATH + 2; j++) {
-			const int index = (tid*2 + i)*(MAX_BOUNCES_PER_PATH + 2) + j;
+		// first rng used for image is rand_r based to prevent weird image patterns
+		rngs[i].push_back(rand_r_rng);
+		for (int j = 1; j < MAX_BOUNCES_PER_PATH + 2; j++) {
+			const int index = (tid*2 + i)*(MAX_BOUNCES_PER_PATH + 2) + (j - 1);
 			rngs[i].push_back(std::make_shared<HaltonRng>(primes[index]));
 		}
 	}
