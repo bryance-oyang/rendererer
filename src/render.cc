@@ -101,30 +101,32 @@ bool PathTracer::sample_new_path(int *last_path)
 	path.film_y = rngs[1][0]->next() * camera.film_height - camera.film_height / 2;
 	camera.get_init_ray(path.rays[0], path.film_x, path.film_y);
 
-	for (i = 0; i < MAX_BOUNCES_PER_PATH + 1; i++) {
-		if (!octree_root.first_ray_face_intersect(&path.rays[i+1].orig,
-			&path.faces[i+1], path.rays[i])) {
+	for (i = 1; i < MAX_BOUNCES_PER_PATH + 2; i++) {
+		if (!octree_root.first_ray_face_intersect(&path.rays[i].orig,
+			&path.faces[i], path.rays[i-1])) {
+			i--;
 			return hit_light;
 		}
 
-		const Material &material = *path.faces[i+1]->material;
+		const Material &material = *path.faces[i]->material;
 		hit_light = hit_light || material.is_light;
 
 		// set path normals[i] to be on same side of rays[i]
-		const Vec &face_normal = path.faces[i+1]->n;
-		const float cos_in = face_normal * path.rays[i].dir;
+		const Vec &face_normal = path.faces[i]->n;
+		const float cos_in = face_normal * path.rays[i-1].dir;
 		if (cos_in < 0) {
-			path.normals[i+1] = face_normal;
-			path.rays[i].cosines[1] = -cos_in;
+			path.normals[i] = face_normal;
+			path.rays[i-1].cosines[1] = -cos_in;
 		} else {
-			path.normals[i+1] = -1 * face_normal;
-			path.rays[i].cosines[i] = cos_in;
+			path.normals[i] = -1 * face_normal;
+			path.rays[i-1].cosines[1] = cos_in;
 		}
 
-		path.prob_dens[i+1] = material.sample_ray(path.rays[i+1], path.rays[i],
-			path.normals[i+1], *rngs[0][i+1], *rngs[1][i+1]);
+		path.prob_dens[i] = material.sample_ray(path.rays[i], path.rays[i-1],
+			path.normals[i], *rngs[0][i], *rngs[1][i]);
 	}
 
+	i--;
 	return hit_light;
 }
 
@@ -134,21 +136,21 @@ void PathTracer::compute_I(const int last_path)
 		path.I[k] = 0;
 	}
 
-	for (int i = last_path - 1; i >= 0; i--) {
+	for (int i = last_path; i > 0; i--) {
 		for (int k = 0; k < NFREQ; k++) {
-			path.I[k] /= path.prob_dens[i+1];
+			path.I[k] /= path.prob_dens[i];
 		}
 
-		const Material &material = *path.faces[i+1]->material;
-		material.transfer(path.I, path.rays[i+1], path.rays[i]);
+		const Material &material = *path.faces[i]->material;
+		material.transfer(path.I, path.rays[i], path.rays[i-1]);
 	}
 }
 
 void PathTracer::render()
 {
+	int last_path;
 	unsigned long max_samples = AVG_SAMPLE_PER_PIX * camera.nx * camera.ny / NTHREAD;
 	for (unsigned long samples = 0; samples < max_samples; samples++) {
-		int last_path;
 		if (!sample_new_path(&last_path)) {
 			continue;
 		}
