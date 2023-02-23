@@ -23,11 +23,11 @@ int main()
 	auto primes = get_primes(NTHREAD * 2 * (MAX_BOUNCES_PER_PATH + 1));
 
 	// for websocket_ctube broadcasting image to browser for realtime display
-	ImgGenThread img_gen{scene.camera, 9743, 3, 0, 24};
+	ImgGenThread img_gen{scene.camera, 9743, 3, 0, 1};
 
 	// start threads
 	for (int tid = 0; tid < NTHREAD; tid++) {
-		render_threads.emplace_back(std::make_unique<PathTracer>(tid, scene, 1, primes));
+		render_threads.emplace_back(std::make_unique<PathTracer>(tid, scene, 1000, primes));
 		//render_threads.emplace_back(std::make_unique<DebugRender>(tid, scene, 1));
 	}
 

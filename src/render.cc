@@ -130,7 +130,7 @@ void PathTracer::compute_I(const int last_path)
 
 void PathTracer::render()
 {
-	for (long samples = 0; samples < AVG_SAMPLE_PER_PIX * IMAGE_WIDTH * IMAGE_HEIGHT; samples++) {
+	for (long samples = 0; ; samples++) {
 		int last_path;
 		if (!sample_new_path(&last_path)) {
 			continue;
@@ -143,7 +143,7 @@ void PathTracer::render()
 			film_buffer(i, j, k) += path.I[k];
 		}
 
-		if (samples % samples_before_update) {
+		if (samples % samples_before_update == 0) {
 			samples = 0;
 			update_pixel_data();
 		}
