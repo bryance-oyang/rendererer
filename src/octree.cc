@@ -104,7 +104,7 @@ Octree::Octree(const Box &bounding_box, const std::vector<std::shared_ptr<Face>>
 }
 
 /** base case for first_ray_face_intersect() */
-bool Octree::_base_intersect(Vec *point, Face **face, Ray &r)
+bool Octree::_base_intersect(Vec *point, const Face **face, const Ray &r) const
 {
 	float tmin = FLT_MAX;
 	bool intersected = false;
@@ -173,7 +173,7 @@ static void order_hit_boxes(int n, int *order, const float *box_hit_times)
  * @param face stores the face intersected here
  * @param r the ray with which to intersect
  */
-bool Octree::first_ray_face_intersect(Vec *point, Face **face, Ray &r)
+bool Octree::first_ray_face_intersect(Vec *point, const Face **face, const Ray &r) const
 {
 	// base case
 	if (this->terminal) {

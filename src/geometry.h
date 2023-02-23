@@ -10,6 +10,7 @@
 #define GEOMETRY_H
 
 #include <memory>
+#include "macro_def.h"
 
 class Material;
 
@@ -64,6 +65,10 @@ public:
 	Vec orig;
 	/** normalized direction */
 	Vec dir;
+	/** index of refraction of medium */
+	float n;
+	/** cosine at orig and cosine at hit point (positive if ray on same side of normal) */
+	float cosines[2];
 
 	Ray() {};
 	Ray(const Vec &origin, const Vec &direction);

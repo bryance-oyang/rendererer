@@ -15,11 +15,19 @@
 #include "scene.h"
 #include "rng.h"
 
+class Path {
+public:
+	Ray rays[MAX_BOUNCES_PER_PATH + 2];
+	const Face *faces[MAX_BOUNCES_PER_PATH + 1];
+	Vec normals[MAX_BOUNCES_PER_PATH + 1];
+};
+
 class RenderThread {
 public:
 	const int tid;
 	std::unique_ptr<std::thread> thread;
-	Scene &scene;
+	const Scene &scene;
+	Camera &camera;
 	int samples_before_update;
 
 	MultiArray<float> film_buffer;
@@ -39,7 +47,7 @@ public:
 class DebugRender : public RenderThread {
 public:
 	DebugRender(int tid, Scene &scene, int samples_before_update)
-	: RenderThread(tid, scene, samples_before_update) {}
+	: RenderThread(tid, scene, samples_before_update) { start(); }
 
 	void render() {
 		for (int cycle = 0;; cycle++) {
@@ -56,9 +64,12 @@ public:
 
 class PathTracer : public RenderThread {
 public:
-	PathTracer(int tid, Scene &scene, int samples_before_update)
-	: RenderThread(tid, scene, samples_before_update) {}
+	Path path;
+	HaltonRng rngs[MAX_BOUNCES_PER_PATH + 1][2];
 
+	PathTracer(int tid, Scene &scene, int samples_before_update, std::vector<unsigned int> &primes);
+
+	bool sample_new_path(int &i);
 	void render();
 };
 

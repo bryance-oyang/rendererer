@@ -1,5 +1,6 @@
-/** @file
- * This contains the basic rendering settings and other useful misc
+/**
+ * @file
+ * @brief This contains the basic rendering settings and other useful misc
  */
 #ifndef MACRO_DEF_H
 #define MACRO_DEF_H

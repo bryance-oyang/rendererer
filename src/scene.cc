@@ -83,20 +83,18 @@ void Camera::update_pixel_data(MultiArray<float> &other) noexcept
  * (TODO: extra film rotation in xy plane so that camera is always level after
  * rotating to normal)
  */
-Ray Camera::get_init_ray(const float film_x, const float film_y)
+void Camera::get_init_ray(Ray &ray, const float film_x, const float film_y) const
 {
 	float theta, phi;
 
 	theta = atanf(sqrtf(film_x*film_x + film_y*film_y) / focal_len);
 	phi = atan2f(film_y, film_x) + PI_F;
 
-	Ray ray;
 	ray.orig = position;
 	ray.dir.x[0] = sinf(theta) * cosf(phi);
 	ray.dir.x[1] = sinf(theta) * sinf(phi);
 	ray.dir.x[2] = cosf(theta);
 	z_to_normal_rotation(normal, ray.dir, 1);
-	return ray;
 }
 
 /**
@@ -109,7 +107,7 @@ Ray Camera::get_init_ray(const float film_x, const float film_y)
  * @param film_x corresponds to j
  * @param film_y corresponds to i
  */
-void Camera::get_ij(int *i, int *j, const float film_x, const float film_y)
+void Camera::get_ij(int *i, int *j, const float film_x, const float film_y) const
 {
 	*j = (int)((nx / film_width) * (film_width / 2 - film_x));
 	*i = (int)((ny / film_height) * (film_height / 2 - film_y));

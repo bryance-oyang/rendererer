@@ -29,8 +29,8 @@ public:
 		const std::vector<std::shared_ptr<Box>> &bounding_boxes,
 		size_t max_faces_per_box, size_t max_recursion_depth);
 
-	bool _base_intersect(Vec *point, Face **face, Ray &r);
-	bool first_ray_face_intersect(Vec *point, Face **face, Ray &r);
+	bool _base_intersect(Vec *point, const Face **face, const Ray &r) const;
+	bool first_ray_face_intersect(Vec *point, const Face **face, const Ray &r) const;
 };
 
 #endif /* OCTREE_H */

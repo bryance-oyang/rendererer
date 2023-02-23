@@ -40,8 +40,17 @@ std::vector<unsigned int> get_primes(unsigned int nprimes)
 	return result;
 }
 
-HaltonRng::HaltonRng(unsigned int numerator, unsigned int denominator, unsigned int base)
-: numerator{numerator}, denominator{denominator}, base{base} {}
+HaltonRng::HaltonRng(unsigned int base)
+{
+	init(base);
+}
+
+void HaltonRng::init(unsigned int base)
+{
+	this->base = base;
+	denominator = base;
+	numerator = 1;
+}
 
 /**
  * https://en.wikipedia.org/wiki/Halton_sequence

@@ -13,10 +13,9 @@
 #include "render.h"
 
 RenderThread::RenderThread(int tid, Scene &scene, int samples_before_update)
-: tid{tid}, scene{scene}, samples_before_update{samples_before_update}
+: tid{tid}, scene{scene}, camera{scene.camera}, samples_before_update{samples_before_update}
 {
 	film_buffer = scene.camera.pixel_data;
-	start();
 }
 
 RenderThread::~RenderThread()
@@ -46,7 +45,66 @@ void RenderThread::join()
 
 void RenderThread::update_pixel_data() noexcept
 {
-	scene.camera.update_pixel_data(film_buffer);
+	camera.update_pixel_data(film_buffer);
+}
+
+PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update,
+	std::vector<unsigned int> &primes)
+: RenderThread(tid, scene, samples_before_update)
+{
+	for (int i = 0; i < MAX_BOUNCES_PER_PATH + 1; i++) {
+		for (int j = 0; j < 2; j++) {
+			rngs[i][j].init(primes[(tid*(MAX_BOUNCES_PER_PATH + 1) + i)*2 + j]);
+		}
+	}
+
+	start();
+}
+
+/**
+ * generate a new path
+ *
+ * @param i returns index of ray that should be darkness (first physically incoming ray)
+ *
+ * @return if a light was hit
+ */
+bool PathTracer::sample_new_path(int &i)
+{
+	bool hit_light = false;
+	const Camera &camera = scene.camera;
+	const Octree &octree_root = scene.octree_root;
+
+	// first ray from camera
+	const float film_x = rngs[0][0].next() * camera.film_width - camera.film_width / 2;
+	const float film_y = rngs[0][1].next() * camera.film_height - camera.film_height / 2;
+	camera.get_init_ray(path.rays[0], film_x, film_y);
+
+	for (i = 0; i < MAX_BOUNCES_PER_PATH + 1; i++) {
+		if (!octree_root.first_ray_face_intersect(&path.rays[i+1].orig,
+			&path.faces[i], path.rays[i])) {
+			return hit_light;
+		}
+
+		const Material &material = *path.faces[i+1]->material;
+		if (material.is_light) {
+			hit_light = true;
+		}
+
+		// set path normals[i] to be on same side of rays[i]
+		const Vec &face_normal = path.faces[i]->n;
+		const float cos_in = face_normal * path.rays[i].dir;
+		if (cos_in < 0) {
+			path.normals[i] = face_normal;
+			path.rays[i].cosines[1] = -cos_in;
+		} else {
+			path.normals[i] = -1 * face_normal;
+			path.rays[i].cosines[i] = cos_in;
+		}
+
+		material.sample_ray(path.rays[i+1], path.rays[i], rngs[i][0], rngs[i][1]);
+	}
+
+	return hit_light;
 }
 
 void PathTracer::render()

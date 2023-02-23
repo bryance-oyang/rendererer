@@ -50,8 +50,8 @@ public:
 	void alloc_pixel_data();
 	void update_pixel_data(MultiArray<float> &other) noexcept;
 
-	Ray get_init_ray(const float film_x, const float film_y);
-	void get_ij(int *i, int *j, const float film_x, const float film_y);
+	void get_init_ray(Ray &ray, const float film_x, const float film_y) const;
+	void get_ij(int *i, int *j, const float film_x, const float film_y) const;
 };
 
 class Scene {

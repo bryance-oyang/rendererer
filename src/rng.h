@@ -23,8 +23,10 @@ public:
 	unsigned int denominator;
 	unsigned int base;
 
-	HaltonRng(unsigned int numerator, unsigned int denominator, unsigned int base);
+	HaltonRng() {};
+	HaltonRng(unsigned int base);
 
+	void init(unsigned int base);
 	float next();
 };
 
