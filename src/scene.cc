@@ -10,6 +10,7 @@
  * @file
  */
 
+#include <algorithm>
 #include <cfloat>
 #include "scene.h"
 
@@ -25,7 +26,7 @@ float global_characteristic_length_scale;
 Camera::Camera(float focal_len, float film_diagonal, const Vec &position,
 	const Vec &normal, int nx, int ny)
 {
-	focal_len= focal_len;
+	this->focal_len = focal_len;
 	film_height = film_diagonal * ny / sqrtf(nx*nx + ny*ny);
 	film_width = film_diagonal * nx / sqrtf(nx*nx + ny*ny);
 
@@ -87,7 +88,7 @@ void Camera::get_init_ray(Ray &ray, const float film_x, const float film_y) cons
 {
 	float theta, phi;
 
-	theta = atanf(sqrtf(film_x*film_x + film_y*film_y) / focal_len);
+	theta = atanf(sqrtf(SQR(film_x) + SQR(film_y)) / focal_len);
 	phi = atan2f(film_y, film_x) + PI_F;
 
 	ray.orig = position;
@@ -111,32 +112,12 @@ void Camera::get_ij(int *i, int *j, const float film_x, const float film_y) cons
 {
 	*j = (int)((nx / film_width) * (film_width / 2 - film_x));
 	*i = (int)((ny / film_height) * (film_height / 2 - film_y));
+
+	*j = std::max(0, std::min(nx-1, *j));
+	*i = std::max(0, std::min(ny-1, *i));
 }
 
-Scene::Scene(const Box &bounding_box,
-	const std::vector<std::shared_ptr<Face>> &all_faces,
-	const std::vector<std::shared_ptr<Material>> &all_materials,
-	const Camera &camera)
-: all_faces{all_faces},
-all_materials{all_materials},
-camera{camera}
-{
-	// setup camera
-	this->camera.init_pixel_data();
-
-	// ensure normals and bounding boxes are computed
-	std::vector<std::shared_ptr<Box>> bounding_boxes;
-	for (auto &face : all_faces) {
-		face->compute_normal();
-		bounding_boxes.emplace_back(std::make_shared<Box>(face_bounding_box(*face)));
-	}
-
-	// build octree
-	octree_root = Octree{bounding_box, all_faces, bounding_boxes,
-		OCTREE_MAX_FACE_PER_BOX, OCTREE_MAX_SUBDIV};
-}
-
-static Box all_faces_bounding_box(std::vector<std::shared_ptr<Face>> &all_faces)
+static Box all_faces_bounding_box(const std::vector<std::shared_ptr<Face>> &all_faces)
 {
 	Vec corners[2];
 
@@ -162,6 +143,7 @@ static Box all_faces_bounding_box(std::vector<std::shared_ptr<Face>> &all_faces)
 
 	// expand box slightly
 	Vec diag = corners[1] - corners[0];
+	diag += GEOMETRY_EPSILON * Vec{1, 1, 1};
 	corners[1] += 0.1 * diag;
 	corners[0] -= 0.1 * diag;
 
@@ -175,6 +157,51 @@ static Box all_faces_bounding_box(std::vector<std::shared_ptr<Face>> &all_faces)
 	};
 }
 
+Scene::Scene(const std::vector<std::shared_ptr<Face>> &all_faces,
+	const std::vector<std::shared_ptr<Material>> &all_materials,
+	const Camera &camera)
+: all_faces{all_faces},
+all_materials{all_materials},
+camera{camera}
+{
+	Box bounding_box = all_faces_bounding_box(all_faces);
+	init(bounding_box, all_faces);
+}
+
+Scene::Scene(const Box &bounding_box,
+	const std::vector<std::shared_ptr<Face>> &all_faces,
+	const std::vector<std::shared_ptr<Material>> &all_materials,
+	const Camera &camera)
+: all_faces{all_faces},
+all_materials{all_materials},
+camera{camera}
+{
+	init(bounding_box, all_faces);
+}
+
+void Scene::init(const Box &bounding_box,
+	const std::vector<std::shared_ptr<Face>> &all_faces)
+{
+	// setup camera
+	camera.init_pixel_data();
+
+	// ensure normals and bounding boxes are computed
+	std::vector<std::shared_ptr<Box>> bounding_boxes;
+	for (auto &face : all_faces) {
+		face->compute_normal();
+		bounding_boxes.emplace_back(std::make_shared<Box>(face_bounding_box(*face)));
+	}
+
+	// set char len
+	Vec lower{bounding_box.corners[0][0], bounding_box.corners[0][1], bounding_box.corners[0][2]};
+	Vec upper{bounding_box.corners[1][0], bounding_box.corners[1][1], bounding_box.corners[1][2]};
+	global_characteristic_length_scale = (upper - lower).len();
+
+	// build octree
+	octree_root = Octree{bounding_box, all_faces, bounding_boxes,
+		OCTREE_MAX_FACE_PER_BOX, OCTREE_MAX_SUBDIV};
+}
+
 Scene build_test_scene()
 {
 	std::vector<std::shared_ptr<Material>> all_materials;
@@ -186,13 +213,13 @@ Scene build_test_scene()
 	std::shared_ptr<Face> face;
 
 	// wall
-	face = std::make_shared<Face>(Vec{0,0,0}, Vec{2,0,0}, Vec{0,0,2});
+	face = std::make_shared<Face>(Vec{-1,0,-1}, Vec{1,0,-1}, Vec{0,0,2});
 	face->material = all_materials[0];
 	all_faces.push_back(face);
 
 	Box bounding_box = all_faces_bounding_box(all_faces);
 
-	Camera camera{35, 35, Vec{0.5,-3,0.5}, Vec{0,1,0}, IMAGE_WIDTH, IMAGE_HEIGHT};
+	Camera camera{35, 0.1, Vec{0,-1,0}, Vec{0,1,0}, IMAGE_WIDTH, IMAGE_HEIGHT};
 
 	return Scene{bounding_box, all_faces, all_materials, camera};
 }

@@ -62,12 +62,19 @@ public:
 	Camera camera;
 
 	Scene() {}
+	Scene(const std::vector<std::shared_ptr<Face>> &all_faces,
+		const std::vector<std::shared_ptr<Material>> &all_materials,
+		const Camera &camera);
 	Scene(const Box &bounding_box,
 		const std::vector<std::shared_ptr<Face>> &all_faces,
 		const std::vector<std::shared_ptr<Material>> &all_materials,
 		const Camera &camera);
+
+	void init(const Box &bounding_box,
+		const std::vector<std::shared_ptr<Face>> &all_faces);
 };
 
 Scene build_test_scene();
+Scene build_test_scene2();
 
 #endif /* SCENE_H */

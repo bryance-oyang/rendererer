@@ -17,7 +17,7 @@
 int main()
 {
 	std::vector<std::unique_ptr<RenderThread>> render_threads;
-	Scene scene = build_test_scene();
+	Scene scene = build_test_scene2();
 
 	// for rng
 	auto primes = get_primes(NTHREAD * 2 * (MAX_BOUNCES_PER_PATH + 1));
