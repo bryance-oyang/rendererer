@@ -11,6 +11,7 @@
 
 #include "geometry.h"
 
+/** octree used to optimize ray face intersection finding */
 class Octree {
 public:
 	/** octree children */

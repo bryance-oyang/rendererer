@@ -20,6 +20,7 @@ public:
 	float film_x;
 	float film_y;
 
+	// the ith face/normal/prob_dens is at origin of ith ray
 	Ray rays[MAX_BOUNCES_PER_PATH + 2];
 	const Face *faces[MAX_BOUNCES_PER_PATH + 2];
 	Vec normals[MAX_BOUNCES_PER_PATH + 2];
@@ -36,16 +37,43 @@ public:
 
 	MultiArray<float> film_buffer;
 
-
-	RenderThread(int tid, Scene &scene, int samples_before_update);
-	~RenderThread();
-
-	void start();
-	void thread_main();
-	void join();
-
+	/** polymorphic rendering */
 	virtual void render() {}
-	void update_pixel_data() noexcept;
+
+	RenderThread(int tid, Scene &scene, int samples_before_update)
+	: tid{tid}, scene{scene}, camera{scene.camera}, samples_before_update{samples_before_update}
+	{
+		const MultiArray<float> &pixel_data = camera.pixel_data;
+		film_buffer = MultiArray<float>{pixel_data.n[0], pixel_data.n[1], pixel_data.n[2]};
+		film_buffer.fill(0);
+	}
+	~RenderThread()
+	{
+		join();
+	}
+
+	void start()
+	{
+		thread = std::make_unique<std::thread>(&RenderThread::thread_main, this);
+	}
+	void thread_main()
+	{
+		this->render();
+	}
+	void join()
+	{
+		if (thread) {
+			if (thread->joinable()) {
+				thread->join();
+			}
+			thread.reset();
+		}
+	}
+
+	void update_pixel_data() noexcept
+	{
+		camera.update_pixel_data(film_buffer);
+	}
 };
 
 class DebugRender : public RenderThread {

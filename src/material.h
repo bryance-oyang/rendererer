@@ -12,6 +12,7 @@
 #include "geometry.h"
 #include "rng.h"
 
+/** base class for materials */
 class Material {
 public:
 	bool is_light = false;

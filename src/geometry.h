@@ -17,6 +17,7 @@ class Material;
 /** 3D vector */
 class Vec {
 public:
+	/** 3 components for vector */
 	float x[3];
 
 	Vec();
@@ -37,26 +38,19 @@ public:
 	void normalize();
 };
 
-class Triangle {
+class Face {
 public:
 	/** 3 vertices to define corners of triangle */
 	Vec v[3];
 	/** normal */
 	Vec n;
-
-	Triangle() {};
-	Triangle(const Vec &v0, const Vec &v1, const Vec &v2);
-
-	void compute_normal();
-};
-
-class Face : public Triangle {
-public:
+	/** material for face */
 	std::shared_ptr<Material> material;
 
 	Face() {};
-	Face(const Vec &v0, const Vec &v1, const Vec &v2)
-	: Triangle(v0, v1, v2) {};
+	Face(const Vec &v0, const Vec &v1, const Vec &v2);
+
+	void compute_normal();
 };
 
 class Ray {
@@ -89,8 +83,8 @@ public:
 };
 
 float fast_ray_plane_intersect(Vec &intersect, const Ray &r, int plane, float pval);
-float ray_face_intersect(Vec &result, const Ray &r, const struct Triangle &f);
-Box face_bounding_box(const Triangle &f);
+float ray_face_intersect(Vec &result, const Ray &r, const struct Face &f);
+Box face_bounding_box(const Face &f);
 bool vec_in_box(const Vec &v, const Box &b);
 bool box_touch_box(const Box &a, const Box &b);
 float ray_box_intersect(const Ray &r, const Box &b);

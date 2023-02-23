@@ -27,8 +27,9 @@ Camera::Camera(float focal_len, float film_diagonal, const Vec &position,
 	const Vec &normal, int nx, int ny)
 {
 	this->focal_len = focal_len;
-	film_height = film_diagonal * ny / sqrtf(nx*nx + ny*ny);
-	film_width = film_diagonal * nx / sqrtf(nx*nx + ny*ny);
+	const float d = sqrtf(SQR(nx) + SQR(ny));
+	film_height = film_diagonal * ny / d;
+	film_width = film_diagonal * nx / d;
 
 	this->position = position;
 	this->normal = normal;

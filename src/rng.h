@@ -13,6 +13,7 @@
 
 std::vector<unsigned int> get_primes(unsigned int nprimes);
 
+/** base class for random number generator */
 class Rng {
 public:
 	virtual float next() {return 0;}

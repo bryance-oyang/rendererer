@@ -13,44 +13,6 @@
 #include <climits>
 #include "render.h"
 
-RenderThread::RenderThread(int tid, Scene &scene, int samples_before_update)
-: tid{tid}, scene{scene}, camera{scene.camera}, samples_before_update{samples_before_update}
-{
-	const MultiArray<float> &pixel_data = camera.pixel_data;
-	film_buffer = MultiArray<float>{pixel_data.n[0], pixel_data.n[1], pixel_data.n[2]};
-	film_buffer.fill(0);
-}
-
-RenderThread::~RenderThread()
-{
-	join();
-}
-
-void RenderThread::start()
-{
-	thread = std::make_unique<std::thread>(&RenderThread::thread_main, this);
-}
-
-void RenderThread::thread_main()
-{
-	this->render();
-}
-
-void RenderThread::join()
-{
-	if (thread) {
-		if (thread->joinable()) {
-			thread->join();
-		}
-		thread.reset();
-	}
-}
-
-void RenderThread::update_pixel_data() noexcept
-{
-	camera.update_pixel_data(film_buffer);
-}
-
 /** constructor for randr rngs */
 PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update)
 : RenderThread(tid, scene, samples_before_update)
@@ -58,7 +20,7 @@ PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update)
 	std::shared_ptr<RandRng> rng = std::make_shared<RandRng>(tid * (UINT_MAX / NTHREAD));
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < MAX_BOUNCES_PER_PATH + 2; j++) {
-			rngs[i].push_back(rng);
+			rngs[i].emplace_back(rng);
 		}
 	}
 	start();
@@ -72,10 +34,10 @@ PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update,
 	std::shared_ptr<RandRng> rand_r_rng = std::make_shared<RandRng>(tid * (UINT_MAX / NTHREAD));
 	for (int i = 0; i < 2; i++) {
 		// first rng used for image is rand_r based to prevent weird image patterns
-		rngs[i].push_back(rand_r_rng);
+		rngs[i].emplace_back(rand_r_rng);
 		for (int j = 1; j < MAX_BOUNCES_PER_PATH + 2; j++) {
 			const int index = (tid*2 + i)*(MAX_BOUNCES_PER_PATH + 2) + (j - 1);
-			rngs[i].push_back(std::make_shared<HaltonRng>(primes[index]));
+			rngs[i].emplace_back(std::make_shared<HaltonRng>(primes[index]));
 		}
 	}
 	start();

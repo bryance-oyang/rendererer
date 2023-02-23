@@ -72,7 +72,7 @@ Octree::Octree(const Box &bounding_box, const std::vector<std::shared_ptr<Face>>
 	size_t max_faces_per_box, size_t max_recursion_depth)
 : box{bounding_box}
 {
-	// base case
+	// base case: copy all faces into box
 	if (all_faces.size() <= max_faces_per_box || max_recursion_depth == 0) {
 		for (auto &f : all_faces) {
 			faces.emplace_back(*f);
@@ -111,7 +111,7 @@ bool Octree::_base_intersect(Vec *point, const Face **face, const Ray &r) const
 	bool intersected = false;
 	Vec candidate_point;
 
-	// find first intersection by lowest t
+	// find first intersection with face by lowest t
 	for (auto &candidate_face : faces) {
 		float t = ray_face_intersect(candidate_point, r, candidate_face);
 		if (t > 0 && t < tmin && vec_in_box(candidate_point, box)) {
@@ -159,7 +159,8 @@ static void order_hit_boxes(int n, int *order, const float *box_hit_times)
 		if (box_hit_times[i] < 0)
 			continue;
 		if (box_hit_times[i] <= nth_smallest) {
-			if (n == 0 || box_hit_times[order[n-1]] < box_hit_times[i] || (box_hit_times[order[n-1]] == box_hit_times[i] && not_in(i, n, order))) {
+			if (n == 0 || box_hit_times[order[n-1]] < box_hit_times[i]
+			|| (box_hit_times[order[n-1]] == box_hit_times[i] && not_in(i, n, order))) {
 				nth_smallest = box_hit_times[i];
 				order[n] = i;
 			}

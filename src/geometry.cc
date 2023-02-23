@@ -99,13 +99,13 @@ void Vec::normalize()
 	*this /= this->len();
 }
 
-Triangle::Triangle(const Vec &v0, const Vec &v1, const Vec &v2)
+Face::Face(const Vec &v0, const Vec &v1, const Vec &v2)
 : v{v0, v1, v2}
 {
 	compute_normal();
 }
 
-void Triangle::compute_normal()
+void Face::compute_normal()
 {
 	n = (v[1] - v[0]) ^ (v[2] - v[0]);
 	n.normalize();
@@ -187,7 +187,7 @@ float fast_ray_plane_intersect(Vec &intersect, const Ray &r,
  *
  * @return intersect ray parameter t if intersection occurs or -1 if not
  */
-float ray_face_intersect(Vec &result, const Ray &r, const struct Triangle &f)
+float ray_face_intersect(Vec &result, const Ray &r, const struct Face &f)
 {
 	float pyramid_vol, u1, u2;
 	float t;
@@ -229,7 +229,7 @@ float ray_face_intersect(Vec &result, const Ray &r, const struct Triangle &f)
 }
 
 /** @return the bounding box of a face */
-Box face_bounding_box(const Triangle &f)
+Box face_bounding_box(const Face &f)
 {
 	Box result{FLT_MAX, FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX};
 	for (int i = 0; i < 3; i++) {
