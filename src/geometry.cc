@@ -21,33 +21,33 @@ Vec::Vec(float x, float y, float z) : x{x, y, z} {}
 
 Vec &Vec::operator+=(const Vec &v)
 {
-	x[0] += v.x[0];
-	x[1] += v.x[1];
-	x[2] += v.x[2];
+	for (int i = 0; i < 3; i++) {
+		x[i] += v.x[i];
+	}
 	return *this;
 }
 
 Vec &Vec::operator-=(const Vec &v)
 {
-	x[0] -= v.x[0];
-	x[1] -= v.x[1];
-	x[2] -= v.x[2];
+	for (int i = 0; i < 3; i++) {
+		x[i] -= v.x[i];
+	}
 	return *this;
 }
 
 Vec &Vec::operator*=(const float s)
 {
-	x[0] *= s;
-	x[1] *= s;
-	x[2] *= s;
+	for (int i = 0; i < 3; i++) {
+		x[i] *= s;
+	}
 	return *this;
 }
 
 Vec &Vec::operator/=(const float s)
 {
-	x[0] /= s;
-	x[1] /= s;
-	x[2] /= s;
+	for (int i = 0; i < 3; i++) {
+		x[i] /= s;
+	}
 	return *this;
 }
 
@@ -83,8 +83,9 @@ Vec Vec::operator^(const Vec &rhs) const
 float Vec::operator*(const Vec &rhs) const
 {
 	float dotprod = 0;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++) {
 		dotprod += x[i] * rhs.x[i];
+	}
 	return dotprod;
 }
 
