@@ -69,7 +69,7 @@ public:
 class PathTracer : public RenderThread {
 public:
 	Path path;
-	std::vector<std::unique_ptr<Rng>> rngs[2];
+	std::vector<std::shared_ptr<Rng>> rngs[2];
 
 	PathTracer(int tid, Scene &scene, int samples_before_update);
 	PathTracer(int tid, Scene &scene, int samples_before_update, std::vector<unsigned int> &primes);

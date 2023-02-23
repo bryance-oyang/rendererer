@@ -23,7 +23,14 @@ int main()
 	auto primes = get_primes(NTHREAD * 2 * (MAX_BOUNCES_PER_PATH + 2));
 
 	// for websocket_ctube broadcasting image to browser for realtime display
-	ImgGenThread img_gen{scene.camera, 9743, 3, 0, 1};
+#if !BENCHMARKING
+	ImgGenThread img_gen{scene.camera, 9743, 3, 0, 10};
+#endif
+
+	struct timespec start_time_spec, end_time_spec;
+	if (BENCHMARKING) {
+		clock_gettime(CLOCK_MONOTONIC_RAW, &start_time_spec);
+	}
 
 	// start threads
 	for (int tid = 0; tid < NTHREAD; tid++) {
@@ -31,10 +38,16 @@ int main()
 		//render_threads.emplace_back(std::make_unique<PathTracer>(tid, scene, 1000));
 		//render_threads.emplace_back(std::make_unique<DebugRender>(tid, scene, 1));
 	}
-
 	// join threads
 	for (int tid = 0; tid < NTHREAD; tid++) {
 		render_threads[tid]->join();
+	}
+
+	if (BENCHMARKING) {
+		clock_gettime(CLOCK_MONOTONIC_RAW, &end_time_spec);
+		float duration = (end_time_spec.tv_sec - start_time_spec.tv_sec) + (float)(end_time_spec.tv_nsec - start_time_spec.tv_nsec) / 1e9;
+		unsigned long npaths = AVG_SAMPLE_PER_PIX * IMAGE_WIDTH * IMAGE_HEIGHT;
+		printf("Rendered %lu paths in %.3g sec (%.2f paths/sec)\n", npaths, duration, (float)npaths / duration);
 	}
 
 	return 0;

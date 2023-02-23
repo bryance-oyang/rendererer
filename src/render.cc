@@ -10,6 +10,7 @@
  * @file
  */
 
+#include <climits>
 #include "render.h"
 
 RenderThread::RenderThread(int tid, Scene &scene, int samples_before_update)
@@ -54,10 +55,10 @@ void RenderThread::update_pixel_data() noexcept
 PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update)
 : RenderThread(tid, scene, samples_before_update)
 {
+	std::shared_ptr<RandRng> rng = std::make_shared<RandRng>(tid * (UINT_MAX / NTHREAD));
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < MAX_BOUNCES_PER_PATH + 2; j++) {
-			const int index = (tid*2 + i)*(MAX_BOUNCES_PER_PATH + 2) + j;
-			rngs[i].push_back(std::make_unique<RandRng>(index));
+			rngs[i].push_back(rng);
 		}
 	}
 	start();
@@ -71,7 +72,7 @@ PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update,
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < MAX_BOUNCES_PER_PATH + 2; j++) {
 			const int index = (tid*2 + i)*(MAX_BOUNCES_PER_PATH + 2) + j;
-			rngs[i].push_back(std::make_unique<HaltonRng>(primes[index]));
+			rngs[i].push_back(std::make_shared<HaltonRng>(primes[index]));
 		}
 	}
 	start();
@@ -104,9 +105,7 @@ bool PathTracer::sample_new_path(int *last_path)
 		}
 
 		const Material &material = *path.faces[i+1]->material;
-		if (material.is_light) {
-			hit_light = true;
-		}
+		hit_light = hit_light || material.is_light;
 
 		// set path normals[i] to be on same side of rays[i]
 		const Vec &face_normal = path.faces[i+1]->n;
@@ -144,7 +143,8 @@ void PathTracer::compute_I(const int last_path)
 
 void PathTracer::render()
 {
-	for (long samples = 0; ; samples++) {
+	unsigned long max_samples = AVG_SAMPLE_PER_PIX * camera.nx * camera.ny / NTHREAD;
+	for (unsigned long samples = 0; samples < max_samples; samples++) {
 		int last_path;
 		if (!sample_new_path(&last_path)) {
 			continue;
@@ -157,8 +157,7 @@ void PathTracer::render()
 			film_buffer(i, j, k) += path.I[k];
 		}
 
-		if (samples % samples_before_update == 0) {
-			samples = 0;
+		if (!BENCHMARKING && samples % samples_before_update == 0) {
 			update_pixel_data();
 		}
 	}
