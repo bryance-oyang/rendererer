@@ -21,9 +21,9 @@ public:
 	float film_y;
 
 	Ray rays[MAX_BOUNCES_PER_PATH + 2];
-	const Face *faces[MAX_BOUNCES_PER_PATH + 1];
-	Vec normals[MAX_BOUNCES_PER_PATH + 1];
-	float prob_dens[MAX_BOUNCES_PER_PATH + 1];
+	const Face *faces[MAX_BOUNCES_PER_PATH + 2];
+	Vec normals[MAX_BOUNCES_PER_PATH + 2];
+	float prob_dens[MAX_BOUNCES_PER_PATH + 2];
 };
 
 class RenderThread {
@@ -69,8 +69,9 @@ public:
 class PathTracer : public RenderThread {
 public:
 	Path path;
-	HaltonRng rngs[MAX_BOUNCES_PER_PATH + 1][2];
+	std::vector<std::unique_ptr<Rng>> rngs[2];
 
+	PathTracer(int tid, Scene &scene, int samples_before_update);
 	PathTracer(int tid, Scene &scene, int samples_before_update, std::vector<unsigned int> &primes);
 
 	bool sample_new_path(int *last_path);

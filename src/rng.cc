@@ -8,6 +8,7 @@
 
 /**
  * @file
+ * @brief various random number generators
  */
 
 #include <cstdlib>
@@ -54,6 +55,7 @@ void HaltonRng::init(unsigned int base)
 
 /**
  * https://en.wikipedia.org/wiki/Halton_sequence
+ * https://en.wikipedia.org/wiki/Quasi-Monte_Carlo_method
  *
  * This rng generates floats between 0, 1 in the following manner: start at 1
  * and increment and express in base b, then reverse the digits and put the

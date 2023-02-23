@@ -20,7 +20,7 @@ int main()
 	Scene scene = build_test_scene2();
 
 	// for rng
-	auto primes = get_primes(NTHREAD * 2 * (MAX_BOUNCES_PER_PATH + 1));
+	auto primes = get_primes(NTHREAD * 2 * (MAX_BOUNCES_PER_PATH + 2));
 
 	// for websocket_ctube broadcasting image to browser for realtime display
 	ImgGenThread img_gen{scene.camera, 9743, 3, 0, 1};
@@ -28,6 +28,7 @@ int main()
 	// start threads
 	for (int tid = 0; tid < NTHREAD; tid++) {
 		render_threads.emplace_back(std::make_unique<PathTracer>(tid, scene, 1000, primes));
+		//render_threads.emplace_back(std::make_unique<PathTracer>(tid, scene, 1000));
 		//render_threads.emplace_back(std::make_unique<DebugRender>(tid, scene, 1));
 	}
 

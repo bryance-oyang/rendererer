@@ -39,7 +39,7 @@ class EmitterMaterial : public Material {
 public:
 	float emission[NFREQ];
 
-	EmitterMaterial(float *emission);
+	EmitterMaterial(const float *emission);
 
 	float sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &normal,
 		Rng &rng_theta, Rng &rng_phi) const;
@@ -50,7 +50,7 @@ class DiffuseMaterial : public Material {
 public:
 	float color[NFREQ];
 
-	DiffuseMaterial(float *color);
+	DiffuseMaterial(const float *color);
 
 	float sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &normal,
 		Rng &rng_theta, Rng &rng_phi) const;

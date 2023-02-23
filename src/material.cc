@@ -77,7 +77,7 @@ static inline float sample_ray_cosine(Ray &ray_out, const Ray &ray_in,
 	return z * INV_PI_F / (1 - GEOMETRY_EPSILON*GEOMETRY_EPSILON);
 }
 
-EmitterMaterial::EmitterMaterial(float *emission)
+EmitterMaterial::EmitterMaterial(const float *emission)
 {
 	is_light = true;
 	for (int i = 0; i < NFREQ; i++) {
@@ -100,7 +100,7 @@ void EmitterMaterial::transfer(float *I, Ray &ray_out, const Ray &ray_in) const
 	}
 }
 
-DiffuseMaterial::DiffuseMaterial(float *color)
+DiffuseMaterial::DiffuseMaterial(const float *color)
 {
 	for (int i = 0; i < NFREQ; i++) {
 		this->color[i] = color[i];

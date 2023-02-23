@@ -50,16 +50,30 @@ void RenderThread::update_pixel_data() noexcept
 	camera.update_pixel_data(film_buffer);
 }
 
+/** constructor for randr rngs */
+PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update)
+: RenderThread(tid, scene, samples_before_update)
+{
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < MAX_BOUNCES_PER_PATH + 2; j++) {
+			const int index = (tid*2 + i)*(MAX_BOUNCES_PER_PATH + 2) + j;
+			rngs[i].push_back(std::make_unique<RandRng>(index));
+		}
+	}
+	start();
+}
+
+/** constructor for halton rngs (quasi Monte Carlo) */
 PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update,
 	std::vector<unsigned int> &primes)
 : RenderThread(tid, scene, samples_before_update)
 {
-	for (int i = 0; i < MAX_BOUNCES_PER_PATH + 1; i++) {
-		for (int j = 0; j < 2; j++) {
-			rngs[i][j].init(primes[(tid*(MAX_BOUNCES_PER_PATH + 1) + i)*2 + j]);
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < MAX_BOUNCES_PER_PATH + 2; j++) {
+			const int index = (tid*2 + i)*(MAX_BOUNCES_PER_PATH + 2) + j;
+			rngs[i].push_back(std::make_unique<HaltonRng>(primes[index]));
 		}
 	}
-
 	start();
 }
 
@@ -79,34 +93,34 @@ bool PathTracer::sample_new_path(int *last_path)
 	const Octree &octree_root = scene.octree_root;
 
 	// first ray from camera
-	path.film_x = rngs[0][0].next() * camera.film_width - camera.film_width / 2;
-	path.film_y = rngs[0][1].next() * camera.film_height - camera.film_height / 2;
+	path.film_x = rngs[0][0]->next() * camera.film_width - camera.film_width / 2;
+	path.film_y = rngs[1][0]->next() * camera.film_height - camera.film_height / 2;
 	camera.get_init_ray(path.rays[0], path.film_x, path.film_y);
 
 	for (i = 0; i < MAX_BOUNCES_PER_PATH + 1; i++) {
 		if (!octree_root.first_ray_face_intersect(&path.rays[i+1].orig,
-			&path.faces[i], path.rays[i])) {
+			&path.faces[i+1], path.rays[i])) {
 			return hit_light;
 		}
 
-		const Material &material = *path.faces[i]->material;
+		const Material &material = *path.faces[i+1]->material;
 		if (material.is_light) {
 			hit_light = true;
 		}
 
 		// set path normals[i] to be on same side of rays[i]
-		const Vec &face_normal = path.faces[i]->n;
+		const Vec &face_normal = path.faces[i+1]->n;
 		const float cos_in = face_normal * path.rays[i].dir;
 		if (cos_in < 0) {
-			path.normals[i] = face_normal;
+			path.normals[i+1] = face_normal;
 			path.rays[i].cosines[1] = -cos_in;
 		} else {
-			path.normals[i] = -1 * face_normal;
+			path.normals[i+1] = -1 * face_normal;
 			path.rays[i].cosines[i] = cos_in;
 		}
 
-		path.prob_dens[i] = material.sample_ray(path.rays[i+1], path.rays[i],
-			path.normals[i], rngs[i][0], rngs[i][1]);
+		path.prob_dens[i+1] = material.sample_ray(path.rays[i+1], path.rays[i],
+			path.normals[i+1], *rngs[0][i+1], *rngs[1][i+1]);
 	}
 
 	return hit_light;
@@ -120,10 +134,10 @@ void PathTracer::compute_I(const int last_path)
 
 	for (int i = last_path - 1; i >= 0; i--) {
 		for (int k = 0; k < NFREQ; k++) {
-			path.I[k] /= path.prob_dens[i];
+			path.I[k] /= path.prob_dens[i+1];
 		}
 
-		const Material &material = *path.faces[i]->material;
+		const Material &material = *path.faces[i+1]->material;
 		material.transfer(path.I, path.rays[i+1], path.rays[i]);
 	}
 }

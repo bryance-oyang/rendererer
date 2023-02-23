@@ -219,7 +219,7 @@ Scene build_test_scene()
 
 	Box bounding_box = all_faces_bounding_box(all_faces);
 
-	Camera camera{35, 0.1, Vec{0,-1,0}, Vec{0,1,0}, IMAGE_WIDTH, IMAGE_HEIGHT};
+	Camera camera{35, 35, Vec{0,-10,0}, Vec{0,1,0}, IMAGE_WIDTH, IMAGE_HEIGHT};
 
 	return Scene{bounding_box, all_faces, all_materials, camera};
 }

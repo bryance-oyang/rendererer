@@ -18,6 +18,7 @@ public:
 	virtual float next() {return 0;}
 };
 
+/** for quasi Monte Carlo */
 class HaltonRng : public Rng {
 public:
 	unsigned int numerator;
@@ -31,6 +32,7 @@ public:
 	float next();
 };
 
+/** use rand_r() */
 class RandRng : public Rng {
 public:
 	unsigned int seed;
