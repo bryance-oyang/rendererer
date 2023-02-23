@@ -119,3 +119,137 @@ void DiffuseMaterial::transfer(float *I, Ray &ray_out, const Ray &ray_in) const
 		I[k] *= color[k] * INV_2PI_F * ray_out.cosines[0];
 	}
 }
+
+/**
+ * Get cosine of the angle in glass given air side cosine
+ */
+static float glass_cosglass(float n, float cosair)
+{
+	float discr;
+	discr = 1.0f + (SQR(cosair) - 1.0f) / SQR(n);
+	return sqrtf(discr);
+}
+
+/**
+ * Get cosine of the angle in air given glass side cosine
+ */
+static float glass_cosair(float n, float cosglass)
+{
+	float discr;
+	discr = 1.0f + SQR(n) * (SQR(cosglass) - 1.0f);
+	if (discr <= 0) {
+		/* total internal reflection */
+		return 0;
+	}
+	return sqrtf(discr);
+}
+
+/**
+ * https://en.wikipedia.org/wiki/Fresnel_equations
+ *
+ * Symmetric wrt cosair <--> cosglass and n <--> 1/n
+ */
+static float glass_reflection(float n, float cosair, float cosglass)
+{
+	float R1, R2;
+
+	R1 = (cosair - n*cosglass) / (cosair + n*cosglass);
+	R1 = SQR(R1);
+
+	R2 = (cosglass - n*cosair) / (cosglass + n*cosair);
+	R2 = SQR(R2);
+
+	/* average both polarizations */
+	return 0.5f * (R1 + R2);
+}
+
+GlassMaterial::GlassMaterial(const float ior) : ior{ior} {}
+
+float GlassMaterial::sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &normal,
+	Rng &rng_theta, Rng &rng_phi) const
+{
+	(void)rng_phi;
+
+	float R;
+	float cosair, cosglass;
+	float cosrefl, costrans;
+
+	if (ray_in.n != SPACE_INDEX_REFRACT) {
+		/* glass side */
+		cosglass = ray_in.cosines[1];
+		cosair = glass_cosair(ior, cosglass);
+		cosrefl = cosglass;
+		costrans = cosair;
+	} else {
+		/* air side */
+		cosair = ray_in.cosines[1];
+		cosglass = glass_cosglass(ior, cosair);
+		cosrefl = cosair;
+		costrans = cosglass;
+	}
+
+	R = glass_reflection(ior, cosair, cosglass);
+
+	if (rng_theta.next() < R) {
+		/* sample reflection */
+		ray_out.n = ray_in.n;
+		ray_out.cosines[0] = cosrefl;
+		ray_out.dir = 2*cosrefl*normal + ray_in.dir;
+
+		return R;
+	} else {
+		/* sample transmission */
+		ray_out.n = (ray_in.n == SPACE_INDEX_REFRACT)? ior : SPACE_INDEX_REFRACT;
+		ray_out.cosines[0] = costrans;
+
+		if (ray_out.n == ior) {
+			/* out is glass: -cos_out nhat + 1/n (vin + cos_in nhat) */
+			ray_out.dir = -ray_out.cosines[0] * normal
+				+ 1.0f/ior * (ray_in.dir + ray_in.cosines[1] * normal);
+		} else {
+			/* out is air: -cos_out nhat + n (vin + cos_in nhat) */
+			ray_out.dir = -ray_out.cosines[0] * normal
+				+ ior * (ray_in.dir + ray_in.cosines[1] * normal);
+		}
+
+		return 1.0f - R;
+	}
+}
+
+void GlassMaterial::transfer(float *I, Ray &ray_out, const Ray &ray_in) const
+{
+	float R;
+	float cosair, cosglass;
+
+	if (ray_out.n != SPACE_INDEX_REFRACT) {
+		/* physically incident light on glass side */
+		cosglass = ray_out.cosines[0];
+		cosair = glass_cosair(ior, cosglass);
+	} else {
+		/* physically incident light on air side */
+		cosair = ray_out.cosines[0];
+		cosglass = glass_cosglass(ior, cosair);
+	}
+
+	R = glass_reflection(ior, cosair, cosglass);
+
+	if (ray_in.n == ray_out.n) {
+		/* reflection */
+		for (int k = 0; k < NFREQ; k++) {
+			I[k] *= R;
+		}
+	} else {
+		/* transmission */
+		if (ray_in.n == ior) {
+			/* physically passing into glass */
+			for (int k = 0; k < NFREQ; k++) {
+				I[k] *= (1.0f - R) * SQR(ior);
+			}
+		} else {
+			/* physically passing into air */
+			for (int k = 0; k < NFREQ; k++) {
+				I[k] *= (1.0f - R) / SQR(ior);
+			}
+		}
+	}
+}

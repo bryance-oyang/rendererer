@@ -12,6 +12,7 @@
 
 #define IMAGE_WIDTH (1 << 8)
 #define IMAGE_HEIGHT (1 << 8)
+#define SPACE_INDEX_REFRACT 1.0f
 
 #define MAX_BOUNCES_PER_PATH 8
 

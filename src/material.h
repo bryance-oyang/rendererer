@@ -58,4 +58,15 @@ public:
 	void transfer(float *I, Ray &ray_out, const Ray &ray_in) const;
 };
 
+class GlassMaterial : public Material {
+public:
+	float ior;
+
+	GlassMaterial(const float ior);
+
+	float sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &normal,
+		Rng &rng_theta, Rng &rng_phi) const;
+	void transfer(float *I, Ray &ray_out, const Ray &ray_in) const;
+};
+
 #endif /* MATERIAL_H */

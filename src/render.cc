@@ -62,6 +62,7 @@ bool PathTracer::sample_new_path(int *last_path)
 	path.film_x = rngs[0][0]->next() * camera.film_width - camera.film_width / 2;
 	path.film_y = rngs[1][0]->next() * camera.film_height - camera.film_height / 2;
 	camera.get_init_ray(path.rays[0], path.film_x, path.film_y);
+	path.rays[0].n = SPACE_INDEX_REFRACT;
 
 	for (i = 1; i < MAX_BOUNCES_PER_PATH + 2; i++) {
 		if (!octree_root.first_ray_face_intersect(&path.rays[i].orig,
