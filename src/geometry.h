@@ -60,7 +60,7 @@ public:
 	/** normalized direction */
 	Vec dir;
 	/** index of refraction of medium */
-	float n;
+	float ior;
 	/** cosine at orig and cosine at hit point (positive if ray on same side of normal) */
 	float cosines[2];
 
