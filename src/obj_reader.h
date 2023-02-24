@@ -38,6 +38,7 @@ public:
 };
 
 class ObjReader {
+public:
 	std::string fname_base;
 	std::ifstream mtl_file;
 	std::ifstream obj_file;
