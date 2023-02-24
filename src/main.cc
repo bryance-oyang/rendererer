@@ -12,6 +12,7 @@
  */
 
 #include "render.h"
+#include "obj_reader.h"
 #include "img_broadcast.h"
 
 Scene scene_from_files(const char *obj_fname, const char *mtl_fname, Camera &camera)
