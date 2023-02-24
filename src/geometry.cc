@@ -17,6 +17,7 @@
 extern float global_characteristic_length_scale;
 
 Vec::Vec() {}
+Vec::Vec(const float *x) : x{x[0], x[1], x[2]} {}
 Vec::Vec(float x, float y, float z) : x{x, y, z} {}
 
 Vec &Vec::operator+=(const Vec &v)

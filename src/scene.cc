@@ -190,7 +190,7 @@ void Scene::init(const Box &bounding_box,
 	std::vector<std::shared_ptr<Box>> bounding_boxes;
 	for (auto &face : all_faces) {
 		face->compute_normal();
-		bounding_boxes.emplace_back(std::make_shared<Box>(face_bounding_box(*face)));
+		bounding_boxes.push_back(std::make_shared<Box>(face_bounding_box(*face)));
 	}
 
 	// set char len

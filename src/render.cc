@@ -20,7 +20,7 @@ PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update)
 	std::shared_ptr<RandRng> rng = std::make_shared<RandRng>(tid * (UINT_MAX / NTHREAD));
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < MAX_BOUNCES_PER_PATH + 2; j++) {
-			rngs[i].emplace_back(rng);
+			rngs[i].push_back(rng);
 		}
 	}
 	start();
@@ -34,10 +34,10 @@ PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update,
 	std::shared_ptr<RandRng> rand_r_rng = std::make_shared<RandRng>(tid * (UINT_MAX / NTHREAD));
 	for (int i = 0; i < 2; i++) {
 		// first rng used for image is rand_r based to prevent weird image patterns
-		rngs[i].emplace_back(rand_r_rng);
+		rngs[i].push_back(rand_r_rng);
 		for (int j = 0; j < MAX_BOUNCES_PER_PATH + 1; j++) {
 			const int index = (tid*2 + i)*(MAX_BOUNCES_PER_PATH + 2) + j;
-			rngs[i].emplace_back(std::make_shared<HaltonRng>(primes[index]));
+			rngs[i].push_back(std::make_shared<HaltonRng>(primes[index]));
 		}
 	}
 	start();

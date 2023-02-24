@@ -33,7 +33,7 @@ int main()
 
 	// rendering threads
 	for (int tid = 0; tid < NTHREAD; tid++) {
-		render_threads.emplace_back(
+		render_threads.push_back(
 			std::make_unique<PathTracer>(tid, scene, SAMPLES_PER_BROADCAST, primes));
 	}
 	for (int tid = 0; tid < NTHREAD; tid++) {

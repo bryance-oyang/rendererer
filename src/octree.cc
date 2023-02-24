@@ -75,7 +75,7 @@ Octree::Octree(const Box &bounding_box, const std::vector<std::shared_ptr<Face>>
 	// base case: copy all faces into box
 	if (all_faces.size() <= max_faces_per_box || max_recursion_depth == 0) {
 		for (auto &f : all_faces) {
-			faces.emplace_back(*f);
+			faces.push_back(*f);
 		}
 		terminal = true;
 		return;
@@ -91,8 +91,8 @@ Octree::Octree(const Box &bounding_box, const std::vector<std::shared_ptr<Face>>
 	for (size_t i = 0; i < all_faces.size(); i++) {
 		for (int j = 0; j < 8; j++) {
 			if (box_touch_box(*faces_bounding_boxes[i], sub_boxes[j])) {
-				sub_all_faces[j].emplace_back(all_faces[i]);
-				sub_bounding_boxes[j].emplace_back(faces_bounding_boxes[i]);
+				sub_all_faces[j].push_back(all_faces[i]);
+				sub_bounding_boxes[j].push_back(faces_bounding_boxes[i]);
 			}
 		}
 	}

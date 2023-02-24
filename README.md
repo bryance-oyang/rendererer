@@ -1,2 +1,2 @@
 # rendererer
-Monte Carlo based ray tracing for 3D computer graphics fun.
+Ray tracing via physically-based Monte Carlo for 3D computer graphics fun.

@@ -21,6 +21,7 @@ public:
 	float x[3];
 
 	Vec();
+	Vec(const float *x);
 	Vec(float x, float y, float z);
 
 	Vec &operator+=(const Vec &v);
