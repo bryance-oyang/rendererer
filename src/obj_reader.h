@@ -41,12 +41,10 @@ public:
 	std::vector<std::unique_ptr<Face>> all_faces;
 	std::vector<std::unique_ptr<Material>> all_materials;
 
-	ObjReader(const char *fname_base);
 	ObjReader(const char *obj_fname, const char *mtl_fname);
 
 	void parse_mtl();
 	void create_all_materials();
-
 	void parse_obj();
 };
 

@@ -15,17 +15,6 @@
 #include "obj_reader.h"
 #include "material.h"
 
-ObjReader::ObjReader(const char *fname_base)
-{
-	std::string fname_base_str{fname_base};
-	mtl_file = std::ifstream{fname_base_str + std::string{".mtl"}};
-	obj_file = std::ifstream{fname_base_str + std::string{".obj"}};
-
-	parse_mtl();
-	create_all_materials();
-	parse_obj();
-}
-
 ObjReader::ObjReader(const char *obj_fname, const char *mtl_fname)
 {
 	mtl_file = std::ifstream{mtl_fname};

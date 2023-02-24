@@ -164,7 +164,7 @@ Scene::Scene(std::vector<std::unique_ptr<Face>> &&all_faces,
 	const Camera &camera)
 : all_faces{std::move(all_faces)}, all_materials{std::move(all_materials)}, camera{camera}
 {
-	bounding_box = all_faces_bounding_box(all_faces);
+	bounding_box = all_faces_bounding_box(this->all_faces);
 }
 
 Scene::Scene(const Box &bounding_box,
