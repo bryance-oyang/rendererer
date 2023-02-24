@@ -174,7 +174,7 @@ float GlassMaterial::sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &norm
 	float cosair, cosglass;
 	float cosrefl, costrans;
 
-	if (ray_in.ior != SPACE_INDEX_REFRACT) {
+	if (ray_in.ior == ior) {
 		/* glass side */
 		cosglass = ray_in.cosines[1];
 		cosair = glass_cosair(ior, cosglass);
@@ -199,7 +199,7 @@ float GlassMaterial::sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &norm
 		return R;
 	} else {
 		/* sample transmission */
-		ray_out.ior = (ray_in.ior == SPACE_INDEX_REFRACT)? ior : SPACE_INDEX_REFRACT;
+		ray_out.ior = (ray_in.ior == ior)? SPACE_INDEX_REFRACT : ior;
 		ray_out.cosines[0] = costrans;
 
 		if (ray_out.ior == ior) {
@@ -221,7 +221,7 @@ void GlassMaterial::transfer(float *I, Ray &ray_out, const Ray &ray_in) const
 	float R;
 	float cosair, cosglass;
 
-	if (ray_out.ior != SPACE_INDEX_REFRACT) {
+	if (ray_out.ior == ior) {
 		/* physically incident light on glass side */
 		cosglass = ray_out.cosines[0];
 		cosair = glass_cosair(ior, cosglass);
