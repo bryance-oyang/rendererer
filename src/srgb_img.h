@@ -23,8 +23,8 @@ public:
 
 	void alloc_same_size(const MultiArray<float> &raw)
 	{
-		if (img_data.n[0] != raw.n[0] || img_data.n[1] != raw.n[1] || img_data.n[2] != raw.n[2]) {
-			img_data = MultiArray<uint8_t>{raw.n[0], raw.n[1], raw.n[2]};
+		if (img_data.n[0] != raw.n[0] || img_data.n[1] != raw.n[1]) {
+			img_data = MultiArray<uint8_t>{raw.n[0], raw.n[1], 3};
 		}
 	}
 };
