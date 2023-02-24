@@ -104,9 +104,20 @@ public:
 		return fminf(high, fmaxf(low, x));
 	}
 
-	/** maps RGB min-max to 0-255 */
-	void direct_conversion(MultiArray<float> &raw)
+	float gamma(float in)
 	{
+		return powf(in, 1.0f/2.2f);
+	}
+
+	/** maps RGB min-max to 0-255 */
+	void direct_conversion(MultiArray<float> &raw_original)
+	{
+		// make copy to apply gamma correction
+		MultiArray<float> raw = raw_original;
+		for (int i = 0; i < raw.len; i++) {
+			raw(i) = gamma(raw(i));
+		}
+
 		float mean[3];
 		float stddev[3];
 		get_mean(mean, raw);

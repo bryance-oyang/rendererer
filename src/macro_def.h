@@ -8,7 +8,7 @@
 #include <cmath>
 
 #define BENCHMARKING 0
-#define SAMPLES_PER_BROADCAST (1 << 7)
+#define SAMPLES_PER_BROADCAST (1 << 16)
 
 #define IMAGE_WIDTH (1 << 8)
 #define IMAGE_HEIGHT (1 << 8)
