@@ -25,6 +25,7 @@ public:
 	Camera &camera;
 	std::atomic<int> should_terminate;
 
+	/** pass an std::make_shared<>() of the type of image converter desired */
 	ImgBroadcastThread(const std::shared_ptr<SRGBImgConverter> &img_converter, Camera &camera,
 		int port, int max_nclient, int timeout_ms, double max_broadcast_fps)
 	: img_converter{img_converter}, camera{camera}

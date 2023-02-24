@@ -11,7 +11,6 @@
  * @brief rendererer
  */
 
-#include "obj_reader.h"
 #include "render.h"
 #include "img_broadcast.h"
 

@@ -9,8 +9,6 @@
 #ifndef OBJ_READER_H
 #define OBJ_READER_H
 
-#include <memory>
-#include <vector>
 #include <unordered_map>
 #include <fstream>
 #include <string>
