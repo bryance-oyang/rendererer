@@ -36,8 +36,19 @@ int main(int argc, const char **argv)
 	}
 	scene.init();
 
-#if BENCHMARKING == 0
+	// time rendering for stats
+	struct timespec start_time_spec, end_time_spec;
+	clock_gettime(CLOCK_MONOTONIC_RAW, &start_time_spec);
+
+	// start rendering threads
+	std::vector<std::unique_ptr<RenderThread>> render_threads;
+	for (int tid = 0; tid < NTHREAD; tid++) {
+		render_threads.push_back(
+			std::make_unique<PathTracer>(tid, scene, SAMPLES_PER_BROADCAST, primes));
+	}
+
 	// for websocket_ctube broadcasting image to browser for realtime display
+#if BENCHMARKING == 0
 	int port = 9743;
 	int max_client = 3;
 	int timeout_ms = 0;
@@ -46,28 +57,20 @@ int main(int argc, const char **argv)
 		port, max_client, timeout_ms, max_broadcast_fps};
 #endif
 
-	// time rendering for stats
-	struct timespec start_time_spec, end_time_spec;
-	clock_gettime(CLOCK_MONOTONIC_RAW, &start_time_spec);
-
-	// rendering threads
-	std::vector<std::unique_ptr<RenderThread>> render_threads;
-	for (int tid = 0; tid < NTHREAD; tid++) {
-		render_threads.push_back(
-			std::make_unique<PathTracer>(tid, scene, SAMPLES_PER_BROADCAST, primes));
-	}
+	// finish rendering threads
 	for (int tid = 0; tid < NTHREAD; tid++) {
 		render_threads[tid]->join();
 	}
 
+	// output statistics
 	clock_gettime(CLOCK_MONOTONIC_RAW, &end_time_spec);
 	float duration = (end_time_spec.tv_sec - start_time_spec.tv_sec)
 		+ (float)(end_time_spec.tv_nsec - start_time_spec.tv_nsec) / 1e9;
 	unsigned long npaths = AVG_SAMPLE_PER_PIX * IMAGE_WIDTH * IMAGE_HEIGHT;
 	printf("Rendered %lu paths in %.3g sec (%.2f paths/sec)\n", npaths, duration, (float)npaths / duration);
 
-#if BENCHMARKING == 0
 	// send update before exiting
+#if BENCHMARKING == 0
 	img_bcast_thread.broadcast();
 #endif
 
