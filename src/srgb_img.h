@@ -27,6 +27,8 @@ static int float_compare(const void *a, const void *b)
 class SRGBImgConverter {
 public:
 	MultiArray<uint8_t> img_data;
+
+	virtual ~SRGBImgConverter() {};
 	virtual void make_image(const MultiArray<float> &raw) {(void)raw;}
 
 	void alloc_same_size(const MultiArray<float> &raw)

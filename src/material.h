@@ -17,6 +17,8 @@ class Material {
 public:
 	bool is_light = false;
 
+	virtual ~Material() {};
+
 	/** returns the prob dens for sampling */
 	virtual float sample_ray(Ray &ray_out, const Ray &ray_in,
 		const Vec &normal, Rng &rng_theta, Rng &rng_phi) const

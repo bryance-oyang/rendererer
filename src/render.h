@@ -47,7 +47,7 @@ public:
 		film_buffer = MultiArray<float>{pixel_data.n[0], pixel_data.n[1], pixel_data.n[2]};
 		film_buffer.fill(0);
 	}
-	~RenderThread()
+	virtual ~RenderThread()
 	{
 		join();
 	}

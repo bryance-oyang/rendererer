@@ -80,22 +80,22 @@ void ObjReader::create_all_materials()
 {
 	// default material
 	float default_color[3] = {0.8,0.8,0.8};
-	all_materials.push_back(std::make_shared<DiffuseMaterial>(default_color));
+	all_materials.push_back(std::make_unique<DiffuseMaterial>(default_color));
 
 	// from obj file
 	for (auto &mtl_mat : mtl_materials) {
 		if (mtl_mat.Ke[0] > 0 || mtl_mat.Ke[1] > 0 || mtl_mat.Ke[2] > 0) {
 			// emitter
-			all_materials.push_back(std::make_shared<EmitterMaterial>(mtl_mat.Ke));
+			all_materials.push_back(std::make_unique<EmitterMaterial>(mtl_mat.Ke));
 		} else if (mtl_mat.d < 1) {
 			// glass
-			all_materials.push_back(std::make_shared<GlassMaterial>(mtl_mat.Ni));
+			all_materials.push_back(std::make_unique<GlassMaterial>(mtl_mat.Ni));
 		} else {
 			// diffuse
-			all_materials.push_back(std::make_shared<DiffuseMaterial>(mtl_mat.Kd));
+			all_materials.push_back(std::make_unique<DiffuseMaterial>(mtl_mat.Kd));
 		}
 
-		mat_table[mtl_mat.name] = all_materials.back();
+		mat_table[mtl_mat.name] = all_materials.back().get();
 	}
 }
 
@@ -109,7 +109,7 @@ void ObjReader::parse_obj()
 	float xyz[3];
 
 	// default material to begin
-	std::shared_ptr<Material> cur_material = all_materials[0];
+	Material *cur_material = all_materials[0].get();
 
 	std::string line;
 	while (std::getline(obj_file, line)) {
@@ -155,9 +155,9 @@ void ObjReader::parse_obj()
 				vind[i] = std::stoi(num_str) - 1;
 			}
 
-			std::shared_ptr<Face> face = std::make_shared<Face>(vertices[vind[0]], vertices[vind[1]], vertices[vind[2]]);
+			std::unique_ptr<Face> face = std::make_unique<Face>(vertices[vind[0]], vertices[vind[1]], vertices[vind[2]]);
 			face->material = cur_material;
-			all_faces.push_back(face);
+			all_faces.push_back(std::move(face));
 		}
 	}
 }

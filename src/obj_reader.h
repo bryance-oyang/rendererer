@@ -36,10 +36,10 @@ public:
 	std::vector<MTLMaterial> mtl_materials;
 	std::vector<Vec> vertices;
 
-	std::unordered_map<std::string, std::shared_ptr<Material>> mat_table;
+	std::unordered_map<std::string, Material*> mat_table;
 
-	std::vector<std::shared_ptr<Face>> all_faces;
-	std::vector<std::shared_ptr<Material>> all_materials;
+	std::vector<std::unique_ptr<Face>> all_faces;
+	std::vector<std::unique_ptr<Material>> all_materials;
 
 	ObjReader(const char *fname_base);
 	ObjReader(const char *obj_fname, const char *mtl_fname);

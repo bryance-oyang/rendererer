@@ -46,7 +46,7 @@ public:
 	/** normal */
 	Vec n;
 	/** material for face */
-	std::shared_ptr<Material> material;
+	Material *material;
 
 	Face() {};
 	Face(const Vec &v0, const Vec &v1, const Vec &v2);

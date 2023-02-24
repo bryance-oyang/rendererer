@@ -24,8 +24,8 @@ public:
 	bool terminal;
 
 	Octree() {};
-	Octree(const Box &bounding_box, const std::vector<std::shared_ptr<Face>> &all_faces,
-		const std::vector<std::shared_ptr<Box>> &bounding_boxes,
+	Octree(const Box &bounding_box, const std::vector<Face*> &all_faces,
+		const std::vector<std::shared_ptr<Box>> &faces_bounding_boxes,
 		size_t max_faces_per_box, size_t max_recursion_depth);
 
 	bool _base_intersect(Vec *point, const Face **face, const Ray &r) const;

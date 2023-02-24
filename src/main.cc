@@ -18,7 +18,7 @@
 Scene scene_from_files(const char *obj_fname, const char *mtl_fname, Camera &camera)
 {
 	ObjReader obj_reader{obj_fname, mtl_fname};
-	return Scene{obj_reader.all_faces, obj_reader.all_materials, camera};
+	return Scene{std::move(obj_reader.all_faces), std::move(obj_reader.all_materials), camera};
 }
 
 int main(int argc, const char **argv)
@@ -41,10 +41,10 @@ int main(int argc, const char **argv)
 	clock_gettime(CLOCK_MONOTONIC_RAW, &start_time_spec);
 
 	// start rendering threads
-	std::vector<std::shared_ptr<RenderThread>> render_threads;
+	std::vector<std::unique_ptr<RenderThread>> render_threads;
 	for (int tid = 0; tid < NTHREAD; tid++) {
 		render_threads.push_back(
-			std::make_shared<PathTracer>(tid, scene, SAMPLES_PER_BROADCAST, primes));
+			std::make_unique<PathTracer>(tid, scene, SAMPLES_PER_BROADCAST, primes));
 	}
 
 	// for websocket_ctube broadcasting image to browser for realtime display
@@ -54,7 +54,7 @@ int main(int argc, const char **argv)
 	int timeout_ms = 0;
 	float max_broadcast_fps = 10;
 	ImgBroadcastThread img_bcast_thread{
-		std::make_shared<SRGBImgDirectConverter>(), scene.camera,
+		std::make_unique<SRGBImgDirectConverter>(), scene.camera,
 		port, max_client, timeout_ms, max_broadcast_fps
 	};
 #endif

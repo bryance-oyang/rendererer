@@ -21,14 +21,14 @@ class ImgBroadcastThread {
 public:
 	std::unique_ptr<std::thread> thread;
 	ws_ctube *ctube = NULL;
-	std::shared_ptr<SRGBImgConverter> img_converter;
+	std::unique_ptr<SRGBImgConverter> img_converter;
 	Camera &camera;
 	std::atomic<int> should_terminate;
 
-	/** pass an std::make_shared<>() of the type of image converter desired */
-	ImgBroadcastThread(const std::shared_ptr<SRGBImgConverter> &img_converter, Camera &camera,
+	/** pass an std::make_unique<>() of the type of image converter desired */
+	ImgBroadcastThread(std::unique_ptr<SRGBImgConverter> &&img_converter, Camera &camera,
 		int port, int max_nclient, int timeout_ms, double max_broadcast_fps)
-	: img_converter{img_converter}, camera{camera}
+	: img_converter{std::move(img_converter)}, camera{camera}
 	{
 		if (start_ctube(port, max_nclient, timeout_ms, max_broadcast_fps)) {
 			start_thread();

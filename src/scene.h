@@ -57,18 +57,18 @@ public:
 class Scene {
 public:
 	Box bounding_box;
-	std::vector<std::shared_ptr<Face>> all_faces;
-	std::vector<std::shared_ptr<Material>> all_materials;
+	std::vector<std::unique_ptr<Face>> all_faces;
+	std::vector<std::unique_ptr<Material>> all_materials;
 	Octree octree_root;
 	Camera camera;
 
 	Scene() {}
-	Scene(const std::vector<std::shared_ptr<Face>> &all_faces,
-		const std::vector<std::shared_ptr<Material>> &all_materials,
+	Scene(std::vector<std::unique_ptr<Face>> &&all_faces,
+		std::vector<std::unique_ptr<Material>> &&all_materials,
 		const Camera &camera);
 	Scene(const Box &bounding_box,
-		const std::vector<std::shared_ptr<Face>> &all_faces,
-		const std::vector<std::shared_ptr<Material>> &all_materials,
+		std::vector<std::unique_ptr<Face>> &&all_faces,
+		std::vector<std::unique_ptr<Material>> &&all_materials,
 		const Camera &camera);
 
 	void init();

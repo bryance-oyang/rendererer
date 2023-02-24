@@ -9,23 +9,23 @@
 
 #define BENCHMARKING 0
 #define SAMPLES_PER_BROADCAST (1 << 16)
-
-#define IMAGE_WIDTH (1 << 8)
-#define IMAGE_HEIGHT (1 << 8)
-
 #define MAX_BOUNCES_PER_PATH 8
 
 #ifndef DEBUG
 /* nondebug */
 
-#define NTHREAD 20
+#define NTHREAD 8
+#define IMAGE_WIDTH (1 << 8)
+#define IMAGE_HEIGHT (1 << 8)
 #define AVG_SAMPLE_PER_PIX (1 << 13)
 
 #else /* DEBUG */
 /* debug */
 
-#define NTHREAD 1
-#define AVG_SAMPLE_PER_PIX 10
+#define NTHREAD 8
+#define IMAGE_WIDTH (1 << 2)
+#define IMAGE_HEIGHT (1 << 2)
+#define AVG_SAMPLE_PER_PIX (1 << 2)
 
 #endif /* DEBUG */
 
