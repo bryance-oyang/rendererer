@@ -23,7 +23,6 @@ ObjReader::ObjReader(const char *fname_base) : fname_base{fname_base}
 	create_all_materials();
 
 	parse_obj();
-	create_all_faces();
 }
 
 void ObjReader::parse_mtl()
@@ -67,6 +66,11 @@ void ObjReader::parse_mtl()
 
 void ObjReader::create_all_materials()
 {
+	// default material
+	float default_color[3] = {0.8,0.8,0.8};
+	all_materials.push_back(std::make_shared<DiffuseMaterial>(default_color));
+
+	// from obj file
 	for (auto &mtl_mat : mtl_materials) {
 		if (mtl_mat.Ke[0] > 0 || mtl_mat.Ke[1] > 0 || mtl_mat.Ke[2] > 0) {
 			// emitter
@@ -91,17 +95,12 @@ void ObjReader::parse_obj()
 	int vind[3];
 	float floats[3];
 
+	// default material to begin
+	std::shared_ptr<Material> cur_material = all_materials[0];
+
 	std::string line;
 	while (std::getline(obj_file, line)) {
 		std::istringstream sline{line};
-
-		if (line.rfind("o", 0) == 0) {
-			sline >> ignore >> name;
-			obj_objects.emplace_back();
-			continue;
-		}
-
-		OBJObject &obj = obj_objects.back();
 
 		if (line.rfind("v", 0) == 0) {
 			// v float float float
@@ -109,11 +108,11 @@ void ObjReader::parse_obj()
 			for (int i = 0; i < 3; i++) {
 				sline >> floats[i];
 			}
-			obj.vertices.emplace_back(floats);
+			vertices.emplace_back(floats);
 		} else if (line.rfind("usemtl", 0) == 0) {
 			// usemtl name
 			sline >> ignore >> name;
-			obj.mat_name = name;
+			cur_material = mat_table[name];
 		} else if (line.rfind("f", 0) == 0) {
 			// f # # #
 			// f #/# #/# #/#
@@ -133,20 +132,12 @@ void ObjReader::parse_obj()
 					num_str += c;
 				}
 
-				// number is the vertex index
-				vind[i] = std::stoi(num_str);
+				// number is the vertex index (starts from 1 in .obj)
+				vind[i] = std::stoi(num_str) - 1;
 			}
 
-			obj.faces.push_back(std::make_shared<Face>(obj.vertices[vind[0]], obj.vertices[vind[1]], obj.vertices[vind[2]]));
-		}
-	}
-}
-
-void ObjReader::create_all_faces()
-{
-	for (auto &object : obj_objects) {
-		for (auto &face : object.faces) {
-			face->material = mat_table[object.mat_name];
+			std::shared_ptr<Face> face = std::make_shared<Face>(vertices[vind[0]], vertices[vind[1]], vertices[vind[2]]);
+			face->material = cur_material;
 			all_faces.push_back(face);
 		}
 	}

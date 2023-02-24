@@ -29,14 +29,6 @@ public:
 	MTLMaterial(std::string name) : name{name} {}
 };
 
-/** helper class for representing obj format objects */
-class OBJObject {
-public:
-	std::string mat_name;
-	std::vector<Vec> vertices;
-	std::vector<std::shared_ptr<Face>> faces;
-};
-
 class ObjReader {
 public:
 	std::string fname_base;
@@ -44,7 +36,7 @@ public:
 	std::ifstream obj_file;
 
 	std::vector<MTLMaterial> mtl_materials;
-	std::vector<OBJObject> obj_objects;
+	std::vector<Vec> vertices;
 
 	std::unordered_map<std::string, std::shared_ptr<Material>> mat_table;
 
@@ -57,7 +49,6 @@ public:
 	void create_all_materials();
 
 	void parse_obj();
-	void create_all_faces();
 };
 
 #endif /* OBJ_READER_H */

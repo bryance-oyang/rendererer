@@ -8,7 +8,7 @@
 #include <cmath>
 
 #define BENCHMARKING 0
-#define SAMPLES_PER_BROADCAST (1 << 16)
+#define SAMPLES_PER_BROADCAST (1 << 7)
 
 #define IMAGE_WIDTH (1 << 8)
 #define IMAGE_HEIGHT (1 << 8)
@@ -19,7 +19,7 @@
 #ifndef DEBUG
 /* nondebug */
 
-#define NTHREAD 8
+#define NTHREAD 20
 #define AVG_SAMPLE_PER_PIX (1 << 13)
 
 #else /* DEBUG */
