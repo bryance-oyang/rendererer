@@ -34,7 +34,7 @@ void ObjReader::parse_mtl()
 	while (std::getline(mtl_file, line)) {
 		std::istringstream sline{line};
 
-		if (line.rfind("newmtl", 0) == 0) {
+		if (line.rfind("newmtl ", 0) == 0) {
 			sline >> ignore >> name;
 			mtl_materials.emplace_back(name);
 			continue;
@@ -42,22 +42,22 @@ void ObjReader::parse_mtl()
 
 		MTLMaterial &mat = mtl_materials.back();
 
-		if (line.rfind("Kd", 0) == 0) {
+		if (line.rfind("Kd ", 0) == 0) {
 			// Kd float float float
 			sline >> ignore;
 			for (int i = 0; i < 3; i++) {
 				sline >> mat.Kd[i];
 			}
-		} else if (line.rfind("Ke", 0) == 0) {
+		} else if (line.rfind("Ke ", 0) == 0) {
 			// Ke float float float
 			sline >> ignore;
 			for (int i = 0; i < 3; i++) {
 				sline >> mat.Ke[i];
 			}
-		} else if (line.rfind("Ni", 0) == 0) {
+		} else if (line.rfind("Ni ", 0) == 0) {
 			// Ni float
 			sline >> ignore >> mat.Ni;
-		} else if (line.rfind("d", 0) == 0) {
+		} else if (line.rfind("d ", 0) == 0) {
 			// d float
 			sline >> ignore >> mat.d;
 		}
@@ -94,6 +94,7 @@ void ObjReader::parse_obj()
 	std::string tmp;
 	int vind[3];
 	float floats[3];
+	float xyz[3];
 
 	// default material to begin
 	std::shared_ptr<Material> cur_material = all_materials[0];
@@ -102,18 +103,24 @@ void ObjReader::parse_obj()
 	while (std::getline(obj_file, line)) {
 		std::istringstream sline{line};
 
-		if (line.rfind("v", 0) == 0) {
+		if (line.rfind("v ", 0) == 0) {
 			// v float float float
 			sline >> ignore;
 			for (int i = 0; i < 3; i++) {
 				sline >> floats[i];
 			}
-			vertices.emplace_back(floats);
-		} else if (line.rfind("usemtl", 0) == 0) {
+
+			// obj format is weird
+			xyz[0] = floats[0];
+			xyz[2] = floats[1];
+			xyz[1] = -floats[2];
+
+			vertices.emplace_back(xyz);
+		} else if (line.rfind("usemtl ", 0) == 0) {
 			// usemtl name
 			sline >> ignore >> name;
 			cur_material = mat_table[name];
-		} else if (line.rfind("f", 0) == 0) {
+		} else if (line.rfind("f ", 0) == 0) {
 			// f # # #
 			// f #/# #/# #/#
 			// f #/#/# #/#/# #/#/#
