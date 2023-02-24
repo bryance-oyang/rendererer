@@ -24,9 +24,6 @@
 
 #include "material.h"
 
-/** this must be 1, or else material glass computation needs changing */
-#define SPACE_INDEX_REFRACT 1.0f
-
 /**
  * Sample ray uniformly in hemisphere
  */

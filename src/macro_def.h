@@ -60,4 +60,7 @@
 
 #define ARRAY_LEN(a) (sizeof(a) / sizeof((a)[0]))
 
+/** this must be 1, or else material glass computation needs changing */
+#define SPACE_INDEX_REFRACT 1.0f
+
 #endif /* MACRO_DEF_H */
