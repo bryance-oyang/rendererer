@@ -13,7 +13,7 @@
 
 #include "obj_reader.h"
 #include "render.h"
-#include "img_gen.h"
+#include "img_broadcast.h"
 
 Scene scene_from_files(const char *obj_fname, const char *mtl_fname, Camera &camera)
 {
@@ -34,10 +34,16 @@ int main(int argc, const char **argv)
 		Camera camera{35, 35, Vec{0,-7,-0.5}, Vec{0,1,0}, IMAGE_WIDTH, IMAGE_HEIGHT};
 		scene = scene_from_files(argv[1], argv[2], camera);
 	}
+	scene.init();
 
 #if BENCHMARKING == 0
 	// for websocket_ctube broadcasting image to browser for realtime display
-	ImgGenThread img_gen{scene.camera, 9743, 3, 0, 10};
+	int port = 9743;
+	int max_client = 3;
+	int timeout_ms = 0;
+	float max_broadcast_fps = 10;
+	ImgBroadcastThread img_bcast_thread{SRGBImgDirectConverter{}, scene.camera,
+		port, max_client, timeout_ms, max_broadcast_fps};
 #endif
 
 	// time rendering for stats
@@ -59,6 +65,11 @@ int main(int argc, const char **argv)
 		+ (float)(end_time_spec.tv_nsec - start_time_spec.tv_nsec) / 1e9;
 	unsigned long npaths = AVG_SAMPLE_PER_PIX * IMAGE_WIDTH * IMAGE_HEIGHT;
 	printf("Rendered %lu paths in %.3g sec (%.2f paths/sec)\n", npaths, duration, (float)npaths / duration);
+
+#if BENCHMARKING == 0
+	// send update before exiting
+	img_bcast_thread.broadcast();
+#endif
 
 	return 0;
 }

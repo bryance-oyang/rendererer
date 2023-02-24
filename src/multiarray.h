@@ -93,13 +93,11 @@ public:
 
 	MultiArray(const MultiArray &&other)
 	{
-		using std::swap;
 		swap(*this, other);
 	}
 
 	MultiArray &operator=(MultiArray other)
 	{
-		using std::swap;
 		swap(*this, other);
 		return *this;
 	}
@@ -121,21 +119,24 @@ public:
 	}
 
 	T &operator()(int i0)
-	{
-		return data[i0];
-	}
+	{ return data[i0]; }
+	T operator()(int i0) const
+	{ return data[i0]; }
+
 	T &operator()(int i0, int i1)
-	{
-		return data[i0*n[1] + i1];
-	}
+	{ return data[i0*n[1] + i1]; }
+	T operator()(int i0, int i1) const
+	{ return data[i0*n[1] + i1]; }
+
 	T &operator()(int i0, int i1, int i2)
-	{
-		return data[(i0*n[1] + i1)*n[2] + i2];
-	}
+	{ return data[(i0*n[1] + i1)*n[2] + i2]; }
+	T operator()(int i0, int i1, int i2) const
+	{ return data[(i0*n[1] + i1)*n[2] + i2]; }
+
 	T &operator()(int i0, int i1, int i2, int i3)
-	{
-		return data[((i0*n[1] + i1)*n[2] + i2)*n[3] + i3];
-	}
+	{ return data[((i0*n[1] + i1)*n[2] + i2)*n[3] + i3]; }
+	T operator()(int i0, int i1, int i2, int i3) const
+	{ return data[((i0*n[1] + i1)*n[2] + i2)*n[3] + i3]; }
 };
 
 #endif /* MULTIARRAY_H */

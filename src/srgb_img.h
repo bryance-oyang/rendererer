@@ -16,28 +16,26 @@
 #define N_STDDEV_CLIP 2
 
 /** creates an sRGB image 0-255 */
-class SRGBImg {
+class SRGBImgConverter {
 public:
-	MultiArray<uint8_t> pixels;
-
-	SRGBImg(MultiArray<float> &raw)
-	: pixels{raw.n[0], raw.n[1], 3} {}
+	MultiArray<uint8_t> img_data;
+	virtual void make_image(const MultiArray<float> &raw) {(void)raw;}
 };
 
-class SRGBImgDirect : public SRGBImg {
+/** interprets 3 values as rgb and directly maps after gamma correction and some clipping */
+class SRGBImgDirectConverter : public SRGBImgConverter {
 public:
-	SRGBImgDirect(MultiArray<float> &raw)
-	: SRGBImg(raw)
+	void make_image(const MultiArray<float> &raw)
 	{
 		if (NFREQ == 3) {
 			direct_conversion(raw);
 		} else {
-			fprintf(stderr, "SRGBImgDirect(): direct: NFREQ == %d != 3\n", NFREQ);
+			fprintf(stderr, "SRGBImgDirectConverter(): direct: NFREQ == %d != 3\n", NFREQ);
 			exit(EXIT_FAILURE);
 		}
 	}
 
-	void get_mean(float *mean, MultiArray<float> &raw)
+	void get_mean(float *mean, const MultiArray<float> &raw)
 	{
 		for (int k = 0; k < 3; k++) {
 			mean[k] = 0;
@@ -48,7 +46,7 @@ public:
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				for (int k = 0; k < 3; k++) {
-					mean[k] += raw(i, j, k);
+					mean[k] += img_data(i, j, k);
 				}
 			}
 		}
@@ -58,7 +56,7 @@ public:
 		}
 	}
 
-	void get_stddev(float *stddev, MultiArray<float> &raw, const float *mean)
+	void get_stddev(float *stddev, const MultiArray<float> &raw, const float *mean)
 	{
 		for (int k = 0; k < 3; k++) {
 			stddev[k] = 0;
@@ -80,7 +78,7 @@ public:
 		}
 	}
 
-	void get_minmax(float *min, float *max, MultiArray<float> &raw)
+	void get_minmax(float *min, float *max, const MultiArray<float> &raw)
 	{
 		for (int k = 0; k < 3; k++) {
 			min[k] = FLT_MAX;
@@ -110,7 +108,7 @@ public:
 	}
 
 	/** maps RGB min-max to 0-255 */
-	void direct_conversion(MultiArray<float> &raw_original)
+	void direct_conversion(const MultiArray<float> &raw_original)
 	{
 		// make copy to apply gamma correction
 		MultiArray<float> raw = raw_original;
@@ -146,7 +144,7 @@ public:
 			for (int j = 0; j < width; j++) {
 				for (int k = 0; k < 3; k++) {
 					float lin_interp = (255.001f * (raw(i, j, k) - min) / (max - min));
-					pixels(i, j, k) = (uint8_t)clip(lin_interp, 0, 255.001f);
+					img_data(i, j, k) = (uint8_t)clip(lin_interp, 0, 255.001f);
 				}
 			}
 		}

@@ -56,6 +56,7 @@ public:
 
 class Scene {
 public:
+	Box bounding_box;
 	std::vector<std::shared_ptr<Face>> all_faces;
 	std::vector<std::shared_ptr<Material>> all_materials;
 	Octree octree_root;
@@ -70,8 +71,7 @@ public:
 		const std::vector<std::shared_ptr<Material>> &all_materials,
 		const Camera &camera);
 
-	void init(const Box &bounding_box,
-		const std::vector<std::shared_ptr<Face>> &all_faces);
+	void init();
 };
 
 Scene build_test_scene();

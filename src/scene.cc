@@ -161,27 +161,18 @@ static Box all_faces_bounding_box(const std::vector<std::shared_ptr<Face>> &all_
 Scene::Scene(const std::vector<std::shared_ptr<Face>> &all_faces,
 	const std::vector<std::shared_ptr<Material>> &all_materials,
 	const Camera &camera)
-: all_faces{all_faces},
-all_materials{all_materials},
-camera{camera}
+: all_faces{all_faces}, all_materials{all_materials}, camera{camera}
 {
-	Box bounding_box = all_faces_bounding_box(all_faces);
-	init(bounding_box, all_faces);
+	bounding_box = all_faces_bounding_box(all_faces);
 }
 
 Scene::Scene(const Box &bounding_box,
 	const std::vector<std::shared_ptr<Face>> &all_faces,
 	const std::vector<std::shared_ptr<Material>> &all_materials,
 	const Camera &camera)
-: all_faces{all_faces},
-all_materials{all_materials},
-camera{camera}
-{
-	init(bounding_box, all_faces);
-}
+: bounding_box{bounding_box}, all_faces{all_faces}, all_materials{all_materials}, camera{camera} {}
 
-void Scene::init(const Box &bounding_box,
-	const std::vector<std::shared_ptr<Face>> &all_faces)
+void Scene::init()
 {
 	// setup camera
 	camera.init_pixel_data();
