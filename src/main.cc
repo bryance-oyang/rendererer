@@ -41,10 +41,10 @@ int main(int argc, const char **argv)
 	clock_gettime(CLOCK_MONOTONIC_RAW, &start_time_spec);
 
 	// start rendering threads
-	std::vector<std::unique_ptr<RenderThread>> render_threads;
+	std::vector<std::shared_ptr<RenderThread>> render_threads;
 	for (int tid = 0; tid < NTHREAD; tid++) {
 		render_threads.push_back(
-			std::make_unique<PathTracer>(tid, scene, SAMPLES_PER_BROADCAST, primes));
+			std::make_shared<PathTracer>(tid, scene, SAMPLES_PER_BROADCAST, primes));
 	}
 
 	// for websocket_ctube broadcasting image to browser for realtime display
