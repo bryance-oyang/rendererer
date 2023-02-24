@@ -8,6 +8,7 @@
 
 /**
  * @file
+ * @brief Virtual 3D scene.
  */
 
 #include <algorithm>

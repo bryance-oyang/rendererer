@@ -8,6 +8,8 @@
 
 /**
  * @file
+ * @brief Octree for triangles for more efficient ray-triangle intersection
+ * computation.
  */
 
 #include <cfloat>

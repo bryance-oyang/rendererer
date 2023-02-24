@@ -8,6 +8,7 @@
 
 /**
  * @file
+ * @brief Basic parsing of .obj and .mtl files.
  */
 
 #include <sstream>

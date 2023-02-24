@@ -19,7 +19,7 @@
  * bsdf integrates to 1 over solid angle for non-absorber (physical bsdf).
  *
  * In addition to setting the ray_out, samplers need to set the probability
- * density weighting *prob_dens, and index of refraction (e.g. if ray enters glass)
+ * density weighting prob_dens, and index of refraction (e.g. if ray enters glass)
  */
 
 #include "material.h"

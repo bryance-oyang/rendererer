@@ -8,6 +8,7 @@
 
 /**
  * @file
+ * @brief Main rendering functions.
  */
 
 #include <climits>

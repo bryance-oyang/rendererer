@@ -8,6 +8,7 @@
 
 /**
  * @file
+ * @brief Basic geometrical objects and computations.
  */
 
 #include <cfloat>

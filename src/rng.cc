@@ -8,7 +8,7 @@
 
 /**
  * @file
- * @brief various random number generators
+ * @brief Various random number generators.
  */
 
 #include <cstdlib>
