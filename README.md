@@ -15,4 +15,5 @@ Adjust image size, number of threads, etc in `src/macro_def.h` and re-`make`.
 
 ![cornell_box_img](cornell_box.png)
 
-Transparent tall box and sphere. Sphere is not a sphere but many triangles (no smooth normals).
+Tall box and sphere are transparent. Sphere is not a sphere but many triangles
+(no smooth normals).
