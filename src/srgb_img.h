@@ -13,8 +13,8 @@
 #include <cfloat>
 #include "multiarray.h"
 
-#define RAW_LO_PERCENTILE_CUTOFF 0.05
-#define RAW_HI_PERCENTILE_CUTOFF 0.95
+#define RAW_LO_PERCENTILE_CUTOFF 0.02
+#define RAW_HI_PERCENTILE_CUTOFF 0.98
 
 static int float_compare(const void *a, const void *b)
 {
