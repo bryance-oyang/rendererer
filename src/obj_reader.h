@@ -20,11 +20,11 @@
 class MTLMaterial {
 public:
 	std::string name;
-	float Kd[3];
-	float Ke[3];
-	float Ns;
-	float Ni;
-	float d;
+	float Kd[3] = {0, 0, 0};
+	float Ke[3] = {0, 0, 0};
+	float Ns = 0;
+	float Ni = 0;
+	float d = 0;
 
 	MTLMaterial(std::string name) : name{name} {}
 };
