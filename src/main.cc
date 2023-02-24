@@ -68,7 +68,7 @@ int main(int argc, const char **argv)
 	clock_gettime(CLOCK_MONOTONIC_RAW, &end_time_spec);
 	float duration = (end_time_spec.tv_sec - start_time_spec.tv_sec)
 		+ (float)(end_time_spec.tv_nsec - start_time_spec.tv_nsec) / 1e9;
-	unsigned long npaths = AVG_SAMPLE_PER_PIX * IMAGE_WIDTH * IMAGE_HEIGHT;
+	unsigned long npaths = (unsigned long)AVG_SAMPLE_PER_PIX * IMAGE_WIDTH * IMAGE_HEIGHT;
 	printf("Rendered %lu paths in %.3g sec (%.2f paths/sec)\n", npaths, duration, (float)npaths / duration);
 
 	// send update before exiting

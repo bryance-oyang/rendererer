@@ -13,7 +13,15 @@
 #include <cfloat>
 #include "multiarray.h"
 
-#define N_STDDEV_CLIP 2
+#define RAW_LO_PERCENTILE_CUTOFF 0.05
+#define RAW_HI_PERCENTILE_CUTOFF 0.95
+
+static int float_compare(const void *a, const void *b)
+{
+	float aa = *((float *)a);
+	float bb = *((float *)b);
+	return (aa > bb) - (aa < bb);
+}
 
 /** creates an sRGB image 0-255 */
 class SRGBImgConverter {
@@ -43,68 +51,6 @@ public:
 		}
 	}
 
-	void get_mean(float *mean, const MultiArray<float> &raw)
-	{
-		for (int k = 0; k < 3; k++) {
-			mean[k] = 0;
-		}
-
-		const int height = raw.n[0];
-		const int width = raw.n[1];
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				for (int k = 0; k < 3; k++) {
-					mean[k] += raw(i, j, k);
-				}
-			}
-		}
-
-		for (int k = 0; k < 3; k++) {
-			mean[k] /= width*height;
-		}
-	}
-
-	void get_stddev(float *stddev, const MultiArray<float> &raw, const float *mean)
-	{
-		for (int k = 0; k < 3; k++) {
-			stddev[k] = 0;
-		}
-
-		const int height = raw.n[0];
-		const int width = raw.n[1];
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				for (int k = 0; k < 3; k++) {
-					stddev[k] += SQR(raw(i, j, k) - mean[k]);
-				}
-			}
-		}
-
-		for (int k = 0; k < 3; k++) {
-			stddev[k] /= (width*height - 1);
-			stddev[k] = sqrtf(stddev[k]);
-		}
-	}
-
-	void get_minmax(float *min, float *max, const MultiArray<float> &raw)
-	{
-		for (int k = 0; k < 3; k++) {
-			min[k] = FLT_MAX;
-			max[k] = -FLT_MAX;
-		}
-
-		const int height = raw.n[0];
-		const int width = raw.n[1];
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				for (int k = 0; k < 3; k++) {
-					min[k] = fminf(min[k], raw(i, j, k));
-					max[k] = fmaxf(max[k], raw(i, j, k));
-				}
-			}
-		}
-	}
-
 	float clip(float x, float low, float high)
 	{
 		return fminf(high, fmaxf(low, x));
@@ -113,6 +59,20 @@ public:
 	float gamma(float in)
 	{
 		return powf(in, 1.0f/2.2f);
+	}
+
+	/** returns the float values of the low/high percentiles in min/max */
+	void get_percentile(float *min, float *max, float low_percentile, float high_percentile, const MultiArray<float> &raw)
+	{
+		MultiArray<float> sorted_copy = raw;
+		qsort(sorted_copy.data, sorted_copy.len, sizeof(float), float_compare);
+
+		int min_ind = sorted_copy.len * low_percentile;
+		int max_ind = sorted_copy.len * high_percentile;
+		max_ind = std::min(sorted_copy.len - 1, max_ind);
+
+		*min = sorted_copy(min_ind);
+		*max = sorted_copy(max_ind);
 	}
 
 	/** maps RGB min-max to 0-255 */
@@ -124,27 +84,8 @@ public:
 			raw(i) = gamma(raw(i));
 		}
 
-		float mean[3];
-		float stddev[3];
-		get_mean(mean, raw);
-		get_stddev(stddev, raw, mean);
-
-		float real_min[3];
-		float real_max[3];
-		get_minmax(real_min, real_max, raw);
-
-		// set min max from mean +/- some stddev
-		float min = FLT_MAX;
-		float max = -FLT_MAX;
-		for (int k = 0; k < 3; k++) {
-			min = fminf(min, mean[k] - N_STDDEV_CLIP*stddev[k]);
-			max = fmaxf(max, mean[k] + N_STDDEV_CLIP*stddev[k]);
-		}
-		// prevent min/max from exceeding real_min/real_max
-		for (int k = 0; k < 3; k++) {
-			min = fmaxf(min, real_min[k]);
-			max = fminf(max, real_max[k]);
-		}
+		float min, max;
+		get_percentile(&min, &max, RAW_LO_PERCENTILE_CUTOFF, RAW_HI_PERCENTILE_CUTOFF, raw);
 
 		const int height = raw.n[0];
 		const int width = raw.n[1];
