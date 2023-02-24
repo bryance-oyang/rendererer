@@ -54,7 +54,7 @@ public:
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				for (int k = 0; k < 3; k++) {
-					mean[k] += img_data(i, j, k);
+					mean[k] += raw(i, j, k);
 				}
 			}
 		}
