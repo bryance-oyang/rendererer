@@ -84,7 +84,7 @@ public:
 };
 
 float fast_ray_plane_intersect(Vec &intersect, const Ray &r, int plane, float pval);
-float ray_face_intersect(Vec &result, const Ray &r, const struct Face &f);
+float ray_face_intersect(Vec &result, const Ray &r, const Face &f);
 Box face_bounding_box(const Face &f);
 bool vec_in_box(const Vec &v, const Box &b);
 bool box_touch_box(const Box &a, const Box &b);
