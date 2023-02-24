@@ -88,7 +88,7 @@ public:
 
 		free();
 		alloc();
-		memcpy(data, other.data, len * sizeof(T));
+		memcpy(data, other.data, bytes());
 	}
 
 	MultiArray(const MultiArray &&other)

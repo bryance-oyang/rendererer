@@ -31,7 +31,7 @@ int main(int argc, const char **argv)
 	if (argc < 3) {
 		scene = build_test_scene2();
 	} else {
-		Camera camera{35, 35, Vec{0,-7,-0.5}, Vec{0,1,0}, IMAGE_WIDTH, IMAGE_HEIGHT};
+		Camera camera{43, 35, Vec{0,-7,-0.5}, Vec{0,1,0}, IMAGE_WIDTH, IMAGE_HEIGHT};
 		scene = scene_from_files(argv[1], argv[2], camera);
 	}
 	scene.init();

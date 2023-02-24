@@ -10,6 +10,7 @@
 #define OBJ_READER_H
 
 #include <unordered_map>
+#include <vector>
 #include <fstream>
 #include <string>
 #include "geometry.h"
