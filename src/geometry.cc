@@ -189,7 +189,7 @@ float fast_ray_plane_intersect(Vec &intersect, const Ray &r,
  *
  * @return intersect ray parameter t if intersection occurs or -1 if not
  */
-float ray_face_intersect(Vec &result, const Ray &r, const struct Face &f)
+float ray_face_intersect(Vec &result, const Ray &r, const Face &f)
 {
 	float pyramid_vol, u1, u2;
 	float t;
