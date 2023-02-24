@@ -11,7 +11,7 @@ View image in a browser while rendering: `img_viewer/index.html` (via [websocket
 
 Adjust image size, number of threads, etc in `src/macro_def.h` and re-`make`.
 
-## Sample
+## Cornell Box
 
 ![cornell_box_img](cornell_box.png)
 

@@ -188,7 +188,7 @@ void Scene::init()
 	// set char len
 	Vec lower{bounding_box.corners[0][0], bounding_box.corners[0][1], bounding_box.corners[0][2]};
 	Vec upper{bounding_box.corners[1][0], bounding_box.corners[1][1], bounding_box.corners[1][2]};
-	global_characteristic_length_scale = (upper - lower).len() / 10;
+	global_characteristic_length_scale = (upper - lower).len() / 32;
 
 	// build octree
 	octree_root = Octree{bounding_box, all_faces, bounding_boxes,
