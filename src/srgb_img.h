@@ -20,6 +20,13 @@ class SRGBImgConverter {
 public:
 	MultiArray<uint8_t> img_data;
 	virtual void make_image(const MultiArray<float> &raw) {(void)raw;}
+
+	void alloc_same_size(const MultiArray<float> &raw)
+	{
+		if (img_data.n[0] != raw.n[0] || img_data.n[1] != raw.n[1] || img_data.n[2] != raw.n[2]) {
+			img_data = MultiArray<uint8_t>{raw.n[0], raw.n[1], raw.n[2]};
+		}
+	}
 };
 
 /** interprets 3 values as rgb and directly maps after gamma correction and some clipping */
@@ -28,6 +35,7 @@ public:
 	void make_image(const MultiArray<float> &raw)
 	{
 		if (NFREQ == 3) {
+			alloc_same_size(raw);
 			direct_conversion(raw);
 		} else {
 			fprintf(stderr, "SRGBImgDirectConverter(): direct: NFREQ == %d != 3\n", NFREQ);

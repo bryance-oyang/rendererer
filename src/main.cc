@@ -53,8 +53,10 @@ int main(int argc, const char **argv)
 	int max_client = 3;
 	int timeout_ms = 0;
 	float max_broadcast_fps = 10;
-	ImgBroadcastThread img_bcast_thread{SRGBImgDirectConverter{}, scene.camera,
-		port, max_client, timeout_ms, max_broadcast_fps};
+	ImgBroadcastThread img_bcast_thread{
+		std::make_shared<SRGBImgDirectConverter>(), scene.camera,
+		port, max_client, timeout_ms, max_broadcast_fps
+	};
 #endif
 
 	// finish rendering threads

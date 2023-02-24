@@ -46,7 +46,7 @@ public:
 
 	MultiArray()
 	: rank{0},
-	n{0, 1, 1, 1},
+	n{0, 0, 0, 0},
 	len{0} {}
 
 	MultiArray(int n0)
