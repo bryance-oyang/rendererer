@@ -15,21 +15,25 @@
 #include "render.h"
 #include "img_gen.h"
 
-Scene scene_from_obj_file(const char *fname_base, Camera &camera)
+Scene scene_from_files(const char *obj_fname, const char *mtl_fname, Camera &camera)
 {
-	ObjReader obj_reader{fname_base};
+	ObjReader obj_reader{obj_fname, mtl_fname};
 	return Scene{obj_reader.all_faces, obj_reader.all_materials, camera};
 }
 
-int main()
+int main(int argc, const char **argv)
 {
 	// for quasi Monte Carlo Halton rng
 	auto primes = get_primes(NTHREAD * 2 * (MAX_BOUNCES_PER_PATH + 2));
 
 	// build scene
-	//Scene scene = build_test_scene2();
-	Camera camera{35, 35, Vec{0,-7,-0.5}, Vec{0,1,0}, IMAGE_WIDTH, IMAGE_HEIGHT};
-	Scene scene = scene_from_obj_file("../test_scenes/cornell_box", camera);
+	Scene scene;
+	if (argc < 3) {
+		scene = build_test_scene2();
+	} else {
+		Camera camera{35, 35, Vec{0,-7,-0.5}, Vec{0,1,0}, IMAGE_WIDTH, IMAGE_HEIGHT};
+		scene = scene_from_files(argv[1], argv[2], camera);
+	}
 
 #if BENCHMARKING == 0
 	// for websocket_ctube broadcasting image to browser for realtime display

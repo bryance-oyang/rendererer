@@ -31,7 +31,6 @@ public:
 
 class ObjReader {
 public:
-	std::string fname_base;
 	std::ifstream mtl_file;
 	std::ifstream obj_file;
 
@@ -44,6 +43,7 @@ public:
 	std::vector<std::shared_ptr<Material>> all_materials;
 
 	ObjReader(const char *fname_base);
+	ObjReader(const char *obj_fname, const char *mtl_fname);
 
 	void parse_mtl();
 	void create_all_materials();

@@ -1,4 +1,4 @@
-EXEC=a.out
+EXEC=rendererer
 srcdir=
 
 SHELL=/bin/sh
