@@ -45,11 +45,11 @@ class SRGBImgDirectConverter : public SRGBImgConverter {
 public:
 	void make_image(const MultiArray<float> &raw)
 	{
-		if (NFREQ == 3) {
+		if (NWAVELEN == 3) {
 			alloc_same_size(raw);
 			direct_conversion(raw);
 		} else {
-			fprintf(stderr, "SRGBImgDirectConverter(): direct: NFREQ == %d != 3\n", NFREQ);
+			fprintf(stderr, "SRGBImgDirectConverter(): direct: NWAVELEN == %d != 3\n", NWAVELEN);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -102,5 +102,10 @@ public:
 		}
 	}
 };
+
+/** treats bins as wavelengths */
+class SRGBImgPhysicalConverter : public SRGBImgConverter {
+public:
+}
 
 #endif /* SRGB_IMG_H */

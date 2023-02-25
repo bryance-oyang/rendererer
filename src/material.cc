@@ -83,7 +83,7 @@ static inline float sample_ray_cosine(Ray &ray_out, const Ray &ray_in,
 EmitterMaterial::EmitterMaterial(const float *emission)
 {
 	is_light = true;
-	for (int i = 0; i < NFREQ; i++) {
+	for (int i = 0; i < NWAVELEN; i++) {
 		this->emission[i] = emission[i];
 	}
 }
@@ -107,7 +107,7 @@ void EmitterMaterial::transfer(Path &path, int pind) const
 
 DiffuseMaterial::DiffuseMaterial(const float *color)
 {
-	for (int i = 0; i < NFREQ; i++) {
+	for (int i = 0; i < NWAVELEN; i++) {
 		this->color[i] = color[i];
 	}
 }
@@ -288,7 +288,7 @@ void DispersiveGlassMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &r
 		cindex = path.I.cindex;
 	} else {
 		// randomly choose a frequency and make monochromatic
-		cindex = std::min(NFREQ - 1, std::max(0, (int)(rng1.next() * (NFREQ - 1))));
+		cindex = std::min(NWAVELEN - 1, std::max(0, (int)(rng1.next() * (NWAVELEN - 1))));
 		path.I.cindex = cindex;
 		path.I.is_monochromatic = true;
 	}

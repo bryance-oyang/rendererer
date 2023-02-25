@@ -9,9 +9,9 @@
 #include <cmath>
 #include "color.h"
 
-float Color::wavelengths[NFREQ];
-float Color::frequencies[NFREQ];
-float Color::xyzbar[NFREQ][3];
+float Color::wavelengths[NWAVELEN];
+float Color::frequencies[NWAVELEN];
+float Color::xyzbar[NWAVELEN][3];
 
 ColorXYZ::ColorXYZ() {}
 ColorXYZ::ColorXYZ(float X, float Y, float Z) : XYZ{X, Y, Z} {}
@@ -51,13 +51,13 @@ static void color_xyzbar(float wavelen, float *xyzbar)
 void Color::init()
 {
 	/* linearly interpolate 400-700nm */
-	for (int k = 0; k < NFREQ; k++) {
-		wavelengths[k] = (700.0f - 400.0f) * k / (NFREQ - 1) + 400.0f;
+	for (int k = 0; k < NWAVELEN; k++) {
+		wavelengths[k] = (700.0f - 400.0f) * k / (NWAVELEN - 1) + 400.0f;
 		frequencies[k] = SPEED_OF_LIGHT / wavelengths[k] * 1e9;
 	}
 
 	/* compute table for color matching functions */
-	for (int k = 0; k < NFREQ; k++) {
+	for (int k = 0; k < NWAVELEN; k++) {
 		color_xyzbar(wavelengths[k], xyzbar[k]);
 	}
 }
@@ -104,7 +104,7 @@ ColorXYZ Color::physical_to_XYZ(const float *I)
 	}
 
 	/* trapezoid integral of (radiance * xyzbar) * dwavelen */
-	for (int k = 0; k < NFREQ - 1; k++) {
+	for (int k = 0; k < NWAVELEN - 1; k++) {
 		dl = wavelengths[k+1] - wavelengths[k];
 		for (int j = 0; j < 3; j++) {
 			out.XYZ[j] += dl/2 * (I[k]*xyzbar[k][j] + I[k+1]*xyzbar[k+1][j]);

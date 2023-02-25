@@ -37,7 +37,7 @@ public:
 
 class EmitterMaterial : public Material {
 public:
-	float emission[NFREQ];
+	float emission[NWAVELEN];
 
 	EmitterMaterial(const float *emission);
 
@@ -47,7 +47,7 @@ public:
 
 class DiffuseMaterial : public Material {
 public:
-	float color[NFREQ];
+	float color[NWAVELEN];
 
 	DiffuseMaterial(const float *color);
 
@@ -67,7 +67,7 @@ public:
 
 class DispersiveGlassMaterial : public Material {
 public:
-	float ior_table[NFREQ];
+	float ior_table[NWAVELEN];
 	float dispersion;
 
 	DispersiveGlassMaterial(const float ior, const float dispersion);

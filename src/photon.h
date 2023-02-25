@@ -13,7 +13,7 @@
 
 class SpecificIntensity {
 public:
-	float I[NFREQ];
+	float I[NWAVELEN];
 	/** dispersive medium will convert path to monochromatic */
 	bool is_monochromatic;
 	/** index of color for monochromatic case */

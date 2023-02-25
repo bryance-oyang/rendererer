@@ -122,9 +122,9 @@ void PathTracer::render()
 		camera.get_ij(&i, &j, path.film_x, path.film_y);
 		if (path.I.is_monochromatic) {
 			int cindex = path.I.cindex;
-			film_buffer(i, j, cindex) += path.I.I[cindex] * NFREQ;
+			film_buffer(i, j, cindex) += path.I.I[cindex] * NWAVELEN;
 		} else {
-			for (int k = 0; k < NFREQ; k++) {
+			for (int k = 0; k < NWAVELEN; k++) {
 				film_buffer(i, j, k) += path.I.I[k];
 			}
 		}

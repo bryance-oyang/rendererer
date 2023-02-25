@@ -61,7 +61,7 @@ Camera &Camera::operator=(const Camera &camera)
 
 void Camera::init_pixel_data()
 {
-	pixel_data = MultiArray<float>{ny, nx, NFREQ};
+	pixel_data = MultiArray<float>{ny, nx, NWAVELEN};
 	pixel_data.fill(0);
 }
 

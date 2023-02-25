@@ -41,9 +41,9 @@ public:
 
 class Color {
 public:
-	static float wavelengths[NFREQ];
-	static float frequencies[NFREQ];
-	static float xyzbar[NFREQ][3];
+	static float wavelengths[NWAVELEN];
+	static float frequencies[NWAVELEN];
+	static float xyzbar[NWAVELEN][3];
 
 	static void init();
 	static ColorRGB XYZ_to_RGB(const ColorXYZ &in);

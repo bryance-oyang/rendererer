@@ -13,7 +13,7 @@ SpecificIntensity &SpecificIntensity::operator=(const float *rhs)
 	if (is_monochromatic) {
 		I[cindex] = rhs[cindex];
 	} else {
-		for (int k = 0; k < NFREQ; k++) {
+		for (int k = 0; k < NWAVELEN; k++) {
 			I[k] = rhs[k];
 		}
 	}
@@ -25,7 +25,7 @@ SpecificIntensity &SpecificIntensity::operator+=(const float *rhs)
 	if (is_monochromatic) {
 		I[cindex] += rhs[cindex];
 	} else {
-		for (int k = 0; k < NFREQ; k++) {
+		for (int k = 0; k < NWAVELEN; k++) {
 			I[k] += rhs[k];
 		}
 	}
@@ -37,7 +37,7 @@ SpecificIntensity &SpecificIntensity::operator-=(const float *rhs)
 	if (is_monochromatic) {
 		I[cindex] -= rhs[cindex];
 	} else {
-		for (int k = 0; k < NFREQ; k++) {
+		for (int k = 0; k < NWAVELEN; k++) {
 			I[k] -= rhs[k];
 		}
 	}
@@ -49,7 +49,7 @@ SpecificIntensity &SpecificIntensity::operator*=(const float *rhs)
 	if (is_monochromatic) {
 		I[cindex] *= rhs[cindex];
 	} else {
-		for (int k = 0; k < NFREQ; k++) {
+		for (int k = 0; k < NWAVELEN; k++) {
 			I[k] *= rhs[k];
 		}
 	}
@@ -61,7 +61,7 @@ SpecificIntensity &SpecificIntensity::operator/=(const float *rhs)
 	if (is_monochromatic) {
 		I[cindex] /= rhs[cindex];
 	} else {
-		for (int k = 0; k < NFREQ; k++) {
+		for (int k = 0; k < NWAVELEN; k++) {
 			I[k] /= rhs[k];
 		}
 	}
@@ -73,7 +73,7 @@ SpecificIntensity &SpecificIntensity::operator=(float rhs)
 	if (is_monochromatic) {
 		I[cindex] = rhs;
 	} else {
-		for (int k = 0; k < NFREQ; k++) {
+		for (int k = 0; k < NWAVELEN; k++) {
 			I[k] = rhs;
 		}
 	}
@@ -85,7 +85,7 @@ SpecificIntensity &SpecificIntensity::operator+=(float rhs)
 	if (is_monochromatic) {
 		I[cindex] += rhs;
 	} else {
-		for (int k = 0; k < NFREQ; k++) {
+		for (int k = 0; k < NWAVELEN; k++) {
 			I[k] += rhs;
 		}
 	}
@@ -97,7 +97,7 @@ SpecificIntensity &SpecificIntensity::operator-=(float rhs)
 	if (is_monochromatic) {
 		I[cindex] -= rhs;
 	} else {
-		for (int k = 0; k < NFREQ; k++) {
+		for (int k = 0; k < NWAVELEN; k++) {
 			I[k] -= rhs;
 		}
 	}
@@ -109,7 +109,7 @@ SpecificIntensity &SpecificIntensity::operator*=(float rhs)
 	if (is_monochromatic) {
 		I[cindex] *= rhs;
 	} else {
-		for (int k = 0; k < NFREQ; k++) {
+		for (int k = 0; k < NWAVELEN; k++) {
 			I[k] *= rhs;
 		}
 	}
@@ -121,7 +121,7 @@ SpecificIntensity &SpecificIntensity::operator/=(float rhs)
 	if (is_monochromatic) {
 		I[cindex] /= rhs;
 	} else {
-		for (int k = 0; k < NFREQ; k++) {
+		for (int k = 0; k < NWAVELEN; k++) {
 			I[k] /= rhs;
 		}
 	}
