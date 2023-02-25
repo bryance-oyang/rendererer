@@ -20,14 +20,14 @@ public:
 	std::unique_ptr<std::thread> thread;
 	const Scene &scene;
 	Camera &camera;
-	int samples_before_update;
+	unsigned long samples_before_update;
 
 	MultiArray<float> film_buffer;
 
 	/** polymorphic rendering */
 	virtual void render() {}
 
-	RenderThread(int tid, Scene &scene, int samples_before_update)
+	RenderThread(int tid, Scene &scene, unsigned long samples_before_update)
 	: tid{tid}, scene{scene}, camera{scene.camera}, samples_before_update{samples_before_update}
 	{
 		const MultiArray<float> &pixel_data = camera.pixel_data;
@@ -65,7 +65,7 @@ public:
 
 class DebugRender : public RenderThread {
 public:
-	DebugRender(int tid, Scene &scene, int samples_before_update)
+	DebugRender(int tid, Scene &scene, unsigned long samples_before_update)
 	: RenderThread(tid, scene, samples_before_update) { start(); }
 
 	void render() {
@@ -86,8 +86,8 @@ public:
 	Path path;
 	std::vector<std::shared_ptr<Rng>> rngs[2];
 
-	PathTracer(int tid, Scene &scene, int samples_before_update);
-	PathTracer(int tid, Scene &scene, int samples_before_update, std::vector<unsigned int> &primes);
+	PathTracer(int tid, Scene &scene, unsigned long samples_before_update);
+	PathTracer(int tid, Scene &scene, unsigned long samples_before_update, std::vector<unsigned int> &primes);
 
 	bool sample_new_path(int *last_path);
 	void compute_I(const int last_path);

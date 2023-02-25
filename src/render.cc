@@ -15,7 +15,7 @@
 #include "render.h"
 
 /** constructor for randr rngs */
-PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update)
+PathTracer::PathTracer(int tid, Scene &scene, unsigned long samples_before_update)
 : RenderThread(tid, scene, samples_before_update)
 {
 	std::shared_ptr<RandRng> rng = std::make_shared<RandRng>(tid * (UINT_MAX / NTHREAD));
@@ -28,7 +28,7 @@ PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update)
 }
 
 /** constructor for halton rngs (quasi Monte Carlo) */
-PathTracer::PathTracer(int tid, Scene &scene, int samples_before_update,
+PathTracer::PathTracer(int tid, Scene &scene, unsigned long samples_before_update,
 	std::vector<unsigned int> &primes)
 : RenderThread(tid, scene, samples_before_update)
 {

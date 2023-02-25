@@ -8,7 +8,7 @@
 #include <cmath>
 
 #define BENCHMARKING 0
-#define SAMPLES_PER_BROADCAST (1 << 16)
+#define SAMPLES_PER_BROADCAST ((unsigned long)(1 << 16))
 #define MAX_BOUNCES_PER_PATH 8
 
 #ifndef DEBUG
