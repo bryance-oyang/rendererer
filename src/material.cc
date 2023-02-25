@@ -23,6 +23,7 @@
  */
 
 #include "material.h"
+#include "color.h"
 
 /**
  * Sample ray uniformly in hemisphere

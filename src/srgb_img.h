@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <cfloat>
 #include "multiarray.h"
+#include "color.h"
 
 #define RAW_LO_PERCENTILE_CUTOFF 0.02
 #define RAW_HI_PERCENTILE_CUTOFF 0.98

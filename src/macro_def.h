@@ -29,6 +29,7 @@
 
 #endif /* DEBUG */
 
+#define SPEED_OF_LIGHT 299792458.0f
 /** This should be 3 for color or 1 for bw */
 #define NFREQ 3
 

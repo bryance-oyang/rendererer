@@ -26,6 +26,9 @@ int main(int argc, const char **argv)
 	// for quasi Monte Carlo Halton rng
 	auto primes = get_primes(NTHREAD * 2 * (MAX_BOUNCES_PER_PATH + 2));
 
+	// precalculate wavelengths/frequencies and color matching function table
+	Color::init();
+
 	// build scene
 	Scene scene;
 	if (argc < 3) {
