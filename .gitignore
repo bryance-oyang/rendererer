@@ -8,3 +8,4 @@ html/
 latex/
 perf.*
 src/rendererer
+*.blend1
