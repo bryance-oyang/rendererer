@@ -17,7 +17,7 @@
 #define NTHREAD 20
 #define IMAGE_WIDTH 320
 #define IMAGE_HEIGHT 320
-#define AVG_SAMPLE_PER_PIX ((unsigned long long)(1 << 15))
+#define AVG_SAMPLE_PER_PIX ((unsigned long long)(1 << 20))
 
 #else /* DEBUG */
 /* debug */

@@ -12,7 +12,7 @@
 #include "color.h"
 
 #define RAW_LO_PERCENTILE_CUTOFF 0.02
-#define RAW_HI_PERCENTILE_CUTOFF 0.98
+#define RAW_HI_PERCENTILE_CUTOFF 0.99
 
 static float clip(float x, float low, float high)
 {
