@@ -9,7 +9,6 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "geometry.h"
 #include "photon.h"
 #include "rng.h"
 
