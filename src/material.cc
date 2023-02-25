@@ -173,20 +173,17 @@ static float glass_reflection(float ior, float cosair, float cosglass)
 	return 0.5f * (R1 + R2);
 }
 
-GlassMaterial::GlassMaterial(const float ior) : ior{ior} {}
-
-void GlassMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const
+static void glass_sample_ray(float ior, Path &path, int pind, Rng &rng)
 {
 	Ray &ray_out = path.rays[pind];
 	const Ray &ray_in = path.rays[pind - 1];
 	const Vec &normal = path.normals[pind];
-	(void)rng_phi;
 
 	float R;
 	float cosair, cosglass;
 	float cosrefl, costrans;
 
-	if (ray_in.ior == ior) {
+	if (ray_in.ior != SPACE_INDEX_REFRACT) {
 		/* glass side */
 		cosglass = ray_in.cosines[1];
 		cosair = glass_cosair(ior, cosglass);
@@ -202,7 +199,7 @@ void GlassMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_ph
 
 	R = glass_reflection(ior, cosair, cosglass);
 
-	if (rng_theta.next() < R) {
+	if (rng.next() < R) {
 		/* sample reflection */
 		ray_out.dir = 2*cosrefl*normal + ray_in.dir;
 
@@ -210,11 +207,11 @@ void GlassMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_ph
 		path.prob_dens[pind] = R;
 	} else {
 		/* sample transmission */
-		float out_ior = (ray_in.ior == ior)?
+		float out_ior = (ray_in.ior != SPACE_INDEX_REFRACT)?
 			SPACE_INDEX_REFRACT
 			: ior;
 
-		if (out_ior == ior) {
+		if (out_ior != SPACE_INDEX_REFRACT) {
 			/* out is glass: -cos_out nhat + 1/n (vin + cos_in nhat) */
 			ray_out.dir = -costrans * normal
 				+ 1.0f/ior * (ray_in.dir + ray_in.cosines[1] * normal);
@@ -229,7 +226,7 @@ void GlassMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_ph
 	}
 }
 
-void GlassMaterial::transfer(Path &path, int pind) const
+static void glass_transfer(float ior, Path &path, int pind)
 {
 	SpecificIntensity &I = path.I;
 	const Ray &ray_out = path.rays[pind];
@@ -238,7 +235,7 @@ void GlassMaterial::transfer(Path &path, int pind) const
 	float R;
 	float cosair, cosglass;
 
-	if (ray_out.ior == ior) {
+	if (ray_out.ior != SPACE_INDEX_REFRACT) {
 		/* physically incident light on glass side */
 		cosglass = ray_out.cosines[0];
 		cosair = glass_cosair(ior, cosglass);
@@ -263,4 +260,32 @@ void GlassMaterial::transfer(Path &path, int pind) const
 			I *= (1.0f - R) / SQR(ior);
 		}
 	}
+}
+
+GlassMaterial::GlassMaterial(const float ior) : ior{ior} {}
+
+void GlassMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const
+{
+	(void)rng_phi;
+	glass_sample_ray(ior, path, pind, rng_theta);
+}
+
+void GlassMaterial::transfer(Path &path, int pind) const
+{
+	glass_transfer(ior, path, pind);
+}
+
+DispersiveGlassMaterial::DispersiveGlassMaterial(const float ior, const float dispersion)
+{
+
+}
+
+void DispersiveGlassMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const
+{
+
+}
+
+void DispersiveGlassMaterial::transfer(Path &path, int pind) const
+{
+
 }

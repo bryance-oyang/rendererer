@@ -65,4 +65,15 @@ public:
 	void transfer(Path &path, int pind) const;
 };
 
+class DispersiveGlassMaterial : public Material {
+public:
+	float ior_list[NFREQ];
+	float dispersion;
+
+	DispersiveGlassMaterial(const float ior, const float dispersion);
+
+	void sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const;
+	void transfer(Path &path, int pind) const;
+};
+
 #endif /* MATERIAL_H */
