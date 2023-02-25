@@ -100,13 +100,11 @@ void PathTracer::compute_I(const int last_path)
 {
 	path.I = 0.0f;
 
-	float prod_prob_dens = 1.0f;
 	for (int i = last_path; i > 0; i--) {
-		prod_prob_dens *= path.prob_dens[i];
+		path.I /= path.prob_dens[i];
 		const Material &material = *path.faces[i]->material;
 		material.transfer(path, i);
 	}
-	path.I /= prod_prob_dens;
 }
 
 void PathTracer::render()
@@ -131,7 +129,7 @@ void PathTracer::render()
 			}
 		}
 
-		if (!BENCHMARKING && since_update_samples == samples_before_update) {
+		if (!BENCHMARKING && since_update_samples >= samples_before_update) {
 			since_update_samples = 0;
 			update_pixel_data();
 		}
