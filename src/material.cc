@@ -287,15 +287,23 @@ DispersiveGlassMaterial::DispersiveGlassMaterial(const CauchyCoeff &cauchy_coeff
 
 void DispersiveGlassMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const
 {
+	bool set_monochromatic;
 	int cindex;
 
 	if (path.I.is_monochromatic) {
 		cindex = path.I.cindex;
+		set_monochromatic = false;
 	} else {
 		cindex = path.I.make_monochromatic(rng1.next());
+		set_monochromatic = true;
 	}
 
 	glass_sample_ray(ior_table[cindex], path, pind, rng0);
+
+	// if sampled reflection, we can undo the monochromatic set from here
+	if (set_monochromatic && path.rays[pind].ior == path.rays[pind-1].ior) {
+		path.I.is_monochromatic = false;
+	}
 }
 
 void DispersiveGlassMaterial::transfer(Path &path, int pind) const
