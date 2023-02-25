@@ -30,6 +30,8 @@ public:
 	SpecificIntensity &operator-=(float rhs);
 	SpecificIntensity &operator*=(float rhs);
 	SpecificIntensity &operator/=(float rhs);
+
+	int make_monochromatic(float random_float);
 };
 
 class Path {

@@ -127,3 +127,23 @@ SpecificIntensity &SpecificIntensity::operator/=(float rhs)
 	}
 	return *this;
 }
+
+static float clip(float x, float lo, float hi)
+{
+	return fmaxf(lo, fminf(hi, x));
+}
+
+/**
+ * randomly choose a wavelength and make monochromatic
+ *
+ * @param random_float random float between 0 and 1
+ * @return the wavelength index cindex
+ */
+int SpecificIntensity::make_monochromatic(float random_float)
+{
+	const float max_ind = NWAVELEN - 1 + 0.001f;
+	int ind = (int)clip(max_ind * random_float, 0, max_ind);
+	cindex = ind;
+	is_monochromatic = true;
+	return ind;
+}

@@ -106,6 +106,9 @@ public:
 /** treats bins as wavelengths */
 class SRGBImgPhysicalConverter : public SRGBImgConverter {
 public:
-}
+	void make_image(const MultiArray<float> &raw)
+	{
+	}
+};
 
 #endif /* SRGB_IMG_H */

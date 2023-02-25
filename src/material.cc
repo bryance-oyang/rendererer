@@ -287,10 +287,7 @@ void DispersiveGlassMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &r
 	if (path.I.is_monochromatic) {
 		cindex = path.I.cindex;
 	} else {
-		// randomly choose a frequency and make monochromatic
-		cindex = std::min(NWAVELEN - 1, std::max(0, (int)(rng1.next() * (NWAVELEN - 1))));
-		path.I.cindex = cindex;
-		path.I.is_monochromatic = true;
+		cindex = path.I.make_monochromatic(rng1.next());
 	}
 
 	glass_sample_ray(ior_table[cindex], path, pind, rng0);

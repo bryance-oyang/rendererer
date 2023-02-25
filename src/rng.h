@@ -17,6 +17,7 @@ std::vector<unsigned int> get_primes(unsigned int nprimes);
 class Rng {
 public:
 	virtual ~Rng() {};
+	/** returns random float between 0 and 1 */
 	virtual float next() {return 0;}
 };
 
