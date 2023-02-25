@@ -110,7 +110,8 @@ void PathTracer::render()
 {
 	int last_path;
 	unsigned long max_samples = AVG_SAMPLE_PER_PIX * camera.nx * camera.ny / NTHREAD;
-	for (unsigned long samples = 0; samples < max_samples; samples++) {
+	for (unsigned long samples = 0, since_update_samples = 0;
+		samples < max_samples; samples++, since_update_samples++) {
 		if (!sample_new_path(&last_path)) {
 			continue;
 		}
@@ -127,7 +128,8 @@ void PathTracer::render()
 			}
 		}
 
-		if (!BENCHMARKING && samples % samples_before_update == 0) {
+		if (!BENCHMARKING && since_update_samples == samples_before_update) {
+			since_update_samples = 0;
 			update_pixel_data();
 		}
 	}
