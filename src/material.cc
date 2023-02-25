@@ -35,12 +35,12 @@ static inline void set_ray_prop(Ray &ray_out, float ior, float cos_out)
  * Sample ray uniformly in hemisphere
  */
 static inline float sample_ray_uniform(Ray &ray_out, const Ray &ray_in,
-	const Vec &normal, Rng &rng_theta, Rng &rng_phi)
+	const Vec &normal, Rng &rng0, Rng &rng1)
 {
 	float r0, r1, phi, z, xy;
 
-	r0 = rng_theta.next();
-	r1 = rng_phi.next();
+	r0 = rng0.next();
+	r1 = rng1.next();
 
 	phi = r1 * (2 * PI_F);
 	z = (1.0f - GEOMETRY_EPSILON) * r0 + GEOMETRY_EPSILON;
@@ -59,12 +59,12 @@ static inline float sample_ray_uniform(Ray &ray_out, const Ray &ray_in,
  * Sample ray according to p(z) ~ z for measure dz dphi
  */
 static inline float sample_ray_cosine(Ray &ray_out, const Ray &ray_in,
-	const Vec &normal, Rng &rng_theta, Rng &rng_phi)
+	const Vec &normal, Rng &rng0, Rng &rng1)
 {
 	float r0, r1, phi, z;
 
-	r0 = rng_theta.next();
-	r1 = rng_phi.next();
+	r0 = rng0.next();
+	r1 = rng1.next();
 
 	/* z is sampled as a trapezoid from GEOMETRY_EPSILON to 1 */
 	phi = r1 * (2 * PI_F);
@@ -88,13 +88,13 @@ EmitterMaterial::EmitterMaterial(const float *emission)
 	}
 }
 
-void EmitterMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const
+void EmitterMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const
 {
 	Ray &ray_out = path.rays[pind];
 	const Ray &ray_in = path.rays[pind - 1];
 	const Vec &normal = path.normals[pind];
 
-	path.prob_dens[pind] = sample_ray_uniform(ray_out, ray_in, normal, rng_theta, rng_phi);
+	path.prob_dens[pind] = sample_ray_uniform(ray_out, ray_in, normal, rng0, rng1);
 }
 
 void EmitterMaterial::transfer(Path &path, int pind) const
@@ -112,13 +112,13 @@ DiffuseMaterial::DiffuseMaterial(const float *color)
 	}
 }
 
-void DiffuseMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const
+void DiffuseMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const
 {
 	Ray &ray_out = path.rays[pind];
 	const Ray &ray_in = path.rays[pind - 1];
 	const Vec &normal = path.normals[pind];
 
-	path.prob_dens[pind] = sample_ray_uniform(ray_out, ray_in, normal, rng_theta, rng_phi);
+	path.prob_dens[pind] = sample_ray_uniform(ray_out, ray_in, normal, rng0, rng1);
 }
 
 void DiffuseMaterial::transfer(Path &path, int pind) const
@@ -264,10 +264,10 @@ static void glass_transfer(float ior, Path &path, int pind)
 
 GlassMaterial::GlassMaterial(const float ior) : ior{ior} {}
 
-void GlassMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const
+void GlassMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const
 {
-	(void)rng_phi;
-	glass_sample_ray(ior, path, pind, rng_theta);
+	(void)rng1;
+	glass_sample_ray(ior, path, pind, rng0);
 }
 
 void GlassMaterial::transfer(Path &path, int pind) const
@@ -280,12 +280,23 @@ DispersiveGlassMaterial::DispersiveGlassMaterial(const float ior, const float di
 
 }
 
-void DispersiveGlassMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const
+void DispersiveGlassMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const
 {
+	int cindex;
 
+	if (path.I.is_monochromatic) {
+		cindex = path.I.cindex;
+	} else {
+		// randomly choose a frequency and make monochromatic
+		cindex = std::min(NFREQ - 1, std::max(0, (int)(rng1.next() * (NFREQ - 1))));
+		path.I.cindex = cindex;
+		path.I.is_monochromatic = true;
+	}
+
+	glass_sample_ray(ior_table[cindex], path, pind, rng0);
 }
 
 void DispersiveGlassMaterial::transfer(Path &path, int pind) const
 {
-
+	glass_transfer(ior_table[path.I.cindex], path, pind);
 }
