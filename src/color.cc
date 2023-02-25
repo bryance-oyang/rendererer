@@ -56,9 +56,9 @@ static void make_rgb_table(float *wavelengths, float *r_table, float *g_table, f
 
 	for (int k = 0; k < NWAVELEN; k++) {
 		float l = wavelengths[k];
-		r_table[k] = color_piecewise_gauss(l, 700, 50, 50);
-		g_table[k] = color_piecewise_gauss(l, 532, 50, 50);
-		b_table[k] = color_piecewise_gauss(l, 400, 50, 50);
+		r_table[k] = 1.0f * color_piecewise_gauss(l, 677, 50, 50);
+		g_table[k] = 0.7f * color_piecewise_gauss(l, 532, 50, 50);
+		b_table[k] = 0.7f * color_piecewise_gauss(l, 437, 50, 50);
 	}
 }
 
@@ -97,6 +97,8 @@ ColorRGB Color::XYZ_to_RGB(const ColorXYZ &in)
 
 	ColorRGB out;
 	for (int i = 0; i < 3; i++) {
+		// clip to non-negative
+		lin[i] = fmaxf(0, lin[i]);
 		out.rgb[i] = gamma_correct(lin[i]);
 	}
 	return out;
