@@ -11,7 +11,7 @@
 
 #include <vector>
 
-std::vector<unsigned int> get_primes(unsigned int nprimes);
+std::vector<size_t> get_primes(size_t nprimes);
 
 /** base class for random number generator */
 class Rng {
@@ -24,14 +24,14 @@ public:
 /** for quasi Monte Carlo */
 class HaltonRng : public Rng {
 public:
-	unsigned int numerator;
-	unsigned int denominator;
-	unsigned int base;
+	size_t numerator;
+	size_t denominator;
+	size_t base;
 
 	HaltonRng() {};
-	HaltonRng(unsigned int base);
+	HaltonRng(size_t base);
 
-	void init(unsigned int base);
+	void init(size_t base);
 	float next();
 };
 

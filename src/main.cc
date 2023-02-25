@@ -11,6 +11,7 @@
  * @brief rendererer
  */
 
+#include <fenv.h>
 #include "render.h"
 #include "color.h"
 #include "obj_reader.h"
@@ -47,6 +48,11 @@ int main(int argc, const char **argv)
 	// time rendering for stats
 	struct timespec start_time_spec, end_time_spec;
 	clock_gettime(CLOCK_MONOTONIC_RAW, &start_time_spec);
+
+	// floating point exceptions;
+#ifdef DEBUG
+	feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
+#endif
 
 	// start rendering threads
 	std::vector<std::unique_ptr<RenderThread>> render_threads;

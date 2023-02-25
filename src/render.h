@@ -87,7 +87,7 @@ public:
 	std::vector<std::shared_ptr<Rng>> rngs[2];
 
 	PathTracer(int tid, Scene &scene, unsigned long samples_before_update);
-	PathTracer(int tid, Scene &scene, unsigned long samples_before_update, std::vector<unsigned int> &primes);
+	PathTracer(int tid, Scene &scene, unsigned long samples_before_update, std::vector<size_t> &primes);
 
 	bool sample_new_path(int *last_path);
 	void compute_I(const int last_path);

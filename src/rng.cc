@@ -18,10 +18,10 @@
  * Get nprimes number of primes in order to initialize the halton prime number
  * generators with coprime denominators.
  */
-std::vector<unsigned int> get_primes(unsigned int nprimes)
+std::vector<size_t> get_primes(size_t nprimes)
 {
-	std::vector<unsigned int> result;
-	unsigned int n;
+	std::vector<size_t> result;
+	size_t n;
 	bool is_prime;
 
 	n = 2;
@@ -41,12 +41,12 @@ std::vector<unsigned int> get_primes(unsigned int nprimes)
 	return result;
 }
 
-HaltonRng::HaltonRng(unsigned int base)
+HaltonRng::HaltonRng(size_t base)
 {
 	init(base);
 }
 
-void HaltonRng::init(unsigned int base)
+void HaltonRng::init(size_t base)
 {
 	this->base = base;
 	denominator = base;
@@ -79,7 +79,7 @@ void HaltonRng::init(unsigned int base)
  */
 float HaltonRng::next()
 {
-	unsigned int x, y;
+	size_t x, y;
 	x = denominator - numerator;
 	if (x == 1) {
 		denominator *= base;
