@@ -32,9 +32,9 @@ static int float_compare(const void *a, const void *b)
 }
 
 /** returns the float values of the low/high percentiles in min/max */
-static void get_percentile(float *min, float *max, float low_percentile, float high_percentile, const MultiArray<float> &raw)
+static void get_percentile(float *min, float *max, float low_percentile, float high_percentile, const MultiArray<float> &img_float)
 {
-	MultiArray<float> sorted_copy = raw;
+	MultiArray<float> sorted_copy = img_float;
 	qsort(sorted_copy.data, sorted_copy.len, sizeof(float), float_compare);
 
 	int min_ind = sorted_copy.len * low_percentile;
