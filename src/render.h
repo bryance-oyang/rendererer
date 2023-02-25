@@ -14,19 +14,6 @@
 #include <thread>
 #include "scene.h"
 
-class Path {
-public:
-	float I[NFREQ];
-	float film_x;
-	float film_y;
-
-	// the ith face/normal/prob_dens is at origin of ith ray
-	Ray rays[MAX_BOUNCES_PER_PATH + 2];
-	const Face *faces[MAX_BOUNCES_PER_PATH + 2];
-	Vec normals[MAX_BOUNCES_PER_PATH + 2];
-	float prob_dens[MAX_BOUNCES_PER_PATH + 2];
-};
-
 class RenderThread {
 public:
 	const int tid;

@@ -20,21 +20,17 @@ public:
 	virtual ~Material() {};
 
 	/** returns the prob dens for sampling */
-	virtual float sample_ray(Ray &ray_out, const Ray &ray_in,
-		const Vec &normal, Rng &rng_theta, Rng &rng_phi) const
+	virtual void sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const
 	{
-		(void)ray_out;
-		(void)ray_in;
-		(void)normal;
+		(void)path;
+		(void)pind;
 		(void)rng_theta;
 		(void)rng_phi;
-		return 0;
 	}
-	virtual void transfer(float *I, Ray &ray_out, const Ray &ray_in) const
+	virtual void transfer(Path &path, int pind) const
 	{
-		(void)I;
-		(void)ray_out;
-		(void)ray_in;
+		(void)path;
+		(void)pind;
 	}
 };
 
@@ -44,9 +40,8 @@ public:
 
 	EmitterMaterial(const float *emission);
 
-	float sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &normal,
-		Rng &rng_theta, Rng &rng_phi) const;
-	void transfer(float *I, Ray &ray_out, const Ray &ray_in) const;
+	void sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const;
+	void transfer(Path &path, int pind) const;
 };
 
 class DiffuseMaterial : public Material {
@@ -55,9 +50,8 @@ public:
 
 	DiffuseMaterial(const float *color);
 
-	float sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &normal,
-		Rng &rng_theta, Rng &rng_phi) const;
-	void transfer(float *I, Ray &ray_out, const Ray &ray_in) const;
+	void sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const;
+	void transfer(Path &path, int pind) const;
 };
 
 class GlassMaterial : public Material {
@@ -66,9 +60,8 @@ public:
 
 	GlassMaterial(const float ior);
 
-	float sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &normal,
-		Rng &rng_theta, Rng &rng_phi) const;
-	void transfer(float *I, Ray &ray_out, const Ray &ray_in) const;
+	void sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const;
+	void transfer(Path &path, int pind) const;
 };
 
 #endif /* MATERIAL_H */

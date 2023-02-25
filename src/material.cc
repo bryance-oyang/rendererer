@@ -93,16 +93,20 @@ EmitterMaterial::EmitterMaterial(const float *emission)
 	}
 }
 
-float EmitterMaterial::sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &normal,
-	Rng &rng_theta, Rng &rng_phi) const
+void EmitterMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const
 {
-	return sample_ray_uniform(ray_out, ray_in, normal, rng_theta, rng_phi);
+	Ray &ray_out = path.rays[pind];
+	const Ray &ray_in = path.rays[pind - 1];
+	const Vec &normal = path.normals[pind];
+
+	path.prob_dens[pind] = sample_ray_uniform(ray_out, ray_in, normal, rng_theta, rng_phi);
 }
 
-void EmitterMaterial::transfer(float *I, Ray &ray_out, const Ray &ray_in) const
+void EmitterMaterial::transfer(Path &path, int pind) const
 {
-	(void)ray_out;
-	(void)ray_in;
+	float *I = path.I;
+	(void)pind;
+
 	for (int k = 0; k < NFREQ; k++) {
 		I[k] = emission[k];
 	}
@@ -115,15 +119,20 @@ DiffuseMaterial::DiffuseMaterial(const float *color)
 	}
 }
 
-float DiffuseMaterial::sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &normal,
-	Rng &rng_theta, Rng &rng_phi) const
+void DiffuseMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const
 {
-	return sample_ray_uniform(ray_out, ray_in, normal, rng_theta, rng_phi);
+	Ray &ray_out = path.rays[pind];
+	const Ray &ray_in = path.rays[pind - 1];
+	const Vec &normal = path.normals[pind];
+
+	path.prob_dens[pind] = sample_ray_uniform(ray_out, ray_in, normal, rng_theta, rng_phi);
 }
 
-void DiffuseMaterial::transfer(float *I, Ray &ray_out, const Ray &ray_in) const
+void DiffuseMaterial::transfer(Path &path, int pind) const
 {
-	(void)ray_in;
+	float *I = path.I;
+	const Ray &ray_out = path.rays[pind];
+
 	for (int k = 0; k < NFREQ; k++) {
 		I[k] *= color[k] * INV_2PI_F * ray_out.cosines[0];
 	}
@@ -174,9 +183,11 @@ static float glass_reflection(float ior, float cosair, float cosglass)
 
 GlassMaterial::GlassMaterial(const float ior) : ior{ior} {}
 
-float GlassMaterial::sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &normal,
-	Rng &rng_theta, Rng &rng_phi) const
+void GlassMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_phi) const
 {
+	Ray &ray_out = path.rays[pind];
+	const Ray &ray_in = path.rays[pind - 1];
+	const Vec &normal = path.normals[pind];
 	(void)rng_phi;
 
 	float R;
@@ -205,7 +216,7 @@ float GlassMaterial::sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &norm
 
 		set_ray_prop(ray_out, ray_in.ior, cosrefl,
 			ray_in.is_monochromatic, ray_in.cindex);
-		return R;
+		path.prob_dens[pind] = R;
 	} else {
 		/* sample transmission */
 		float out_ior = (ray_in.ior == ior)?
@@ -224,12 +235,16 @@ float GlassMaterial::sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &norm
 
 		set_ray_prop(ray_out, out_ior, costrans,
 			ray_in.is_monochromatic, ray_in.cindex);
-		return 1.0f - R;
+		path.prob_dens[pind] = 1.0f - R;
 	}
 }
 
-void GlassMaterial::transfer(float *I, Ray &ray_out, const Ray &ray_in) const
+void GlassMaterial::transfer(Path &path, int pind) const
 {
+	float *I = path.I;
+	const Ray &ray_out = path.rays[pind];
+	const Ray &ray_in = path.rays[pind - 1];
+
 	float R;
 	float cosair, cosglass;
 

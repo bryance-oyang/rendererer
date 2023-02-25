@@ -86,8 +86,7 @@ bool PathTracer::sample_new_path(int *last_path)
 			path.rays[i-1].cosines[1] = cos_in;
 		}
 
-		path.prob_dens[i] = material.sample_ray(path.rays[i], path.rays[i-1],
-			path.normals[i], *rngs[0][i], *rngs[1][i]);
+		material.sample_ray(path, i, *rngs[0][i], *rngs[1][i]);
 	}
 
 	i--;
@@ -101,12 +100,16 @@ void PathTracer::compute_I(const int last_path)
 	}
 
 	for (int i = last_path; i > 0; i--) {
-		for (int k = 0; k < NFREQ; k++) {
-			path.I[k] /= path.prob_dens[i];
+		if (path.is_monochromatic) {
+			path.I[path.cindex] /= path.prob_dens[i];
+		} else {
+			for (int k = 0; k < NFREQ; k++) {
+				path.I[k] /= path.prob_dens[i];
+			}
 		}
 
 		const Material &material = *path.faces[i]->material;
-		material.transfer(path.I, path.rays[i], path.rays[i-1]);
+		material.transfer(path, i);
 	}
 }
 
@@ -118,6 +121,7 @@ void PathTracer::render()
 		if (!sample_new_path(&last_path)) {
 			continue;
 		}
+		path.determine_monochromatic(last_path);
 		compute_I(last_path);
 
 		int i, j;
