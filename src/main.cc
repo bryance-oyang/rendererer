@@ -12,6 +12,7 @@
  */
 
 #include "render.h"
+#include "color.h"
 #include "obj_reader.h"
 #include "img_broadcast.h"
 

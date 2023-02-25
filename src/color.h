@@ -49,6 +49,7 @@ public:
 	static ColorRGB XYZ_to_RGB(const ColorXYZ &in);
 	static ColorRGB8 RGB_to_RGB8(const ColorRGB &in);
 	static ColorXYZ physical_to_XYZ(const float *I);
+	static ColorRGB physical_to_RGB(const float *I);
 	static ColorRGB8 physical_to_RGB8(const float *I);
 };
 

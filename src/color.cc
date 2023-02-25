@@ -114,9 +114,14 @@ ColorXYZ Color::physical_to_XYZ(const float *I)
 	return out;
 }
 
-ColorRGB8 Color::physical_to_RGB8(const float *I)
+ColorRGB Color::physical_to_RGB(const float *I)
 {
 	ColorXYZ XYZ = physical_to_XYZ(I);
-	ColorRGB RGB = XYZ_to_RGB(XYZ);
+	return XYZ_to_RGB(XYZ);
+}
+
+ColorRGB8 Color::physical_to_RGB8(const float *I)
+{
+	ColorRGB RGB = physical_to_RGB(I);
 	return RGB_to_RGB8(RGB);
 }
