@@ -12,6 +12,9 @@
 float Color::wavelengths[NWAVELEN];
 float Color::frequencies[NWAVELEN];
 float Color::xyzbar[NWAVELEN][3];
+float Color::r_table[NWAVELEN];
+float Color::g_table[NWAVELEN];
+float Color::b_table[NWAVELEN];
 
 ColorXYZ::ColorXYZ() {}
 ColorXYZ::ColorXYZ(float X, float Y, float Z) : XYZ{X, Y, Z} {}
@@ -47,6 +50,18 @@ static void color_xyzbar(float wavelen, float *xyzbar)
 		+ 0.681f * color_piecewise_gauss(wavelen, 459.0f, 26.0f, 13.8f);
 }
 
+/** initialize physical spectrum of RGB */
+static void make_rgb_table(float *wavelengths, float *r_table, float *g_table, float *b_table)
+{
+
+	for (int k = 0; k < NWAVELEN; k++) {
+		float l = wavelengths[k];
+		r_table[k] = color_piecewise_gauss(l, 700, 50, 50);
+		g_table[k] = color_piecewise_gauss(l, 532, 50, 50);
+		b_table[k] = color_piecewise_gauss(l, 400, 50, 50);
+	}
+}
+
 /** initialize wavelengths/frequencies and color matching function tables */
 void Color::init()
 {
@@ -60,6 +75,8 @@ void Color::init()
 	for (int k = 0; k < NWAVELEN; k++) {
 		color_xyzbar(wavelengths[k], xyzbar[k]);
 	}
+
+	make_rgb_table(wavelengths, r_table, g_table, b_table);
 }
 
 static float gamma_correct(float rgb_lin)
@@ -124,4 +141,21 @@ ColorRGB8 Color::physical_to_RGB8(const float *I)
 {
 	ColorRGB RGB = physical_to_RGB(I);
 	return RGB_to_RGB8(RGB);
+}
+
+/** attempts to make a wavelength based curve based on rgb */
+void Color::rgbarray_to_physicalarray(const float *rgb, float *physical)
+{
+	if (NWAVELEN == 3) {
+		for (int k = 0; k < NWAVELEN; k++) {
+			physical[k] = rgb[k];
+		}
+	} else {
+		for (int k = 0; k < NWAVELEN; k++) {
+			physical[k] = 0;
+			physical[k] += rgb[0] * r_table[k];
+			physical[k] += rgb[1] * g_table[k];
+			physical[k] += rgb[2] * b_table[k];
+		}
+	}
 }

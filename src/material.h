@@ -42,9 +42,10 @@ public:
 
 class EmitterMaterial : public Material {
 public:
+	float rgb_emission[3];
 	float emission[NWAVELEN];
 
-	EmitterMaterial(const float *emission);
+	EmitterMaterial(const float *rgb_emission);
 
 	void sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const;
 	void transfer(Path &path, int pind) const;
@@ -52,9 +53,10 @@ public:
 
 class DiffuseMaterial : public Material {
 public:
+	float rgb_color[3];
 	float color[NWAVELEN];
 
-	DiffuseMaterial(const float *color);
+	DiffuseMaterial(const float *rgb_color);
 
 	void sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const;
 	void transfer(Path &path, int pind) const;

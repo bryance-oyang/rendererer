@@ -37,6 +37,7 @@ void ObjReader::parse_mtl()
 
 		if (line.rfind("newmtl ", 0) == 0) {
 			sline >> ignore;
+			sline.seekg(1, std::ios_base::cur);
 			std::getline(sline, name);
 			MTLMaterial &mat = mtl_materials.emplace_back(name);
 

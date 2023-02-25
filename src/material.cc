@@ -80,12 +80,13 @@ static inline float sample_ray_cosine(Ray &ray_out, const Ray &ray_in,
 	return z * INV_PI_F / (1 - GEOMETRY_EPSILON*GEOMETRY_EPSILON);
 }
 
-EmitterMaterial::EmitterMaterial(const float *emission)
+EmitterMaterial::EmitterMaterial(const float *rgb_emission)
 {
 	is_light = true;
-	for (int i = 0; i < NWAVELEN; i++) {
-		this->emission[i] = emission[i];
+	for (int i = 0; i < 3; i++) {
+		this->rgb_emission[i] = rgb_emission[i];
 	}
+	Color::rgbarray_to_physicalarray(this->rgb_emission, this->emission);
 }
 
 void EmitterMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const
@@ -105,11 +106,12 @@ void EmitterMaterial::transfer(Path &path, int pind) const
 	I = emission;
 }
 
-DiffuseMaterial::DiffuseMaterial(const float *color)
+DiffuseMaterial::DiffuseMaterial(const float *rgb_color)
 {
-	for (int i = 0; i < NWAVELEN; i++) {
-		this->color[i] = color[i];
+	for (int i = 0; i < 3; i++) {
+		this->rgb_color[i] = rgb_color[i];
 	}
+	Color::rgbarray_to_physicalarray(this->rgb_color, this->color);
 }
 
 void DiffuseMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const
