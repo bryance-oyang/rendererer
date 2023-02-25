@@ -47,6 +47,7 @@ static void color_xyzbar(float wavelen, float *xyzbar)
 		+ 0.681f * color_piecewise_gauss(wavelen, 459.0f, 26.0f, 13.8f);
 }
 
+/** initialize wavelengths/frequencies and color matching function tables */
 void Color::init()
 {
 	/* linearly interpolate 400-700nm */

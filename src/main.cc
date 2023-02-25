@@ -31,11 +31,15 @@ int main(int argc, const char **argv)
 
 	// build scene
 	Scene scene;
-	if (argc < 3) {
-		scene = build_test_scene2();
-	} else {
+	if (argc >= 3) {
 		Camera camera{43, 35, Vec{0,-7,-0.5}, Vec{0,1,0}, IMAGE_WIDTH, IMAGE_HEIGHT};
 		scene = scene_from_files(argv[1], argv[2], camera);
+	} else {
+		printf("rendererer: warning: input scene files not specified\n");
+		printf("usage: rendererer OBJ_FILE MTL_FILE\n");
+		printf("defaulting to built-in test-scene\n");
+		fflush(stdout);
+		scene = build_test_scene2();
 	}
 	scene.init();
 
