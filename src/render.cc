@@ -59,6 +59,9 @@ bool PathTracer::sample_new_path(int *last_path)
 	const Camera &camera = scene.camera;
 	const Octree &octree_root = scene.octree_root;
 
+	// init path
+	path.I.is_monochromatic = false;
+
 	// first ray from camera
 	path.film_x = rngs[0][0]->next() * camera.film_width - camera.film_width / 2;
 	path.film_y = rngs[1][0]->next() * camera.film_height - camera.film_height / 2;
