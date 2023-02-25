@@ -119,18 +119,6 @@ Ray::Ray(const Vec &origin, const Vec &direction)
 	dir.normalize();
 }
 
-void Path::determine_monochromatic(int last_path)
-{
-	is_monochromatic = false;
-	for (int i = last_path; i > 0; i--) {
-		if(rays[i].is_monochromatic) {
-			is_monochromatic = true;
-			cindex = rays[i].cindex;
-			return;
-		}
-	}
-}
-
 Box::Box(float corners[2][3])
 {
 	for (int i = 0; i < 2; i++) {

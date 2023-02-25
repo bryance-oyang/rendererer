@@ -64,10 +64,6 @@ public:
 	float ior;
 	/** cosine at orig and cosine at hit point (positive if ray on same side of normal) */
 	float cosines[2];
-	/** dispersive medium will convert rays to monochromatic */
-	bool is_monochromatic = false;
-	/** index of color for monochromatic case */
-	int cindex;
 
 	Ray() {};
 	Ray(const Vec &origin, const Vec &direction);
@@ -85,12 +81,10 @@ public:
 	Vec normals[MAX_BOUNCES_PER_PATH + 2];
 	float prob_dens[MAX_BOUNCES_PER_PATH + 2];
 
-	/** path is monochromatic if any ray is */
-	bool is_monochromatic;
+	/** dispersive medium will convert path to monochromatic */
+	bool is_monochromatic = false;
 	/** index of color for monochromatic case */
 	int cindex;
-
-	void determine_monochromatic(int last_path);
 };
 
 /**

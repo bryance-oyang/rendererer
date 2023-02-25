@@ -25,13 +25,10 @@
 #include "material.h"
 #include "color.h"
 
-static inline void set_ray_prop(Ray &ray_out, float ior, float cos_out,
-	bool is_monochromatic, int cindex)
+static inline void set_ray_prop(Ray &ray_out, float ior, float cos_out)
 {
 	ray_out.ior = ior;
 	ray_out.cosines[0] = cos_out;
-	ray_out.is_monochromatic = is_monochromatic;
-	ray_out.cindex = cindex;
 }
 
 /**
@@ -54,8 +51,7 @@ static inline float sample_ray_uniform(Ray &ray_out, const Ray &ray_in,
 
 	z_to_normal_rotation(normal, ray_out.dir, 1);
 
-	set_ray_prop(ray_out, ray_in.ior, normal * ray_out.dir,
-		ray_in.is_monochromatic, ray_in.cindex);
+	set_ray_prop(ray_out, ray_in.ior, normal * ray_out.dir);
 	return INV_2PI_F;
 }
 
@@ -80,8 +76,7 @@ static inline float sample_ray_cosine(Ray &ray_out, const Ray &ray_in,
 
 	z_to_normal_rotation(normal, ray_out.dir, 1);
 
-	set_ray_prop(ray_out, ray_in.ior, normal * ray_out.dir,
-		ray_in.is_monochromatic, ray_in.cindex);
+	set_ray_prop(ray_out, ray_in.ior, normal * ray_out.dir);
 	return z * INV_PI_F / (1 - GEOMETRY_EPSILON*GEOMETRY_EPSILON);
 }
 
@@ -214,8 +209,7 @@ void GlassMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_ph
 		/* sample reflection */
 		ray_out.dir = 2*cosrefl*normal + ray_in.dir;
 
-		set_ray_prop(ray_out, ray_in.ior, cosrefl,
-			ray_in.is_monochromatic, ray_in.cindex);
+		set_ray_prop(ray_out, ray_in.ior, cosrefl);
 		path.prob_dens[pind] = R;
 	} else {
 		/* sample transmission */
@@ -233,8 +227,7 @@ void GlassMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_ph
 				+ ior * (ray_in.dir + ray_in.cosines[1] * normal);
 		}
 
-		set_ray_prop(ray_out, out_ior, costrans,
-			ray_in.is_monochromatic, ray_in.cindex);
+		set_ray_prop(ray_out, out_ior, costrans);
 		path.prob_dens[pind] = 1.0f - R;
 	}
 }

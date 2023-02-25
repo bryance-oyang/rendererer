@@ -121,7 +121,6 @@ void PathTracer::render()
 		if (!sample_new_path(&last_path)) {
 			continue;
 		}
-		path.determine_monochromatic(last_path);
 		compute_I(last_path);
 
 		int i, j;
