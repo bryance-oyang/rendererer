@@ -30,7 +30,7 @@
 #endif /* DEBUG */
 
 #define SPEED_OF_LIGHT 299792458.0f
-/** This should be 3 for color or 1 for bw */
+/** This should be 3 for direct srgb color any other for physical wavelengths */
 #define NWAVELEN 3
 
 /** pi as float, not double for speed */

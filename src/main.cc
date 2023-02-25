@@ -61,11 +61,16 @@ int main(int argc, const char **argv)
 	int max_client = 3;
 	int timeout_ms = 0;
 	float max_broadcast_fps = 10;
+#if NWAVELEN == 3
 	ImgBroadcastThread img_bcast_thread{
 		std::make_unique<SRGBImgDirectConverter>(), scene.camera,
-		port, max_client, timeout_ms, max_broadcast_fps
-	};
-#endif
+		port, max_client, timeout_ms, max_broadcast_fps};
+#else /* NWAVELEN */
+	ImgBroadcastThread img_bcast_thread{
+		std::make_unique<SRGBImgPhysicalConverter>(), scene.camera,
+		port, max_client, timeout_ms, max_broadcast_fps};
+#endif /* NWAVELEN */
+#endif /* BENCHMARKING */
 
 	// finish rendering threads
 	for (int tid = 0; tid < NTHREAD; tid++) {
