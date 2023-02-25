@@ -95,22 +95,15 @@ bool PathTracer::sample_new_path(int *last_path)
 
 void PathTracer::compute_I(const int last_path)
 {
-	for (int k = 0; k < NFREQ; k++) {
-		path.I[k] = 0;
-	}
+	path.I = 0.0f;
 
+	float prod_prob_dens = 1.0f;
 	for (int i = last_path; i > 0; i--) {
-		if (path.is_monochromatic) {
-			path.I[path.cindex] /= path.prob_dens[i];
-		} else {
-			for (int k = 0; k < NFREQ; k++) {
-				path.I[k] /= path.prob_dens[i];
-			}
-		}
-
+		prod_prob_dens *= path.prob_dens[i];
 		const Material &material = *path.faces[i]->material;
 		material.transfer(path, i);
 	}
+	path.I /= prod_prob_dens;
 }
 
 void PathTracer::render()
@@ -125,8 +118,13 @@ void PathTracer::render()
 
 		int i, j;
 		camera.get_ij(&i, &j, path.film_x, path.film_y);
-		for (int k = 0; k < NFREQ; k++) {
-			film_buffer(i, j, k) += path.I[k];
+		if (path.I.is_monochromatic) {
+			int cindex = path.I.cindex;
+			film_buffer(i, j, cindex) += path.I.I[cindex] * NFREQ;
+		} else {
+			for (int k = 0; k < NFREQ; k++) {
+				film_buffer(i, j, k) += path.I.I[k];
+			}
 		}
 
 		if (!BENCHMARKING && samples % samples_before_update == 0) {

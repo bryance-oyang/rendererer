@@ -99,12 +99,10 @@ void EmitterMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_
 
 void EmitterMaterial::transfer(Path &path, int pind) const
 {
-	float *I = path.I;
+	SpecificIntensity &I = path.I;
 	(void)pind;
 
-	for (int k = 0; k < NFREQ; k++) {
-		I[k] = emission[k];
-	}
+	I = emission;
 }
 
 DiffuseMaterial::DiffuseMaterial(const float *color)
@@ -125,12 +123,11 @@ void DiffuseMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_
 
 void DiffuseMaterial::transfer(Path &path, int pind) const
 {
-	float *I = path.I;
+	SpecificIntensity &I = path.I;
 	const Ray &ray_out = path.rays[pind];
 
-	for (int k = 0; k < NFREQ; k++) {
-		I[k] *= color[k] * INV_2PI_F * ray_out.cosines[0];
-	}
+	I *= color;
+	I *= INV_2PI_F * ray_out.cosines[0];
 }
 
 /**
@@ -234,7 +231,7 @@ void GlassMaterial::sample_ray(Path &path, int pind, Rng &rng_theta, Rng &rng_ph
 
 void GlassMaterial::transfer(Path &path, int pind) const
 {
-	float *I = path.I;
+	SpecificIntensity &I = path.I;
 	const Ray &ray_out = path.rays[pind];
 	const Ray &ray_in = path.rays[pind - 1];
 
@@ -255,21 +252,15 @@ void GlassMaterial::transfer(Path &path, int pind) const
 
 	if (ray_in.ior == ray_out.ior) {
 		/* reflection */
-		for (int k = 0; k < NFREQ; k++) {
-			I[k] *= R;
-		}
+		I *= R;
 	} else {
 		/* transmission */
 		if (ray_in.ior == ior) {
 			/* physically passing into glass */
-			for (int k = 0; k < NFREQ; k++) {
-				I[k] *= (1.0f - R) * SQR(ior);
-			}
+			I *= (1.0f - R) * SQR(ior);
 		} else {
 			/* physically passing into air */
-			for (int k = 0; k < NFREQ; k++) {
-				I[k] *= (1.0f - R) / SQR(ior);
-			}
+			I *= (1.0f - R) / SQR(ior);
 		}
 	}
 }

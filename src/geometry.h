@@ -69,24 +69,6 @@ public:
 	Ray(const Vec &origin, const Vec &direction);
 };
 
-class Path {
-public:
-	float I[NFREQ];
-	float film_x;
-	float film_y;
-
-	// the ith face/normal/prob_dens is at origin of ith ray
-	Ray rays[MAX_BOUNCES_PER_PATH + 2];
-	const Face *faces[MAX_BOUNCES_PER_PATH + 2];
-	Vec normals[MAX_BOUNCES_PER_PATH + 2];
-	float prob_dens[MAX_BOUNCES_PER_PATH + 2];
-
-	/** dispersive medium will convert path to monochromatic */
-	bool is_monochromatic = false;
-	/** index of color for monochromatic case */
-	int cindex;
-};
-
 /**
  * bounding boxes: used for octree to more quickly test ray intersection or
  * triangle inclusion in octree box
