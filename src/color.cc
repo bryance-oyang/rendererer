@@ -56,7 +56,7 @@ static void make_rgb_table(float *wavelengths, float *r_table, float *g_table, f
 
 	for (int k = 0; k < NWAVELEN; k++) {
 		float l = wavelengths[k];
-		r_table[k] = 1.00f * color_piecewise_gauss(l, 677, 36, 36);
+		r_table[k] = 0.97f * color_piecewise_gauss(l, 677, 36, 36);
 		g_table[k] = 0.50f * color_piecewise_gauss(l, 532, 36, 36);
 		b_table[k] = 0.49f * color_piecewise_gauss(l, 437, 36, 36);
 	}
