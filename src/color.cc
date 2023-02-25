@@ -58,7 +58,7 @@ static void make_rgb_table(float *wavelengths, float *r_table, float *g_table, f
 		float l = wavelengths[k];
 		r_table[k] = 1.00f * color_piecewise_gauss(l, 677, 50, 50);
 		g_table[k] = 0.70f * color_piecewise_gauss(l, 532, 50, 50);
-		b_table[k] = 0.66f * color_piecewise_gauss(l, 437, 50, 50);
+		b_table[k] = 0.67f * color_piecewise_gauss(l, 437, 50, 50);
 	}
 }
 
