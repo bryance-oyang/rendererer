@@ -25,6 +25,15 @@
 #include "material.h"
 #include "color.h"
 
+static inline void set_ray_prop(Ray &ray_out, float ior, float cos_out,
+	bool is_monochromatic, int cindex)
+{
+	ray_out.ior = ior;
+	ray_out.cosines[0] = cos_out;
+	ray_out.is_monochromatic = is_monochromatic;
+	ray_out.cindex = cindex;
+}
+
 /**
  * Sample ray uniformly in hemisphere
  */
@@ -45,8 +54,8 @@ static inline float sample_ray_uniform(Ray &ray_out, const Ray &ray_in,
 
 	z_to_normal_rotation(normal, ray_out.dir, 1);
 
-	ray_out.ior = ray_in.ior;
-	ray_out.cosines[0] = normal * ray_out.dir;
+	set_ray_prop(ray_out, ray_in.ior, normal * ray_out.dir,
+		ray_in.is_monochromatic, ray_in.cindex);
 	return INV_2PI_F;
 }
 
@@ -71,9 +80,8 @@ static inline float sample_ray_cosine(Ray &ray_out, const Ray &ray_in,
 
 	z_to_normal_rotation(normal, ray_out.dir, 1);
 
-	ray_out.ior = ray_in.ior;
-	ray_out.cosines[0] = normal * ray_out.dir;
-
+	set_ray_prop(ray_out, ray_in.ior, normal * ray_out.dir,
+		ray_in.is_monochromatic, ray_in.cindex);
 	return z * INV_PI_F / (1 - GEOMETRY_EPSILON*GEOMETRY_EPSILON);
 }
 
@@ -193,26 +201,29 @@ float GlassMaterial::sample_ray(Ray &ray_out, const Ray &ray_in, const Vec &norm
 
 	if (rng_theta.next() < R) {
 		/* sample reflection */
-		ray_out.ior = ray_in.ior;
-		ray_out.cosines[0] = cosrefl;
 		ray_out.dir = 2*cosrefl*normal + ray_in.dir;
 
+		set_ray_prop(ray_out, ray_in.ior, cosrefl,
+			ray_in.is_monochromatic, ray_in.cindex);
 		return R;
 	} else {
 		/* sample transmission */
-		ray_out.ior = (ray_in.ior == ior)? SPACE_INDEX_REFRACT : ior;
-		ray_out.cosines[0] = costrans;
+		float out_ior = (ray_in.ior == ior)?
+			SPACE_INDEX_REFRACT
+			: ior;
 
-		if (ray_out.ior == ior) {
+		if (out_ior == ior) {
 			/* out is glass: -cos_out nhat + 1/n (vin + cos_in nhat) */
-			ray_out.dir = -ray_out.cosines[0] * normal
+			ray_out.dir = -costrans * normal
 				+ 1.0f/ior * (ray_in.dir + ray_in.cosines[1] * normal);
 		} else {
 			/* out is air: -cos_out nhat + n (vin + cos_in nhat) */
-			ray_out.dir = -ray_out.cosines[0] * normal
+			ray_out.dir = -costrans * normal
 				+ ior * (ray_in.dir + ray_in.cosines[1] * normal);
 		}
 
+		set_ray_prop(ray_out, out_ior, costrans,
+			ray_in.is_monochromatic, ray_in.cindex);
 		return 1.0f - R;
 	}
 }

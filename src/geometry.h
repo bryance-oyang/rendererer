@@ -64,6 +64,10 @@ public:
 	float ior;
 	/** cosine at orig and cosine at hit point (positive if ray on same side of normal) */
 	float cosines[2];
+	/** dispersive medium will convert rays to monochromatic */
+	bool is_monochromatic = false;
+	/** index of color for monochromatic case */
+	int cindex;
 
 	Ray() {};
 	Ray(const Vec &origin, const Vec &direction);
