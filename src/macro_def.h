@@ -31,7 +31,7 @@
 
 #define SPEED_OF_LIGHT 299792458.0f
 /** This should be 3 for direct srgb color any other for physical wavelengths */
-#define NWAVELEN 3
+#define NWAVELEN 100
 
 /** pi as float, not double for speed */
 #define PI_F ((float)M_PI)

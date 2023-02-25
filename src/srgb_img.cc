@@ -109,5 +109,6 @@ void SRGBImgPhysicalConverter::make_image(const MultiArray<float> &raw)
 		}
 	}
 
+	alloc_same_size(raw);
 	percentile_linmap(img_data, srgb_float);
 }

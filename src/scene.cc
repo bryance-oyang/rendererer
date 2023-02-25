@@ -61,14 +61,14 @@ Camera &Camera::operator=(const Camera &camera)
 
 void Camera::init_pixel_data()
 {
-	pixel_data = MultiArray<float>{ny, nx, NWAVELEN};
-	pixel_data.fill(0);
+	raw = MultiArray<float>{ny, nx, NWAVELEN};
+	raw.fill(0);
 }
 
 void Camera::update_pixel_data(MultiArray<float> &other) noexcept
 {
 	mutex.lock();
-	pixel_data += other;
+	raw += other;
 	pixel_data_updated = true;
 	mutex.unlock();
 

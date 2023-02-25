@@ -37,7 +37,7 @@ public:
 	bool pixel_data_updated = false;
 	/** indexing order: same convention as image:
 	 * y, x, freq; use macro campera_pix to access */
-	MultiArray<float> pixel_data;
+	MultiArray<float> raw;
 	std::mutex mutex;
 	std::condition_variable cond;
 

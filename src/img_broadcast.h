@@ -80,7 +80,7 @@ public:
 	void broadcast()
 	{
 		camera.mutex.lock();
-		img_converter->make_image(camera.pixel_data);
+		img_converter->make_image(camera.raw);
 		camera.mutex.unlock();
 
 		ws_ctube_broadcast(ctube, img_converter->img_data.data,
@@ -102,7 +102,7 @@ public:
 					}
 				}
 				camera.pixel_data_updated = false;
-				img_converter->make_image(camera.pixel_data);
+				img_converter->make_image(camera.raw);
 			} /* unlock camera mutex */
 
 			ws_ctube_broadcast(ctube, img_converter->img_data.data,

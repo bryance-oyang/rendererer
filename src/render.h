@@ -30,7 +30,7 @@ public:
 	RenderThread(int tid, Scene &scene, unsigned long samples_before_update)
 	: tid{tid}, scene{scene}, camera{scene.camera}, samples_before_update{samples_before_update}
 	{
-		const MultiArray<float> &pixel_data = camera.pixel_data;
+		const MultiArray<float> &pixel_data = camera.raw;
 		film_buffer = MultiArray<float>{pixel_data.n[0], pixel_data.n[1], pixel_data.n[2]};
 		film_buffer.fill(0);
 	}
