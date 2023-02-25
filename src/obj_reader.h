@@ -14,6 +14,7 @@
 #include <fstream>
 #include <string>
 #include "geometry.h"
+#include "material.h"
 
 /** helper class for representing mtl format materials */
 class MTLMaterial {
@@ -24,6 +25,7 @@ public:
 	float Ns = 0;
 	float Ni = 0;
 	float d = 0;
+	std::unique_ptr<CauchyCoeff> cauchy_coeff = nullptr;
 
 	MTLMaterial(std::string name) : name{name} {}
 };

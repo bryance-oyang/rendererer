@@ -13,7 +13,6 @@
 
 #include <sstream>
 #include "obj_reader.h"
-#include "material.h"
 
 ObjReader::ObjReader(const char *obj_fname, const char *mtl_fname)
 {
@@ -30,14 +29,28 @@ void ObjReader::parse_mtl()
 {
 	std::string ignore;
 	std::string name;
+	std::string cauchy_A, cauchy_B;
 
 	std::string line;
 	while (std::getline(mtl_file, line)) {
 		std::istringstream sline{line};
 
 		if (line.rfind("newmtl ", 0) == 0) {
-			sline >> ignore >> name;
-			mtl_materials.emplace_back(name);
+			sline >> ignore;
+			std::getline(sline, name);
+			MTLMaterial &mat = mtl_materials.emplace_back(name);
+
+			/* CAUCHY_A_B: extract cauchy coefficients */
+			if (name.rfind("CAUCHY_", 0) == 0) {
+				std::istringstream sname{name};
+				std::getline(sname, ignore, '_');
+				std::getline(sname, cauchy_A, '_');
+				std::getline(sname, cauchy_B);
+
+				mat.cauchy_coeff = std::make_unique<CauchyCoeff>();
+				mat.cauchy_coeff->A = std::stof(cauchy_A);
+				mat.cauchy_coeff->B = std::stof(cauchy_B);
+			}
 			continue;
 		}
 
@@ -73,7 +86,10 @@ void ObjReader::create_all_materials()
 
 	// from obj file
 	for (auto &mtl_mat : mtl_materials) {
-		if (mtl_mat.Ke[0] > 0 || mtl_mat.Ke[1] > 0 || mtl_mat.Ke[2] > 0) {
+		if (mtl_mat.cauchy_coeff) {
+			// dispersive glass
+			all_materials.push_back(std::make_unique<DispersiveGlassMaterial>(*mtl_mat.cauchy_coeff));
+		} else if (mtl_mat.Ke[0] > 0 || mtl_mat.Ke[1] > 0 || mtl_mat.Ke[2] > 0) {
 			// emitter
 			all_materials.push_back(std::make_unique<EmitterMaterial>(mtl_mat.Ke));
 		} else if (mtl_mat.d < 1) {

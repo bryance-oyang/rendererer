@@ -275,9 +275,12 @@ void GlassMaterial::transfer(Path &path, int pind) const
 	glass_transfer(ior, path, pind);
 }
 
-DispersiveGlassMaterial::DispersiveGlassMaterial(const float ior, const float dispersion)
+/** https://en.wikipedia.org/wiki/Cauchy%27s_equation */
+DispersiveGlassMaterial::DispersiveGlassMaterial(const CauchyCoeff &cauchy_coeff)
 {
-
+	for (int k = 0; k < NWAVELEN; k++) {
+		ior_table[k] = cauchy_coeff.A + cauchy_coeff.B / SQR(Color::wavelengths[k]);
+	}
 }
 
 void DispersiveGlassMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const

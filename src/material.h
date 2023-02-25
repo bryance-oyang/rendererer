@@ -12,6 +12,12 @@
 #include "photon.h"
 #include "rng.h"
 
+class CauchyCoeff {
+public:
+	float A;
+	float B;
+};
+
 /** base class for materials */
 class Material {
 public:
@@ -69,7 +75,7 @@ public:
 	float ior_table[NWAVELEN];
 	float dispersion;
 
-	DispersiveGlassMaterial(const float ior, const float dispersion);
+	DispersiveGlassMaterial(const CauchyCoeff &cauchy_coeff);
 
 	void sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const;
 	void transfer(Path &path, int pind) const;

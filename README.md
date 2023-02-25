@@ -11,6 +11,10 @@ View image in a browser while rendering: `img_viewer/index.html` (via [websocket
 
 Adjust image size, number of threads, etc in `src/macro_def.h` and re-`make`.
 
+## Full frequency-dependent
+Dispersive glass: set material name in `.mtl` to `CAUCHY_#_#` where # are floats
+indicating the Cauchy coefficients A and B in order (n = A + B / wavelen^2).
+
 ## Cornell Box
 
 ![cornell_box_img](cornell_box.png)
