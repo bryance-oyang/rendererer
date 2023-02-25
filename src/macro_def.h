@@ -9,14 +9,14 @@
 
 #define BENCHMARKING 0
 #define SAMPLES_PER_BROADCAST ((unsigned long long)(1 << 16))
-#define MAX_BOUNCES_PER_PATH 8
+#define MAX_BOUNCES_PER_PATH 6
 
 #ifndef DEBUG
 /* nondebug */
 
 #define NTHREAD 20
-#define IMAGE_WIDTH (1 << 8)
-#define IMAGE_HEIGHT (1 << 8)
+#define IMAGE_WIDTH 320
+#define IMAGE_HEIGHT 320
 #define AVG_SAMPLE_PER_PIX ((unsigned long long)(1 << 15))
 
 #else /* DEBUG */
@@ -31,7 +31,7 @@
 
 #define SPEED_OF_LIGHT 299792458.0f
 /** This should be 3 for direct srgb color any other for physical wavelengths */
-#define NWAVELEN 16
+#define NWAVELEN 28
 
 /** pi as float, not double for speed */
 #define PI_F ((float)M_PI)
