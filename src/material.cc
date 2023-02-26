@@ -201,7 +201,7 @@ static void glass_sample_ray(float ior, Path &path, int pind, Rng &rng)
 
 	R = glass_reflection(ior, cosair, cosglass);
 
-	if (rng.next() < R) {
+	if (rng.next() <= R) {
 		/* sample reflection */
 		ray_out.dir = 2*cosrefl*normal + ray_in.dir;
 
