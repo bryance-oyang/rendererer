@@ -24,9 +24,9 @@ public:
 /** for quasi Monte Carlo */
 class HaltonRng : public Rng {
 public:
+	const unsigned long base;
 	unsigned long numerator;
 	unsigned long denominator;
-	const unsigned long base;
 
 	HaltonRng(unsigned long base);
 
