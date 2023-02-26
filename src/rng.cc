@@ -12,16 +12,17 @@
  */
 
 #include <cstdlib>
+#include <cstdint>
 #include "rng.h"
 
 /**
  * Get nprimes number of primes in order to initialize the halton prime number
  * generators with coprime denominators.
  */
-std::vector<size_t> get_primes(size_t nprimes)
+std::vector<unsigned long> get_primes(unsigned long nprimes)
 {
-	std::vector<size_t> result;
-	size_t n;
+	std::vector<unsigned long> result;
+	unsigned long n;
 	bool is_prime;
 
 	n = 2;
@@ -41,14 +42,14 @@ std::vector<size_t> get_primes(size_t nprimes)
 	return result;
 }
 
-HaltonRng::HaltonRng(size_t base)
+HaltonRng::HaltonRng(unsigned long base)
+: base{base}
 {
-	init(base);
+	reset();
 }
 
-void HaltonRng::init(size_t base)
+void HaltonRng::reset()
 {
-	this->base = base;
 	denominator = base;
 	numerator = 1;
 }
@@ -79,11 +80,15 @@ void HaltonRng::init(size_t base)
  */
 float HaltonRng::next()
 {
-	size_t x, y;
+	unsigned long x, y;
 	x = denominator - numerator;
 	if (x == 1) {
-		denominator *= base;
-		numerator = 1;
+		if (denominator >= (SIZE_MAX >> 14)) {
+			reset();
+		} else {
+			denominator *= base;
+			numerator = 1;
+		}
 	} else {
 		y = denominator;
 		do {

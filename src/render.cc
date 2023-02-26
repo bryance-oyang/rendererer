@@ -29,7 +29,7 @@ PathTracer::PathTracer(int tid, Scene &scene, unsigned long samples_before_updat
 
 /** constructor for halton rngs (quasi Monte Carlo) */
 PathTracer::PathTracer(int tid, Scene &scene, unsigned long samples_before_update,
-	std::vector<size_t> &primes)
+	std::vector<unsigned long> &primes)
 : RenderThread(tid, scene, samples_before_update)
 {
 	std::shared_ptr<RandRng> rand_r_rng = std::make_shared<RandRng>(tid * (UINT_MAX / NTHREAD));
