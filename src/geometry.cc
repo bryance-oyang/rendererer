@@ -13,6 +13,7 @@
 
 #include <cfloat>
 #include "geometry.h"
+#include "macro_def.h"
 
 /* see scene.cc */
 extern float global_characteristic_length_scale;
@@ -99,6 +100,20 @@ float Vec::len() const
 void Vec::normalize()
 {
 	*this /= this->len();
+}
+
+const Vec &PhotonCache::get_dir(float random_float) const
+{
+	int ind = sample_ind(random_float, PHOTON_CACHE_SIZE);
+	return cache[ind];
+}
+
+void PhotonCache::put_dir(const Vec &ray_out_dir)
+{
+	if (likely(cache.size() >= PHOTON_CACHE_SIZE)) {
+		cache.erase(cache.begin());
+	}
+	cache.push_back(ray_out_dir);
 }
 
 Face::Face(const Vec &v0, const Vec &v1, const Vec &v2)
@@ -351,4 +366,20 @@ void z_to_normal_rotation(const Vec &normal, Vec &v, int sgn)
 	zxn.x[2] = 0;
 
 	v = costheta*v + sgn*(zxn^v) + ((zxn*v)/(1.0f + costheta))*zxn;
+}
+
+/** given a random float, give a random int from [0, list_len-1] */
+int sample_ind(float random_float, int list_len)
+{
+	const float max_ind_float = list_len - 1 + 0.001f;
+	int ind = (int)(max_ind_float * random_float);
+
+	// ensure clip ind to [0, list_len - 1]
+	if (unlikely(ind > list_len - 1)) {
+		ind = list_len - 1;
+	} else if (unlikely(ind < 0)) {
+		ind = 0;
+	}
+
+	return ind;
 }

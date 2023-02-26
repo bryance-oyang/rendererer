@@ -22,6 +22,7 @@ public:
 class Material {
 public:
 	bool is_light = false;
+	bool is_diffuse = false;
 
 	virtual ~Material() {};
 

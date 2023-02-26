@@ -14,7 +14,8 @@
 #include <cstring>
 #include <utility>
 
-/** multidimensional but contiguous in memory; accessed via A(i, j, k) */
+/** multidimensional but contiguous in memory for cache efficiency;
+ * accessed via e.g. A(i, j, k) */
 template<typename T> class MultiArray {
 public:
 	int rank;

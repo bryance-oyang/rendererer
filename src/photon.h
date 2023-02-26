@@ -9,6 +9,8 @@
 #ifndef PHOTON_H
 #define PHOTON_H
 
+#include <vector>
+#include "macro_def.h"
 #include "geometry.h"
 
 class SpecificIntensity {
@@ -34,11 +36,6 @@ public:
 	int make_monochromatic(float random_float);
 };
 
-/** records successful hits on each face */
-class PhotonCache {
-public:
-};
-
 class Path {
 public:
 	SpecificIntensity I;
@@ -47,7 +44,7 @@ public:
 
 	// the ith face/normal/prob_dens is at origin of ith ray
 	Ray rays[MAX_BOUNCES_PER_PATH + 2];
-	const Face *faces[MAX_BOUNCES_PER_PATH + 2];
+	Face *faces[MAX_BOUNCES_PER_PATH + 2];
 	Vec normals[MAX_BOUNCES_PER_PATH + 2];
 	float prob_dens[MAX_BOUNCES_PER_PATH + 2];
 };

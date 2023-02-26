@@ -11,6 +11,8 @@
 #define SAMPLES_PER_BROADCAST ((unsigned long long)(1 << 16))
 #define MAX_BOUNCES_PER_PATH 6
 
+#define PHOTON_CACHE_SIZE 4
+
 #ifndef DEBUG
 /* nondebug */
 

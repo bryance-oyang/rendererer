@@ -6,6 +6,15 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+/**
+ * @file
+ * @brief Color space conversions
+ *
+ * References:
+ * https://en.wikipedia.org/wiki/CIE_1931_color_space
+ * https://en.wikipedia.org/wiki/SRGB
+ */
+
 #include <cmath>
 #include "color.h"
 
@@ -37,6 +46,7 @@ static float color_piecewise_gauss(float x, float mu, float s1, float s2)
 	}
 }
 
+/** suggested by https://en.wikipedia.org/wiki/CIE_1931_color_space */
 static void color_xyzbar(float wavelen, float *xyzbar)
 {
 	xyzbar[0] = 1.056f * color_piecewise_gauss(wavelen, 599.8f, 37.9f, 31.0f)
@@ -50,10 +60,9 @@ static void color_xyzbar(float wavelen, float *xyzbar)
 		+ 0.681f * color_piecewise_gauss(wavelen, 459.0f, 26.0f, 13.8f);
 }
 
-/** initialize physical spectrum of RGB */
+/** initialize (very approximate) physical spectrum of RGB */
 static void make_rgb_table(float *wavelengths, float *r_table, float *g_table, float *b_table)
 {
-
 	for (int k = 0; k < NWAVELEN; k++) {
 		float l = wavelengths[k];
 		r_table[k] = 0.97f * color_piecewise_gauss(l, 677, 36, 36);

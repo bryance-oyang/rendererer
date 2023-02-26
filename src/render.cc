@@ -59,7 +59,7 @@ bool PathTracer::sample_new_path(int *last_path)
 	int &i = *last_path;
 	bool hit_light = false;
 	const Camera &camera = scene.camera;
-	const Octree &octree_root = scene.octree_root;
+	Octree &octree_root = scene.octree_root;
 
 	// init path
 	path.I.is_monochromatic = false;
@@ -109,6 +109,20 @@ void PathTracer::compute_I(const int last_path)
 	}
 }
 
+/** see PhotonCache defined in geometry.h */
+void PathTracer::update_photon_cache(const int last_path)
+{
+	for (int i = last_path; i > 0; i--) {
+		Face &face = *path.faces[i];
+		const Material &material = *face.material;
+
+		if (material.is_diffuse) {
+			PhotonCache &photon_cache = face.photon_cache;
+			photon_cache.put_dir(path.rays[i].dir);
+		}
+	}
+}
+
 void PathTracer::render()
 {
 	int last_path;
@@ -122,6 +136,7 @@ void PathTracer::render()
 		since_update_samples++;
 
 		compute_I(last_path);
+		update_photon_cache(last_path);
 
 		int i, j;
 		camera.get_ij(&i, &j, path.film_x, path.film_y);

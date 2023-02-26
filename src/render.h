@@ -18,7 +18,7 @@ class RenderThread {
 public:
 	const int tid;
 	std::unique_ptr<std::thread> thread;
-	const Scene &scene;
+	Scene &scene;
 	Camera &camera;
 	unsigned long samples_before_update;
 
@@ -91,6 +91,7 @@ public:
 
 	bool sample_new_path(int *last_path);
 	void compute_I(const int last_path);
+	void update_photon_cache(const int last_path);
 	void render();
 };
 

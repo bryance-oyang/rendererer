@@ -136,16 +136,7 @@ SpecificIntensity &SpecificIntensity::operator/=(float rhs)
  */
 int SpecificIntensity::make_monochromatic(float random_float)
 {
-	const float max_ind = NWAVELEN - 1 + 0.001f;
-	int ind = (int)(max_ind * random_float);
-
-	// ensure clip ind to [0, NWAVELEN - 1]
-	if (unlikely(ind > NWAVELEN - 1)) {
-		ind = NWAVELEN - 1;
-	} else if (unlikely(ind < 0)) {
-		ind = 0;
-	}
-
+	int ind = sample_ind(random_float, NWAVELEN);
 	cindex = ind;
 	is_monochromatic = true;
 	return ind;

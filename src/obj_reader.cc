@@ -24,7 +24,6 @@ ObjReader::ObjReader(const char *obj_fname, const char *mtl_fname)
 	parse_obj();
 }
 
-
 void ObjReader::parse_mtl()
 {
 	std::string ignore;

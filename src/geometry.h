@@ -10,7 +10,7 @@
 #define GEOMETRY_H
 
 #include <memory>
-#include "macro_def.h"
+#include <vector>
 
 class Material;
 
@@ -39,6 +39,21 @@ public:
 	void normalize();
 };
 
+/**
+ * If a sequence of rays making up a path successfully hits a light from the
+ * camera, we cache the ray_out for each diffuse surface struck. The cache can
+ * then be used during sampling to prefer ray_out's near the previous
+ * successful ray_out's.
+ */
+class PhotonCache {
+public:
+	/** list of ray_out.dir's for successful paths that hit light */
+	std::vector<Vec> cache;
+
+	const Vec &get_dir(float random_float) const;
+	void put_dir(const Vec &ray_out_dir);
+};
+
 class Face {
 public:
 	size_t id;
@@ -48,6 +63,8 @@ public:
 	Vec n;
 	/** material for face */
 	Material *material;
+	/** for cache-ing successful rays and prefer sampling near cached vecs */
+	PhotonCache photon_cache;
 
 	Face() {};
 	Face(const Vec &v0, const Vec &v1, const Vec &v2);
@@ -91,5 +108,6 @@ bool vec_in_box(const Vec &v, const Box &b);
 bool box_touch_box(const Box &a, const Box &b);
 float ray_box_intersect(const Ray &r, const Box &b);
 void z_to_normal_rotation(const Vec &normal, Vec &v, int sgn);
+int sample_ind(float random_float, int list_len);
 
 #endif /* GEOMETRY_H */

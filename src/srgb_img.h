@@ -12,7 +12,7 @@
 #include <cstdint>
 #include "multiarray.h"
 
-/** creates an sRGB image 0-255 */
+/** creates an sRGB image 0-255 from raw pixel wavelength indexed data */
 class SRGBImgConverter {
 public:
 	MultiArray<uint8_t> img_data;

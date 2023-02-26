@@ -12,6 +12,7 @@
 #include <cstdint>
 #include "macro_def.h"
 
+/** https://en.wikipedia.org/wiki/CIE_1931_color_space */
 class ColorXYZ {
 public:
 	float XYZ[3];
@@ -21,6 +22,7 @@ public:
 	ColorXYZ(float XYZ[3]);
 };
 
+/** https://en.wikipedia.org/wiki/SRGB */
 class ColorRGB {
 public:
 	float rgb[3];
@@ -30,6 +32,7 @@ public:
 	ColorRGB(float RGB[3]);
 };
 
+/** https://en.wikipedia.org/wiki/SRGB */
 class ColorRGB8 {
 public:
 	uint8_t rgb8[3];
@@ -39,6 +42,7 @@ public:
 	ColorRGB8(uint8_t RGB[3]);
 };
 
+/** static functions for color conversions */
 class Color {
 public:
 	static float wavelengths[NWAVELEN];

@@ -108,6 +108,8 @@ void EmitterMaterial::transfer(Path &path, int pind) const
 
 DiffuseMaterial::DiffuseMaterial(const float *rgb_color)
 {
+	is_diffuse = true;
+
 	for (int i = 0; i < 3; i++) {
 		this->rgb_color[i] = rgb_color[i];
 	}
