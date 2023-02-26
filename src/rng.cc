@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <cstdint>
 #include "rng.h"
+#include "macro_def.h"
 
 /**
  * Get nprimes number of primes in order to initialize the halton prime number
@@ -83,11 +84,11 @@ float HaltonRng::next()
 	unsigned long x, y;
 	x = denominator - numerator;
 	if (x == 1) {
-		if (denominator >= (SIZE_MAX >> 14)) {
-			reset();
-		} else {
+		if (likely(denominator < (SIZE_MAX >> 14))) {
 			denominator *= base;
 			numerator = 1;
+		} else {
+			reset();
 		}
 	} else {
 		y = denominator;
