@@ -51,7 +51,7 @@ int main(int argc, const char **argv)
 
 	// floating point exceptions;
 #ifdef DEBUG
-	feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
+	feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW | FE_UNDERFLOW);
 #endif
 
 	// start rendering threads
