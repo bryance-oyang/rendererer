@@ -178,9 +178,11 @@ void Scene::init()
 	// setup camera
 	camera.init_pixel_data();
 
-	// ensure normals and bounding boxes are computed
+	// ensure faces are id'ed and normals and bounding boxes are computed
 	std::vector<std::shared_ptr<Box>> faces_bounding_boxes;
-	for (auto &face : all_faces) {
+	for (size_t i = 0; i < all_faces.size(); i++) {
+		auto &face = all_faces[i];
+		face->id = i;
 		face->compute_normal();
 		faces_bounding_boxes.push_back(std::make_shared<Box>(face_bounding_box(*face)));
 	}

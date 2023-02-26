@@ -34,6 +34,11 @@ public:
 	int make_monochromatic(float random_float);
 };
 
+/** records successful hits on each face */
+class PhotonCache {
+public:
+};
+
 class Path {
 public:
 	SpecificIntensity I;
