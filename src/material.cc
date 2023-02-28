@@ -80,6 +80,36 @@ static inline float sample_ray_cosine(Ray &ray_out, const Ray &ray_in,
 	return z * INV_PI_F / (1 - GEOMETRY_EPSILON*GEOMETRY_EPSILON);
 }
 
+/**
+ * Sample ray in a circle near cached target vector
+ */
+static inline float cached_sample_ray(const Vec &cached_target,
+	Ray &ray_out, const Ray &ray_in,
+	const Vec &normal, Rng &rng0, Rng &rng1)
+{
+	float r0, r1, z, phi, zmin, xy;
+
+	r0 = rng0.next();
+	r1 = rng1.next();
+
+	// sample in a circle centered around z-axis
+	// width in z is PHOTON_CACHE_SAMPLE_WIDTH
+	zmin = PHOTON_CACHE_SAMPLE_WIDTH + GEOMETRY_EPSILON;
+	z = (1.0f - zmin) * r0 + zmin;
+	phi = r1 * (2 * PI_F);
+	xy = sqrtf(1.0f - z*z);
+	ray_out.dir.x[0] = xy * cosf(phi);
+	ray_out.dir.x[1] = xy * sinf(phi);
+	ray_out.dir.x[2] = z;
+
+	// rotate so z-axis would end up along target and hence sampled circle
+	// is centered around target now
+	z_to_normal_rotation(cached_target, ray_out.dir, 1);
+
+	set_ray_prop(ray_out, ray_in.ior, normal * ray_out.dir);
+	return INV_2PI_F / (1.0f - zmin);
+}
+
 EmitterMaterial::EmitterMaterial(const float *rgb_emission)
 {
 	is_light = true;
@@ -122,7 +152,17 @@ void DiffuseMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) con
 	const Ray &ray_in = path.rays[pind - 1];
 	const Vec &normal = path.normals[pind];
 
-	path.prob_dens[pind] = sample_ray_uniform(ray_out, ray_in, normal, rng0, rng1);
+	float r0 = rng0.next();
+	if (r0 <= USE_PHOTON_CACHE_PROB && likely(r0 > 0)) {
+		const PhotonCache &cache = path.faces[pind]->photon_cache;
+		path.cache_used[pind] = true;
+		path.prob_dens[pind] = USE_PHOTON_CACHE_PROB
+			* cached_sample_ray(cache.get_dir(rng1.next()),
+				ray_out, ray_in, normal, rng0, rng1);
+	} else {
+		path.prob_dens[pind] = (1.0f - USE_PHOTON_CACHE_PROB)
+			* sample_ray_uniform(ray_out, ray_in, normal, rng0, rng1);
+	}
 }
 
 void DiffuseMaterial::transfer(Path &path, int pind) const
@@ -203,7 +243,8 @@ static void glass_sample_ray(float ior, Path &path, int pind, Rng &rng)
 
 	R = glass_reflection(ior, cosair, cosglass);
 
-	if (rng.next() <= R) {
+	float r0 = rng.next();
+	if (r0 <= R && likely(r0 > 0)) {
 		/* sample reflection */
 		ray_out.dir = 2*cosrefl*normal + ray_in.dir;
 

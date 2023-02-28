@@ -14,6 +14,7 @@
 /** see geometry.h PhotonCache */
 #define PHOTON_CACHE_SIZE 4
 #define USE_PHOTON_CACHE_PROB 0.5
+#define PHOTON_CACHE_SAMPLE_WIDTH 0.043
 
 #ifndef DEBUG
 /* nondebug */

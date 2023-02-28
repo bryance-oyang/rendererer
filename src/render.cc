@@ -63,6 +63,9 @@ bool PathTracer::sample_new_path(int *last_path)
 
 	// init path
 	path.I.is_monochromatic = false;
+	for (int i = 0; i < MAX_BOUNCES_PER_PATH + 2; i++) {
+		path.cache_used[i] = false;
+	}
 
 	// first ray from camera
 	path.film_x = rngs[0][0]->next() * camera.film_width - camera.film_width / 2;
@@ -116,7 +119,13 @@ void PathTracer::update_photon_cache(const int last_path)
 		Face &face = *path.faces[i];
 		const Material &material = *face.material;
 
-		if (material.is_diffuse) {
+		// only consider using photon cache for rays that are
+		// sufficiently far from being parallel to the face, to make the
+		// sampling simple (otherwise would have to eliminate samples
+		// that are on the wrong hemisphere)
+		if (material.is_diffuse
+			&& !(path.cache_used[i]) // don't recache too close
+			&& path.rays[i].cosines[0] > PHOTON_CACHE_SAMPLE_WIDTH) {
 			PhotonCache &photon_cache = face.photon_cache;
 			photon_cache.put_dir(path.rays[i].dir);
 		}

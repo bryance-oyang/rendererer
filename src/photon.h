@@ -47,6 +47,7 @@ public:
 	Face *faces[MAX_BOUNCES_PER_PATH + 2];
 	Vec normals[MAX_BOUNCES_PER_PATH + 2];
 	float prob_dens[MAX_BOUNCES_PER_PATH + 2];
+	bool cache_used[MAX_BOUNCES_PER_PATH + 2];
 };
 
 #endif /* PHOTON_H */
