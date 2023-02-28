@@ -115,6 +115,14 @@ void PathTracer::compute_I(const int last_path)
 /** see PhotonCache defined in photon.h */
 void PathTracer::update_photon_cache(const int last_path)
 {
+	int light_id = -1;
+	for (int i = 1; i > last_path; i++) {
+		if (path.faces[i]->material->is_light) {
+			light_id = path.faces[i]->id;
+			break;
+		}
+	}
+
 	for (int i = last_path; i > 0; i--) {
 		Face &face = *path.faces[i];
 		const Material &material = *face.material;
@@ -124,10 +132,10 @@ void PathTracer::update_photon_cache(const int last_path)
 		// sampling simple (otherwise would have to eliminate samples
 		// that are on the wrong hemisphere)
 		if (material.is_diffuse
-			//&& !(path.cache_used[i]) // don't recache too close
+			&& !(path.cache_used[i]) // don't recache too close
 			&& path.rays[i].cosines[0] > PHOTON_CACHE_SAMPLE_WIDTH) {
 			PhotonCache &photon_cache = photon_caches[face.id];
-			photon_cache.put_dir(path.rays[i].dir);
+			photon_cache.put_dir(path.rays[i].dir, light_id, path.rng.next(), path.rng.next());
 		}
 	}
 }

@@ -94,7 +94,7 @@ static inline float cached_sample_ray(const Vec &cached_target,
 
 	// sample in a circle centered around z-axis
 	// width in z is PHOTON_CACHE_SAMPLE_WIDTH
-	zmin = PHOTON_CACHE_SAMPLE_WIDTH + GEOMETRY_EPSILON;
+	zmin = 1.0f - PHOTON_CACHE_SAMPLE_WIDTH + GEOMETRY_EPSILON;
 	z = (1.0f - zmin) * r0 + zmin;
 	phi = r1 * (2 * PI_F);
 	xy = sqrtf(1.0f - z*z);

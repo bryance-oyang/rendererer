@@ -47,9 +47,10 @@ class PhotonCache {
 public:
 	/** list of ray_out.dir's for successful paths that hit light */
 	std::vector<Vec> cache;
+	std::vector<int> light_ids;
 
 	const Vec &get_dir(float random_float) const;
-	void put_dir(const Vec &ray_out_dir);
+	void put_dir(const Vec &ray_out_dir, int light_id, float random_float, float random_float1);
 };
 
 
