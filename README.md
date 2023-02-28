@@ -14,9 +14,12 @@ View image in a browser while rendering: `img_viewer/index.html` (via
 ![prism_img](prism.png)
 ![cornell_box_img](cornell_box.png)
 
-Can only render triangles. `.obj` file must have only triangles.
+No smooth normals (hence blobby glass sphere). Can only render triangles. `.obj` file must have only triangles. Tested from [blender](https://www.blender.org/) export (but blender doesn't export transparent glass correctly).
 
 Dispersive glass: set material name in `.mtl` to `CAUCHY_#_#` where # are floats
 indicating the Cauchy coefficients A and B in order (n = A + B / wavelen^2).
 
 Adjust image size, number of threads, etc in `src/macro_def.h` and re-`make`.
+
+## Todo
+Metropolis-Hastings for better everything.
