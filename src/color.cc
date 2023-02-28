@@ -15,7 +15,6 @@
  * https://en.wikipedia.org/wiki/SRGB
  */
 
-#include <cmath>
 #include "color.h"
 
 float Color::wavelengths[NWAVELEN];

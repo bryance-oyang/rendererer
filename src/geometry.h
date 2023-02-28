@@ -11,7 +11,6 @@
 
 #include <memory>
 #include <vector>
-#include "macro_def.h"
 
 class Material;
 
@@ -42,7 +41,6 @@ public:
 
 class Face {
 public:
-	size_t id;
 	/** 3 vertices to define corners of triangle */
 	Vec v[3];
 	/** normal */

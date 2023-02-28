@@ -10,7 +10,6 @@
 #define MATERIAL_H
 
 #include "photon.h"
-#include "rng.h"
 
 class CauchyCoeff {
 public:
@@ -22,7 +21,6 @@ public:
 class Material {
 public:
 	bool is_light = false;
-	bool is_diffuse = false;
 
 	virtual ~Material() {};
 

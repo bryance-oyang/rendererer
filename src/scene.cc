@@ -180,9 +180,7 @@ void Scene::init()
 
 	// ensure faces are id'ed and normals and bounding boxes are computed
 	std::vector<std::shared_ptr<Box>> faces_bounding_boxes;
-	for (size_t i = 0; i < all_faces.size(); i++) {
-		auto &face = all_faces[i];
-		face->id = i;
+	for (auto &face : all_faces) {
 		face->compute_normal();
 		faces_bounding_boxes.push_back(std::make_shared<Box>(face_bounding_box(*face)));
 	}

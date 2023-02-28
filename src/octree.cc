@@ -13,7 +13,6 @@
  */
 
 #include <cfloat>
-#include <vector>
 #include "octree.h"
 
 /** divides parent box into 8 children boxes */

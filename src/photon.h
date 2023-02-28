@@ -9,7 +9,6 @@
 #ifndef PHOTON_H
 #define PHOTON_H
 
-#include <vector>
 #include "macro_def.h"
 #include "geometry.h"
 #include "rng.h"

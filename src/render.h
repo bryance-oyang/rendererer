@@ -91,7 +91,6 @@ public:
 
 	bool sample_new_path(int *last_path);
 	void compute_I(const int last_path);
-	void update_photon_cache(const int last_path);
 	void render();
 };
 
