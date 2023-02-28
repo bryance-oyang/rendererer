@@ -152,12 +152,19 @@ void DiffuseMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) con
 	const Ray &ray_in = path.rays[pind - 1];
 	const Vec &normal = path.normals[pind];
 
-	float r0 = rng0.next();
+	const PhotonCache &photon_cache = path.faces[pind]->photon_cache;
+	if (unlikely(photon_cache.cache.size() == 0)) {
+		// cache is empty, sample normally
+		path.prob_dens[pind] = sample_ray_uniform(ray_out, ray_in, normal, rng0, rng1);
+		return;
+	}
+
+	// chance to use photon cache
+	float r0 = path.rng.next();
 	if (r0 <= USE_PHOTON_CACHE_PROB && likely(r0 > 0)) {
-		const PhotonCache &cache = path.faces[pind]->photon_cache;
 		path.cache_used[pind] = true;
 		path.prob_dens[pind] = USE_PHOTON_CACHE_PROB
-			* cached_sample_ray(cache.get_dir(rng1.next()),
+			* cached_sample_ray(photon_cache.get_dir(path.rng.next()),
 				ray_out, ray_in, normal, rng0, rng1);
 	} else {
 		path.prob_dens[pind] = (1.0f - USE_PHOTON_CACHE_PROB)
@@ -217,7 +224,7 @@ static float glass_reflection(float ior, float cosair, float cosglass)
 	return 0.5f * (R1 + R2);
 }
 
-static void glass_sample_ray(float ior, Path &path, int pind, Rng &rng)
+static void glass_sample_ray(float ior, Path &path, int pind)
 {
 	Ray &ray_out = path.rays[pind];
 	const Ray &ray_in = path.rays[pind - 1];
@@ -243,7 +250,7 @@ static void glass_sample_ray(float ior, Path &path, int pind, Rng &rng)
 
 	R = glass_reflection(ior, cosair, cosglass);
 
-	float r0 = rng.next();
+	float r0 = path.rng.next();
 	if (r0 <= R && likely(r0 > 0)) {
 		/* sample reflection */
 		ray_out.dir = 2*cosrefl*normal + ray_in.dir;
@@ -311,8 +318,9 @@ GlassMaterial::GlassMaterial(const float ior) : ior{ior} {}
 
 void GlassMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const
 {
+	(void)rng0;
 	(void)rng1;
-	glass_sample_ray(ior, path, pind, rng0);
+	glass_sample_ray(ior, path, pind);
 }
 
 void GlassMaterial::transfer(Path &path, int pind) const
@@ -330,6 +338,9 @@ DispersiveGlassMaterial::DispersiveGlassMaterial(const CauchyCoeff &cauchy_coeff
 
 void DispersiveGlassMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) const
 {
+	(void)rng0;
+	(void)rng1;
+
 	bool set_monochromatic;
 	int cindex;
 
@@ -337,11 +348,11 @@ void DispersiveGlassMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &r
 		cindex = path.I.cindex;
 		set_monochromatic = false;
 	} else {
-		cindex = path.I.make_monochromatic(rng1.next());
+		cindex = path.I.make_monochromatic(path.rng.next());
 		set_monochromatic = true;
 	}
 
-	glass_sample_ray(ior_table[cindex], path, pind, rng0);
+	glass_sample_ray(ior_table[cindex], path, pind);
 
 	// if sampled reflection, we can undo the monochromatic set from here
 	if (set_monochromatic && path.rays[pind].ior == path.rays[pind-1].ior) {

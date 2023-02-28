@@ -12,6 +12,7 @@
 #include <vector>
 #include "macro_def.h"
 #include "geometry.h"
+#include "rng.h"
 
 class SpecificIntensity {
 public:
@@ -48,6 +49,9 @@ public:
 	Vec normals[MAX_BOUNCES_PER_PATH + 2];
 	float prob_dens[MAX_BOUNCES_PER_PATH + 2];
 	bool cache_used[MAX_BOUNCES_PER_PATH + 2];
+
+	// to be used for sampling if/else probabilities
+	RandRng rng{0};
 };
 
 #endif /* PHOTON_H */

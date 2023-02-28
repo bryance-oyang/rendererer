@@ -104,7 +104,7 @@ void Vec::normalize()
 
 const Vec &PhotonCache::get_dir(float random_float) const
 {
-	int ind = sample_ind(random_float, PHOTON_CACHE_SIZE);
+	int ind = sample_ind(random_float, cache.size());
 	return cache[ind];
 }
 
