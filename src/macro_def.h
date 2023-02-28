@@ -11,12 +11,6 @@
 #define SAMPLES_PER_BROADCAST ((unsigned long long)(1 << 16))
 #define MAX_BOUNCES_PER_PATH 6
 
-/** see photon.h PhotonCache */
-#define PHOTON_CACHE_SIZE 4
-#define USE_PHOTON_CACHE_PROB 0.5
-#define PHOTON_CACHE_SAMPLE_WIDTH 0.05
-#define PHOTON_CACHE_ERASE_RANDOM_PROB 0.01
-
 #ifndef DEBUG
 /* nondebug */
 

@@ -81,9 +81,10 @@ static inline float sample_ray_cosine(Ray &ray_out, const Ray &ray_in,
 }
 
 /**
- * Sample ray in a circle near cached target vector
+ * Sample ray in a circle near target vector
  */
-static inline float cached_sample_ray(const Vec &cached_target,
+/*
+static inline float target_sample_ray(const Vec &target,
 	Ray &ray_out, const Ray &ray_in,
 	const Vec &normal, Rng &rng0, Rng &rng1)
 {
@@ -104,11 +105,12 @@ static inline float cached_sample_ray(const Vec &cached_target,
 
 	// rotate so z-axis would end up along target and hence sampled circle
 	// is centered around target now
-	z_to_normal_rotation(cached_target, ray_out.dir, 1);
+	z_to_normal_rotation(target, ray_out.dir, 1);
 
 	set_ray_prop(ray_out, ray_in.ior, normal * ray_out.dir);
 	return INV_2PI_F / (1.0f - zmin);
 }
+*/
 
 EmitterMaterial::EmitterMaterial(const float *rgb_emission)
 {
@@ -152,24 +154,7 @@ void DiffuseMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) con
 	const Ray &ray_in = path.rays[pind - 1];
 	const Vec &normal = path.normals[pind];
 
-	const PhotonCache &photon_cache = (*path.photon_caches)[path.faces[pind]->id];
-	if (unlikely(photon_cache.cache.size() == 0)) {
-		// cache is empty, sample normally
-		path.prob_dens[pind] = sample_ray_uniform(ray_out, ray_in, normal, rng0, rng1);
-		return;
-	}
-
-	// chance to use photon cache
-	float r0 = path.rng.next();
-	if (r0 <= USE_PHOTON_CACHE_PROB && likely(r0 > 0)) {
-		path.cache_used[pind] = true;
-		path.prob_dens[pind] = USE_PHOTON_CACHE_PROB
-			* cached_sample_ray(photon_cache.get_dir(path.rng.next()),
-				ray_out, ray_in, normal, rng0, rng1);
-	} else {
-		path.prob_dens[pind] = (1.0f - USE_PHOTON_CACHE_PROB)
-			* sample_ray_uniform(ray_out, ray_in, normal, rng0, rng1);
-	}
+	path.prob_dens[pind] = sample_ray_uniform(ray_out, ray_in, normal, rng0, rng1);
 }
 
 void DiffuseMaterial::transfer(Path &path, int pind) const

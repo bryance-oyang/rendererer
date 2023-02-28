@@ -63,9 +63,6 @@ bool PathTracer::sample_new_path(int *last_path)
 
 	// init path
 	path.I.is_monochromatic = false;
-	for (int i = 0; i < MAX_BOUNCES_PER_PATH + 2; i++) {
-		path.cache_used[i] = false;
-	}
 
 	// first ray from camera
 	path.film_x = rngs[0][0]->next() * camera.film_width - camera.film_width / 2;
@@ -112,44 +109,10 @@ void PathTracer::compute_I(const int last_path)
 	}
 }
 
-/** see PhotonCache defined in photon.h */
-void PathTracer::update_photon_cache(const int last_path)
-{
-	int light_id = -1;
-	for (int i = 1; i > last_path; i++) {
-		if (path.faces[i]->material->is_light) {
-			light_id = path.faces[i]->id;
-			break;
-		}
-	}
-
-	for (int i = last_path; i > 0; i--) {
-		Face &face = *path.faces[i];
-		const Material &material = *face.material;
-
-		// only consider using photon cache for rays that are
-		// sufficiently far from being parallel to the face, to make the
-		// sampling simple (otherwise would have to eliminate samples
-		// that are on the wrong hemisphere)
-		if (material.is_diffuse
-			&& !(path.cache_used[i]) // don't recache too close
-			&& path.rays[i].cosines[0] > PHOTON_CACHE_SAMPLE_WIDTH) {
-			PhotonCache &photon_cache = photon_caches[face.id];
-			photon_cache.put_dir(path.rays[i].dir, light_id, path.rng.next(), path.rng.next());
-		}
-	}
-}
-
 void PathTracer::render()
 {
 	int last_path;
 	unsigned long long max_samples = AVG_SAMPLE_PER_PIX * camera.nx * camera.ny / NTHREAD;
-
-	/* init photon cache vector, one for each face */
-	for (size_t i = 0; i < scene.all_faces.size(); i++) {
-		photon_caches.push_back(PhotonCache{});
-	}
-	path.photon_caches = &photon_caches;
 
 	for (unsigned long long samples = 0, since_update_samples = 0; samples < max_samples;) {
 		if (!sample_new_path(&last_path)) {
@@ -160,7 +123,6 @@ void PathTracer::render()
 		since_update_samples++;
 
 		compute_I(last_path);
-		update_photon_cache(last_path);
 
 		int i, j;
 		camera.get_ij(&i, &j, path.film_x, path.film_y);
