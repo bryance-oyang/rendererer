@@ -152,7 +152,7 @@ void DiffuseMaterial::sample_ray(Path &path, int pind, Rng &rng0, Rng &rng1) con
 	const Ray &ray_in = path.rays[pind - 1];
 	const Vec &normal = path.normals[pind];
 
-	const PhotonCache &photon_cache = path.faces[pind]->photon_cache;
+	const PhotonCache &photon_cache = (*path.photon_caches)[path.faces[pind]->id];
 	if (unlikely(photon_cache.cache.size() == 0)) {
 		// cache is empty, sample normally
 		path.prob_dens[pind] = sample_ray_uniform(ray_out, ray_in, normal, rng0, rng1);

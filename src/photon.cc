@@ -141,3 +141,17 @@ int SpecificIntensity::make_monochromatic(float random_float)
 	is_monochromatic = true;
 	return ind;
 }
+
+const Vec &PhotonCache::get_dir(float random_float) const
+{
+	int ind = sample_ind(random_float, cache.size());
+	return cache[ind];
+}
+
+void PhotonCache::put_dir(const Vec &ray_out_dir)
+{
+	if (likely(cache.size() >= PHOTON_CACHE_SIZE)) {
+		cache.erase(cache.begin());
+	}
+	cache.push_back(ray_out_dir);
+}

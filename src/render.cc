@@ -112,7 +112,7 @@ void PathTracer::compute_I(const int last_path)
 	}
 }
 
-/** see PhotonCache defined in geometry.h */
+/** see PhotonCache defined in photon.h */
 void PathTracer::update_photon_cache(const int last_path)
 {
 	for (int i = last_path; i > 0; i--) {
@@ -124,9 +124,9 @@ void PathTracer::update_photon_cache(const int last_path)
 		// sampling simple (otherwise would have to eliminate samples
 		// that are on the wrong hemisphere)
 		if (material.is_diffuse
-			&& !(path.cache_used[i]) // don't recache too close
+			//&& !(path.cache_used[i]) // don't recache too close
 			&& path.rays[i].cosines[0] > PHOTON_CACHE_SAMPLE_WIDTH) {
-			PhotonCache &photon_cache = face.photon_cache;
+			PhotonCache &photon_cache = photon_caches[face.id];
 			photon_cache.put_dir(path.rays[i].dir);
 		}
 	}
@@ -136,6 +136,13 @@ void PathTracer::render()
 {
 	int last_path;
 	unsigned long long max_samples = AVG_SAMPLE_PER_PIX * camera.nx * camera.ny / NTHREAD;
+
+	/* init photon cache vector, one for each face */
+	for (size_t i = 0; i < scene.all_faces.size(); i++) {
+		photon_caches.push_back(PhotonCache{});
+	}
+	path.photon_caches = &photon_caches;
+
 	for (unsigned long long samples = 0, since_update_samples = 0; samples < max_samples;) {
 		if (!sample_new_path(&last_path)) {
 			continue;

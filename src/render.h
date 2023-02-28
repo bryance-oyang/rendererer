@@ -85,6 +85,7 @@ class PathTracer : public RenderThread {
 public:
 	Path path;
 	std::vector<std::shared_ptr<Rng>> rngs[2];
+	std::vector<PhotonCache> photon_caches; // indexed by face id
 
 	PathTracer(int tid, Scene &scene, unsigned long samples_before_update);
 	PathTracer(int tid, Scene &scene, unsigned long samples_before_update, std::vector<unsigned long> &primes);

@@ -37,6 +37,22 @@ public:
 	int make_monochromatic(float random_float);
 };
 
+/**
+ * If a sequence of rays making up a path successfully hits a light from the
+ * camera, we cache the ray_out for each diffuse surface struck. The cache can
+ * then be used during sampling to prefer ray_out's near the previous
+ * successful ray_out's.
+ */
+class PhotonCache {
+public:
+	/** list of ray_out.dir's for successful paths that hit light */
+	std::vector<Vec> cache;
+
+	const Vec &get_dir(float random_float) const;
+	void put_dir(const Vec &ray_out_dir);
+};
+
+
 class Path {
 public:
 	SpecificIntensity I;
@@ -48,7 +64,9 @@ public:
 	Face *faces[MAX_BOUNCES_PER_PATH + 2];
 	Vec normals[MAX_BOUNCES_PER_PATH + 2];
 	float prob_dens[MAX_BOUNCES_PER_PATH + 2];
+
 	bool cache_used[MAX_BOUNCES_PER_PATH + 2];
+	std::vector<PhotonCache> *photon_caches;
 
 	// to be used for sampling if/else probabilities
 	RandRng rng{0};

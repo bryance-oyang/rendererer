@@ -102,20 +102,6 @@ void Vec::normalize()
 	*this /= this->len();
 }
 
-const Vec &PhotonCache::get_dir(float random_float) const
-{
-	int ind = sample_ind(random_float, cache.size());
-	return cache[ind];
-}
-
-void PhotonCache::put_dir(const Vec &ray_out_dir)
-{
-	if (likely(cache.size() >= PHOTON_CACHE_SIZE)) {
-		cache.erase(cache.begin());
-	}
-	cache.push_back(ray_out_dir);
-}
-
 Face::Face(const Vec &v0, const Vec &v1, const Vec &v2)
 : v{v0, v1, v2}
 {
@@ -345,10 +331,9 @@ float ray_box_intersect(const Ray &r, const Box &b)
  */
 void z_to_normal_rotation(const Vec &normal, Vec &v, int sgn)
 {
-	Vec result, zxn, tmp;
-	float costheta;
+	Vec zxn;
 
-	costheta = normal.x[2];
+	const float costheta = normal.x[2];
 
 	/* normal points close to z or opposite of z */
 	if (1 - costheta < GEOMETRY_EPSILON) {
