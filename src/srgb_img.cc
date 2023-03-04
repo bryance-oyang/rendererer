@@ -37,9 +37,11 @@ static void get_percentile(float *min, float *max, float low_percentile, float h
 	MultiArray<float> sorted_copy = img_float;
 	qsort(sorted_copy.data, sorted_copy.len, sizeof(float), float_compare);
 
-	int min_ind = sorted_copy.len * low_percentile;
-	int max_ind = sorted_copy.len * high_percentile;
-	max_ind = std::min(sorted_copy.len - 1, max_ind);
+	int min_ind = (sorted_copy.len - 1) * low_percentile;
+	int max_ind = (sorted_copy.len - 1) * high_percentile;
+	if (unlikely(max_ind > sorted_copy.len - 1)) {
+		max_ind = sorted_copy.len - 1;
+	}
 
 	*min = sorted_copy(min_ind);
 	*max = sorted_copy(max_ind);
