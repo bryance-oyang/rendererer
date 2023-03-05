@@ -12,8 +12,8 @@ make
 ./rendererer ../scenes/cornell_box.obj ../scenes/cornell_box.mtl
 ```
 
-View image in a browser while rendering: `python -m http.server` and open
-browser to `http://localhost:8000/img_viewer/index.html` (via
+View image in a browser while rendering: `cd img_viewer && python -m http.server` and open
+browser to `http://localhost:8000/` (via
 [websocket_ctube](https://github.com/bryance-oyang/websocket_ctube))
 
 No smooth normals (hence blobby glass sphere). Can only render triangles. `.obj` file must have only triangles. Tested from [blender](https://www.blender.org/) export (but blender doesn't export transparent glass correctly).
