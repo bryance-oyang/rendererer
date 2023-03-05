@@ -11,7 +11,10 @@
  * @brief rendererer
  */
 
+#ifdef DEBUG
 #include <fenv.h>
+#endif
+
 #include "render.h"
 #include "color.h"
 #include "obj_reader.h"

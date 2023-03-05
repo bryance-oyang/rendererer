@@ -1,6 +1,11 @@
 # rendererer
-Ray tracing via physically-based Monte Carlo for 3D computer graphics fun.
+Ray tracing from scratch via physically-based Monte Carlo for 3D computer
+graphics fun.
 
+Build dependencies:
+- `g++` or similar for C++17
+- `make`
+- `pthread` and friends
 ```bash
 cd src
 make
