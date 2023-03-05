@@ -2,10 +2,10 @@
 Ray tracing from scratch via physically-based Monte Carlo for 3D computer
 graphics fun.
 
-Build dependencies:
-- `g++` or similar for C++17
-- `make`
-- `pthread` and friends
+![prism_img](prism.png)
+![cornell_box_img](cornell_box.png)
+
+Build dependencies: `g++` or similar for C++17, `make`, `POSIX` (aka sorry Windows)
 ```bash
 cd src
 make
@@ -14,10 +14,6 @@ make
 
 View image in a browser while rendering: `img_viewer/index.html` (via
 [websocket_ctube](https://github.com/bryance-oyang/websocket_ctube))
-
-## Tests
-![prism_img](prism.png)
-![cornell_box_img](cornell_box.png)
 
 No smooth normals (hence blobby glass sphere). Can only render triangles. `.obj` file must have only triangles. Tested from [blender](https://www.blender.org/) export (but blender doesn't export transparent glass correctly).
 
