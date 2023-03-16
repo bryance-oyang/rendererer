@@ -18,7 +18,7 @@ View image in a browser while rendering: `cd img_viewer && python -m http.server
 browser to `http://localhost:8000/` (via
 [websocket_ctube](https://github.com/bryance-oyang/websocket_ctube))
 
-No smooth normals (hence blobby glass sphere). Can only render triangles. `.obj` file must have only triangles. Tested from [blender](https://www.blender.org/) export (but blender doesn't export transparent glass correctly; must manually set transparency in `.mtl`).
+Can only render triangles. `.obj` file must have only triangles. Tested from [blender](https://www.blender.org/) export (but blender doesn't export transparent glass correctly; must manually set transparency in `.mtl`).
 
 Dispersive glass: set material name in `.mtl` to `CAUCHY_#_#` where # are floats
 indicating the Cauchy coefficients A and B in order (n = A + B / wavelen^2).
